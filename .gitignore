@@ -9,3 +9,11 @@ hardware/lib/jlc/fetch_report.md
 datasheets/*.pdf
 hardware/.easyeda_cache/
 hardware/lib/jlc/jlc.3dshapes/
+
+# 画图代理在仓库根目录留下的临时文件（点开头）
+/.*.png
+/.*.pdf
+/.*.py
+/.*.xml
+/.*.json
+/.*.txt
