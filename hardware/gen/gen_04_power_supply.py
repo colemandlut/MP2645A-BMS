@@ -13,21 +13,26 @@ lib_id 用 jlc:<符号名>（顶层嵌入符号名 = lib_id，带 jlc: 前缀；
 第 2 轮变更（主代理核查）：
   * lib_id 带 jlc: 前缀，嵌入符号与库一致 → 消除 11 条 lib_symbol_issues（library ''）。
   * 引脚电气类型不再在脚本里改（库已由 fetch_jlc_parts.py 统一归一为 passive），原样复制。
-  * 位号统一「前缀+数字」40 段：C_IN_E→C40(47µF/63V RV63V47M6X8)、C_BST→C41、
-    C_IN1→C42、C_OUT1→C43、R_FB1→R40、R_FB2→R41；U4/F11/D7/L1 不变。
-  * 删 D6（SMBJ33A，BAT+ 上 D3 已钳位 ≈53V < VIN 65V）。
+  * 位号统一「前缀+数字」40 段；U4/F11/D7/L1 不变；删 D6（SMBJ33A）。
 
 第 3 轮变更（版面返工，只改版面不改连接）：
-  * U4 每个脚引 ≥5.08mm 短线，线端放局部标签（VIN_F/SW_3V3/CB_3V3/FB_3V3）或 GND 全局标签，
-    组与 U4 之间靠同名标签相连（消灭「VIN_F 导线横穿 U4 本体」的 P0）。
-  * 分组：输入保护（F11+C40+C42）一组、续流/电感/输出（D7+L1+C43）一组、反馈（R40+R41）一组；
-    C41 自举电容放 U4 上方，两端各用 CB_3V3/SW_3V3 标签。
-  * 信号左→右、电源上地在下；器件间距 ≥12.7mm；电路居中偏上、放大布局。
-  * 位号/值：竖放两脚件位号与值都放器件右侧、水平书写；横放件位号在上值在下；U4 位号在上值在下。
+  * U4 每个脚引 ≥5.08mm 短线，线端放局部标签，组与 U4 之间靠同名标签相连。
+  * 分组左→右；位号/值重排（竖放件位号与值在右侧水平书写）。
+
+第 4 轮变更（按 Opus 复核 + 用户 13:57 第 2 轮换料）：
+  * P0-1：每个实例补 Footprint（jlc:…，取库符号同值）+ Datasheet（隐藏）+ LCSC（隐藏）。
+  * P1-1/P1-2：F11 与 VIN_F 之间串 R42 10Ω（1206W4F100JT5E, C17903），新网络 VIN_R
+    （保险丝后、串阻前）；VIN_F 浪涌/上电 I²t 被 R42+C40 的 RC 压住（替代已删 D6）。
+  * 换料：U4 LCSC C87080→C54823941（值 LMR16006XDDCR (Tokmas)，600kHz）；
+    F11 0466001.NRHF→JFC1206-1100FS（值 1A 63V，C136343）；
+    C42 4.7µF/1210→CL31B105KCHNNNE 1µF/100V（C13832）并新增 C44 同件并联；
+    C43 22µF/25V 0805→CL10A226MQ8NRNC 22µF/6.3V 0603（C59461）。
+  * C42/C44 并排、紧挨 U4.VIN（串阻后高频回路就近）；图名/说明文字回图纸左上角。
 
 注意（KiCad 10 实测）：
   * 每条 (wire ...) 只能有 2 个点；折线要拆成多段 2 点导线。
   * 坐标全部落在 1.27mm 栅格上（输出统一 :.2f，消除浮点尾巴），否则 ERC 报 endpoint_off_grid。
+  * 同名符号（C42/C44 共用 CL31B105KCHNNNE）在 lib_symbols 只写一次。
 """
 from __future__ import annotations
 
@@ -84,6 +89,12 @@ def read_symbol(name: str) -> str:
     return block
 
 
+def symbol_props(block: str) -> dict:
+    """符号块里的 property 值（Footprint / Datasheet / Reference / Value …）。"""
+    return {m.group(1): m.group(2)
+            for m in re.finditer(r'\(property "([^"]+)" "([^"]*)"', block)}
+
+
 def parse_pins(block: str) -> dict:
     """返回 {pin_number: (ix, iy)}（符号内坐标，Y 向上）。"""
     pins = {}
@@ -111,21 +122,24 @@ def pin_world(px: float, py: float, rot: int, ix: float, iy: float):
 
 # ---------------------------------------------------------------------------
 # 器件表：位号 / 符号名 / 值 / LCSC / 位置(mm) / 旋转
-# 第 3 轮重排（左→右：BAT+→F11→C40/C42→U4→D7→L1→C43→R40/R41；C41 在 U4 上方）
+# 第 4 轮（左→右：BAT+→F11→R42→C40 输入组；U4 居中；C42/C44 紧挨 U4.VIN；
+#           D7→L1→C43 输出组；R40/R41 反馈组；C41 在 U4 上方）
 # 所有坐标都是 1.27mm 的整数倍（否则 ERC 报 endpoint_off_grid）。
 # ---------------------------------------------------------------------------
 COMPONENTS = [
     # ref, symbol, value, lcsc, x, y, rot
-    ("F11", "0466001.NRHF",    "1A",            "C151135",    86.36,  71.12,   0),   # 保险丝（横放）
-    ("C40", "RV63V47M6X8",     "47µF 63V",      "C48971005", 114.30,  76.20, 270),   # 输入电解（竖放，正极上）
-    ("C42", "FS32X475K101EGG", "4.7µF 100V",    "C381466",   139.70,  76.20,  90),   # 输入陶瓷（竖放）
-    ("U4",  "LMR16006XDDCR",   "LMR16006XDDCR", "C87080",    185.42, 104.14,   0),   # 主控 buck
-    ("C41", "CL05B104KO5NNNC", "100nF 16V",     "C1525",     185.42,  86.36,   0),   # 自举电容（U4 上方，横放）
-    ("D7",  "SS210",           "SS210",         "C14996",    228.60,  80.01,   0),   # 续流肖特基（横放，阴极左接 SW）
-    ("L1",  "SWPA5040S220MT",  "22µH",          "C68434",    254.00,  71.12,   0),   # 输出电感（横放）
-    ("C43", "CL21A226MAQNNNE", "22µF 25V",      "C45783",    289.56,  76.20,  90),   # 输出电容（竖放）
-    ("R40", "0402WGF3302TCE",  "33k 1%",        "C25779",    304.80,  91.44, 270),   # 反馈上电阻（竖放）
-    ("R41", "0402WGF1002TCE",  "10k 1%",        "C25744",    304.80, 114.30, 270),   # 反馈下电阻（竖放）
+    ("F11", "JFC1206-1100FS",   "1A 63V",              "C136343",    86.36,  71.12,   0),   # 输入保险丝（1A 63V，引脚 ±7.62）
+    ("R42", "1206W4F100JT5E",   "10Ω 1% 1206",         "C17903",    114.30,  71.12,   0),   # 抗浪涌串阻（F11 后、VIN_F 前）
+    ("C40", "RV63V47M6X8",      "47µF 63V",            "C48971005", 139.70,  76.20, 270),   # 输入电解（竖放，正极上）
+    ("U4",  "LMR16006XDDCR",    "LMR16006XDDCR (Tokmas)", "C54823941", 185.42, 104.14, 0),  # 主控 buck（Tokmas 件，符号沿用 TI）
+    ("C41", "CL05B104KO5NNNC",  "100nF 16V",           "C1525",     185.42,  86.36,   0),   # 自举电容（U4 上方，横放）
+    ("C42", "CL31B105KCHNNNE",  "1µF 100V",            "C13832",    215.90, 109.22,  90),   # 输入陶瓷 1/2（紧挨 U4.VIN，竖放）
+    ("C44", "CL31B105KCHNNNE",  "1µF 100V",            "C13832",    241.30, 109.22,  90),   # 输入陶瓷 2/2（与 C42 并联）
+    ("D7",  "SS210",            "SS210",               "C14996",    228.60,  80.01,   0),   # 续流肖特基（横放，阴极左接 SW）
+    ("L1",  "SWPA5040S220MT",   "22µH",                "C68434",    254.00,  71.12,   0),   # 输出电感（横放）
+    ("C43", "CL10A226MQ8NRNC",  "22µF 6.3V",           "C59461",    289.56,  76.20,  90),   # 输出电容（竖放）
+    ("R40", "0402WGF3302TCE",   "33k 1%",              "C25779",    304.80,  91.44, 270),   # 反馈上电阻（竖放）
+    ("R41", "0402WGF1002TCE",   "10k 1%",              "C25744",    304.80, 114.30, 270),   # 反馈下电阻（竖放）
 ]
 
 # 位号/值文字位置（绝对坐标，justify left）。
@@ -133,10 +147,12 @@ COMPONENTS = [
 # 横放件：位号在上、值在下；U4：位号在本体上方、值在本体下方。
 PROP_POS = {
     "F11": (("F11", 86.36, 66.04), ("Value", 86.36, 73.66)),
-    "C40": (("C40", 119.38, 73.66), ("Value", 119.38, 78.74)),
-    "C42": (("C42", 144.78, 73.66), ("Value", 144.78, 78.74)),
+    "R42": (("R42", 114.30, 66.04), ("Value", 114.30, 73.66)),
+    "C40": (("C40", 144.78, 73.66), ("Value", 144.78, 78.74)),
     "U4":  (("U4", 185.42, 96.52), ("Value", 185.42, 113.03)),
     "C41": (("C41", 185.42, 81.28), ("Value", 185.42, 88.90)),
+    "C42": (("C42", 220.98, 106.68), ("Value", 220.98, 111.76)),
+    "C44": (("C44", 246.38, 106.68), ("Value", 246.38, 111.76)),
     "D7":  (("D7", 228.60, 76.20), ("Value", 228.60, 83.82)),
     "L1":  (("L1", 254.00, 68.58), ("Value", 254.00, 73.66)),
     "C43": (("C43", 294.64, 73.66), ("Value", 294.64, 78.74)),
@@ -185,19 +201,24 @@ def gen():
     A('\t(title_block\n')
     A('\t\t(title "辅助电源")\n')
     A('\t\t(date "2026-09-26")\n')
-    A('\t\t(rev "v0.3-draw-r3")\n')
+    A('\t\t(rev "v0.3-draw-r4")\n')
     A('\t\t(company "MP2645A-BMS")\n')
     A('\t\t(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡")\n')
     A('\t)\n')
 
-    # lib_symbols：复制 10 个符号
+    # lib_symbols：复制符号（同名符号只写一次；C42/C44 共用 CL31B105KCHNNNE）
     A('\t(lib_symbols\n')
+    seen = set()
     for c in COMPONENTS:
-        block = read_symbol(c[1])
+        name = c[1]
+        if name in seen:
+            continue
+        seen.add(name)
+        block = read_symbol(name)
         A('\t' + block.replace('\n', '\n\t').rstrip('\t') + '\n')
     A('\t)\n')
 
-    # 说明文字（放在电路下方，不与图元重叠）
+    # 图名 + 说明文字（回图纸左上角）
     def text_item(x, y, txt, size, just="left"):
         tu = uid("txt:" + txt)
         A(f'\t(text "{esc(txt)}"\n')
@@ -212,8 +233,13 @@ def gen():
         A(f'\t\t(uuid "{tu}")\n')
         A('\t)\n')
 
-    text_item(40.64, 175.26, "辅助电源（LMR16006X 直降 3.3V）", 4.0, "left top")
-    text_item(40.64, 187.96, "LMR16006X 700kHz 非同步 buck；D7 续流必需；SHDN 悬空=常开；输入 C40 47µF/63V；L1 下方全层禁铜（规则 2d）", 2.0, "left top")
+    text_item(40.64, 20.32, "辅助电源（LMR16006X 直降 3.3V）", 4.0, "left top")
+    text_item(40.64, 33.02,
+              "LMR16006X 600kHz（Tokmas）非同步 buck；D7 续流必需；SHDN 悬空=常开；输入 C40 47µF/63V + C42/C44 2×1µF/100V",
+              2.0, "left top")
+    text_item(40.64, 38.10,
+              "R42 10Ω 与 C40 构成输入 RC：限上电浪涌与短路电流，替代已删的 D6；L1 下方全层禁铜（规则 2d）",
+              2.0, "left top")
 
     # 全局标签
     def global_label(name, shape, x, y, just="left"):
@@ -247,14 +273,16 @@ def gen():
     global_label("+3V3", "output", 320.04, 71.12, "left")
 
     # GND 全局标签（每个接地器件下方一条；U4.GND 用右侧 justify 避开 stub 导线）
-    for x, y, j in [(114.30, 96.52, "left"), (139.70, 96.52, "left"),
-                    (165.10, 104.14, "right"), (233.68, 96.52, "left"),
-                    (289.56, 96.52, "left"), (304.80, 128.27, "left")]:
+    for x, y, j in [(139.70, 96.52, "left"), (165.10, 104.14, "right"),
+                    (215.90, 121.92, "left"), (241.30, 121.92, "left"),
+                    (233.68, 96.52, "left"), (289.56, 96.52, "left"),
+                    (304.80, 128.27, "left")]:
         global_label("GND", "input", x, y, j)
 
     # 局部标签（组内 rail 标签 + U4/C41 脚标签）
     for name, x, y, j in [
-        ("VIN_F", 101.60, 71.12, "left"),    # 输入组 rail
+        ("VIN_R", 101.60, 71.12, "left"),    # 输入组：F11→R42（保险丝后、串阻前）
+        ("VIN_F", 128.27, 71.12, "left"),    # 输入组 rail（R42→C40）
         ("VIN_F", 200.66, 104.14, "left"),   # U4.VIN stub
         ("SW_3V3", 238.76, 71.12, "left"),   # 续流/电感组 rail
         ("SW_3V3", 200.66, 101.60, "left"),  # U4.SW stub
@@ -285,20 +313,22 @@ def gen():
         for i in range(len(pts) - 1):
             wire2(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], f"{key}.{i}")
 
-    # 输入段（BAT+ → F11 → VIN_F rail → C40+/C42）
+    # 输入段（BAT+ → F11 → VIN_R → R42 → VIN_F → C40）
     wire([(40.64, 71.12), pt("F11", "1")], "bat_f11")
-    wire([pt("F11", "2"), (101.60, 71.12)], "f11_vinf")
-    wire([(101.60, 71.12), pt("C40", "1")], "vinf_c40")
-    wire([pt("C40", "1"), pt("C42", "2")], "vinf_c42")
-    # 输入电容地
-    wire([pt("C40", "2"), (114.30, 96.52)], "c40_gnd")
-    wire([pt("C42", "1"), (139.70, 96.52)], "c42_gnd")
+    wire([pt("F11", "2"), pt("R42", "1")], "f11_r42")
+    wire([pt("R42", "2"), pt("C40", "1")], "r42_c40")
+    wire([pt("C40", "2"), (139.70, 96.52)], "c40_gnd")
     # U4 引脚 stub（左 CB/GND/FB，右 SW/VIN）
     wire([pt("U4", "1"), (165.10, 101.60)], "u4_cb")
     wire([pt("U4", "2"), (165.10, 104.14)], "u4_gnd")
     wire([pt("U4", "3"), (165.10, 106.68)], "u4_fb")
     wire([pt("U4", "6"), (200.66, 101.60)], "u4_sw")
     wire([pt("U4", "5"), (200.66, 104.14)], "u4_vin")
+    # VIN_F rail → C42/C44（紧挨 U4.VIN，串阻后高频回路就近）
+    wire([(200.66, 104.14), pt("C42", "2")], "vinf_c42")
+    wire([pt("C42", "2"), pt("C44", "2")], "vinf_c44")
+    wire([pt("C42", "1"), (215.90, 121.92)], "c42_gnd")
+    wire([pt("C44", "1"), (241.30, 121.92)], "c44_gnd")
     # 续流/电感组（SW_3V3 rail；D7 横放：阴极引到上方 rail，阳极引到下方 GND）
     wire([pt("D7", "1"), (223.52, 71.12)], "d7_cathode")
     wire([(223.52, 71.12), (238.76, 71.12)], "sw_rail1")
@@ -326,10 +356,13 @@ def gen():
     nu = uid("nc:u4:4")
     A(f'\t(no_connect (at {fmt(sx)} {fmt(sy)}) (uuid "{nu}"))\n')
 
-    # 器件实例
+    # 器件实例（含 Footprint/Datasheet 字段，取库符号同值；LCSC 隐藏）
     for ref, sym, val, lcsc, x, y, rot in COMPONENTS:
         (rref, rx, ry), (vref, vx, vy) = PROP_POS[ref]
         pins = pins_of((ref, sym, val, lcsc, x, y, rot))
+        props = symbol_props(read_symbol(sym))
+        footprint = props.get("Footprint", "")
+        datasheet = props.get("Datasheet", "")
         su = uid("sym:" + ref)
         # 字段文字角：KiCad 里字段角是相对符号的，绝对角 = 符号旋转 + 字段角。
         # 竖放件要让位号/值水平书写，字段角取 (360 - rot) % 360 抵消符号旋转。
@@ -361,16 +394,18 @@ def gen():
         A('\t\t\t\t(justify left)\n')
         A('\t\t\t)\n')
         A('\t\t)\n')
-        A(f'\t\t(property "LCSC" "{esc(lcsc)}"\n')
-        A(f'\t\t\t(at {fmt(x)} {fmt(y + 7.62)} 0)\n')
-        A('\t\t\t(effects\n')
-        A('\t\t\t\t(font\n')
-        A('\t\t\t\t\t(size 1.27 1.27)\n')
-        A('\t\t\t\t)\n')
-        A('\t\t\t\t(justify left)\n')
-        A('\t\t\t\thide\n')
-        A('\t\t\t)\n')
-        A('\t\t)\n')
+        # Footprint / Datasheet / LCSC 三字段：隐藏
+        for fname, fval in [("Footprint", footprint), ("Datasheet", datasheet), ("LCSC", lcsc)]:
+            A(f'\t\t(property "{fname}" "{esc(fval)}"\n')
+            A(f'\t\t\t(at {fmt(x)} {fmt(y + 7.62)} 0)\n')
+            A('\t\t\t(effects\n')
+            A('\t\t\t\t(font\n')
+            A('\t\t\t\t\t(size 1.27 1.27)\n')
+            A('\t\t\t\t)\n')
+            A('\t\t\t\t(justify left)\n')
+            A('\t\t\t\thide\n')
+            A('\t\t\t)\n')
+            A('\t\t)\n')
         for num in sorted(pins, key=lambda n: int(n)):
             pu = uid("pin:" + ref + ":" + num)
             A(f'\t\t(pin "{num}" (uuid "{pu}"))\n')

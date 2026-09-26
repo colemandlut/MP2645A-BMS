@@ -1,3 +1,125 @@
+# 04_power_supply（辅助电源）画图报告 · 第 4 轮
+
+- 生成脚本：`hardware/gen/gen_04_power_supply.py`（幂等，UUID 用 `uuid.uuid5` 派生，跑两次输出逐字节相同）
+- 自检脚本：`hardware/gen/check_04_layout.py`（几何检查 1–3，直接解析生成的 `.kicad_sch`）
+- 产物：`hardware/04_power_supply.kicad_sch`
+- 依据：复核报告 `design/04_power_supply-review-opus.md` P0-1/P1-1/P1-2/P2-9 + `docs/02-BOM.csv` + 用户 2026-09-26 13:57 第 2 轮换料
+- 上一轮：第 3 轮报告见本文件「附 · 第 3 轮历史报告」，纪律全部沿用
+
+---
+
+## 0. 第 4 轮变更
+
+### P0-1　器件实例补 `Footprint` / `Datasheet` / `LCSC` 字段（网表封装全空 → 全补上）
+
+每个器件**实例**（不再只写在嵌入库符号里）写全字段，`Footprint` 取 `jlc.kicad_sym` 对应符号的
+`Footprint` 值（与库符号一致），`Datasheet` 取库符号值，`LCSC` 保留原有值；三字段均 `hide`。
+生成脚本新增 `symbol_props()`，从库符号块读 `Footprint`/`Datasheet`，逐实例写入。
+验收：`kicad-cli sch export netlist --format kicadxml` 里 12 个 `<comp>` 的 `<footprint>` 全部非空，
+且与库符号逐一对得上（见 §1 表）。
+
+### P1-1 / P1-2　F11 与 VIN_F 之间串 R42 10Ω 抗浪涌电阻
+
+- 拓扑改为 `BAT+ ─ F11 ─ VIN_R ─ R42 10Ω ─ VIN_F ─┬─ C40 ─┬─ C42/C44 ─ U4.VIN`。
+- **新网络 `VIN_R`**（保险丝后、串阻前）= {F11.2, R42.1}；`VIN_F` 现在 = {R42.2, C40.1, C42.2, C44.2, U4.5}。
+- R42 = `1206W4F100JT5E`（`jlc:1206W4F100JT5E`，Footprint 取库值 `jlc:R1206`），值 `10Ω 1% 1206`，LCSC **C17903**（基础库）。
+- 图上说明文字加一句：`R42 10Ω 与 C40 构成输入 RC：限上电浪涌与短路电流，替代已删的 D6`。
+- 效果（复核报告算式）：短路电流 ≤ 53/10 = 5.3A（远低于 F11 50A 分断能力）；上电 I²t ≈ 0.002A²s（约为熔化 I²t 的 5%）；VIN_F 浪涌被 RC 压住。
+
+### 换料（用户 2026-09-26 13:57 第 2 轮，已落 BOM，本轮照做）
+
+| 位号 | 符号名 | 值 | LCSC | 封装 |
+|---|---|---|---|---|
+| U4 | LMR16006XDDCR（符号沿用 TI） | **LMR16006XDDCR (Tokmas)** | **C54823941** | jlc:SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BR（不变） |
+| F11 | JFC1206-1100FS | **1A 63V** | **C136343** | jlc:F1206 |
+| C42 | CL31B105KCHNNNE | 1µF 100V | C13832 | jlc:C1206 |
+| C44（新增，与 C42 并联） | CL31B105KCHNNNE | 1µF 100V | C13832 | jlc:C1206 |
+| C43 | CL10A226MQ8NRNC | 22µF 6.3V | C59461 | jlc:C0603 |
+
+- U4 的 Tokmas 件 VFB = 0.770V、fsw = 600kHz：33k/10k → 3.31V；说明文字「700kHz」→「600kHz（Tokmas）」。
+- F11 值按新料写 **1A 63V**（JDT JFC1206-1100FS）。63V 依据：BOM 行「1A 63V 50A 快熔」+ 库符号 Datasheet 链接
+  `…/Surface-Mount-Fuses_1A-63V_C136343.html`，两者一致；换料说明「不用再核 Littelfuse 手册」，故未再查 C151135。
+- **C44 与 C42 并排、同样接 VIN_F–GND，紧挨 U4.VIN**（串阻后高频回路就近）：C42 在 (215.90,109.22)、C44 在 (241.30,109.22)，
+  二者均竖放，中心距 25.4mm（与第 3 轮 C40↔C42 电容间距一致），避免 C42 的值 `1µF 100V` 与 C44 引脚号重叠。
+
+### 可读性（复核 P2-9）+ 版面
+
+- `FB_3V3`/`SW_3V3`/`CB_3V3`/`VIN_F` 等标签：第 3 轮已移到 U4 各脚短线末端（左 stub 到 x=165.10、右 stub 到 x=200.66），本轮确认仍不在引脚上。
+- U4 的值 `LMR16006XDDCR (Tokmas)` 紧贴 U4 本体下方（185.42, 113.03），远离 D7。
+- 图名「辅助电源（LMR16006X 直降 3.3V）」与说明文字**回图纸左上角**（y=20.32 / 33.02 / 38.10）。
+- `title_block.rev` → `v0.3-draw-r4`。
+
+---
+
+## 1. 器件字段表（网表回读，12 器件 Footprint / LCSC 全部非空）
+
+| 位号 | 值 | Footprint | LCSC |
+|---|---|---|---|
+| F11 | 1A 63V | jlc:F1206 | C136343 |
+| R42 | 10Ω 1% 1206 | jlc:R1206 | C17903 |
+| C40 | 47µF 63V | jlc:CAP-SMD_BD6.3-L6.6-W6.6-LS7.3-FD | C48971005 |
+| U4 | LMR16006XDDCR (Tokmas) | jlc:SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BR | C54823941 |
+| C41 | 100nF 16V | jlc:C0402 | C1525 |
+| C42 | 1µF 100V | jlc:C1206 | C13832 |
+| C44 | 1µF 100V | jlc:C1206 | C13832 |
+| D7 | SS210 | jlc:SMA_L4.3-W2.6-LS5.2-RD | C14996 |
+| L1 | 22µH | jlc:IND-SMD_L5.0-W5.0 | C68434 |
+| C43 | 22µF 6.3V | jlc:C0603 | C59461 |
+| R40 | 33k 1% | jlc:R0402 | C25779 |
+| R41 | 10k 1% | jlc:R0402 | C25744 |
+
+> Footprint 与 `hardware/lib/jlc/jlc.kicad_sym` 中对应符号的 Footprint 字段逐一比对，全部一致（P0-1 验收通过）。
+
+---
+
+## 2. 网表「位号.脚 → 网络」全表（`kicad-cli sch export netlist`，XML 内局部网名前缀 `/辅助电源/` 已省略）
+
+| 网络 | 节点（位号.脚） |
+|---|---|
+| BAT+ | F11.1 |
+| VIN_R | F11.2, R42.1 |
+| VIN_F | R42.2, C40.1, C42.2, C44.2, U4.5 |
+| CB_3V3 | U4.1, C41.1 |
+| SW_3V3 | U4.6, C41.2, D7.1, L1.1 |
+| +3V3 | L1.2, C43.2, R40.1 |
+| FB_3V3 | U4.3, R40.2, R41.1 |
+| GND | U4.2, C40.2, C42.1, C43.1, C44.1, D7.2, R41.2 |
+| unconnected-(U4-SHDN-Pad4) | U4.4（SHDN 悬空 = 常开，NC 标志，预期） |
+
+- 无 `Pad??`、无两脚件一端悬空、无自短路；`VIN_R` 与 `VIN_F` 分离正确（短路防护闭环）。
+- 反馈输出：VFB = 0.770V（Tokmas），Vout = 0.770×(1+33/10) = **3.31V**。
+
+---
+
+## 3. 自检结果（第 3 轮 8 项全部重跑 + 第 4 轮新增项）
+
+| # | 检查 | 结果 |
+|---|---|---|
+| 1 | 导线不许经过非端点的引脚 | ✅ PASS（check_04_layout.py） |
+| 2 | 导线不许穿过符号本体 | ✅ PASS |
+| 3 | T 型连接必须有 junction | ✅ PASS（唯一 T 接点 x=304.80 有 junction） |
+| 4 | 文字不重叠（pymupdf 逐 span bbox，容差 0.2mm） | ✅ 187 个 span，仅 **1 处**重叠：D7 符号自带引脚名 K/A（符号级 quirk，同第 3 轮 §1.1） |
+| 5 | `sch_conn.py` 连通性 | ✅ **P0 = 0**；P1 = 2（`isolated_pin_label` + 网络名单脚，均为 BAT+，01 页未画的跨页预期）；同网多名 0、死头 0、孤立引脚 0、网表找不到的名字 0 |
+| 6 | 网表逐脚 | ✅ 12 器件 28 脚 + 1 NC，与 §2 全表一致；`VIN_R` 新增正确 |
+| 7 | PDF 04 页渲 PNG 目视 | ✅ 图名/说明回左上角、无导线穿 U4 本体、C42/C44 间距足够、文字不压线 |
+| 8 | 幂等 | ✅ 跑两次 md5 相同（`0d2f6dc5a4b1eb13708ec55b6e4f6275`） |
+| 9 | ERC `--severity-all` | ✅ `/辅助电源/` 页 **0 条**；根图 1 条 `isolated_pin_label BAT+`（预期） |
+| 10 | Footprint 非空且与库一致 | ✅ 12/12（§1 表） |
+
+---
+
+## 4. 遗留 / 待主代理
+
+1. **R42（C17903，10Ω 1% 1206）是新器件，`docs/02-BOM.csv` 尚无该行**，需主代理补 BOM 行（本轮交付不含 BOM 更新）。
+2. **D7 引脚名 K/A 重叠**：嘉立创 SS210 符号的引脚名 K/A 无显式位置、被 KiCad 自动摆到本体中心彼此重叠，纯观感、
+   不影响 ERC/网表（第 3 轮已记录在案）；若要在图内消除只能改本图嵌入符号（得不偿失），留主代理定夺。
+3. **BAT+ `isolated_pin_label`**：01 页（功率回路）未画导致，01 页画好后自动消失（跨页项）。
+4. `lib_symbol_mismatch`（L1 电感 arc 归一化误报）本轮 ERC **未再出现**（与第 3 轮一致），无需处理。
+
+---
+
+## 附 · 第 3 轮历史报告（以下为第 3 轮交付时内容，仅作追溯，不再更新）
+
 # 04_power_supply（辅助电源）画图报告 · 第 3 轮
 
 - 生成脚本：`hardware/gen/gen_04_power_supply.py`（幂等，UUID 用 `uuid.uuid5` 派生，跑两次输出逐字节相同）

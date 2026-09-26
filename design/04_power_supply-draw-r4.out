@@ -1,0 +1,33 @@
+2026-09-26 14:27 —— 04_power_supply 第 4 轮画图完成，全部自检通过。
+
+## 变更摘要（按任务书逐项）
+
+**P0-1 Footprint/Datasheet 字段**：生成脚本新增 `symbol_props()`，12 个器件实例全部补上 `Footprint`（取库符号同值）、`Datasheet`、`LCSC` 三个隐藏字段。网表回读 12/12 `<footprint>jlc:…</footprint>` 非空且与 `jlc.kicad_sym` 逐一对得上。
+
+**P1-1/P1-2 R42 抗浪涌串阻**：F11 与 VIN_F 之间串 `R42 = 1206W4F100JT5E`（10Ω 1% 1206，`jlc:R1206`，C17903 基础库），新增网络 `VIN_R = {F11.2, R42.1}`。`VIN_F = {R42.2, C40.1, C42.2, C44.2, U4.5}`。说明文字补了「R42 10Ω 与 C40 构成输入 RC」那句。
+
+**13:57 第 2 轮换料（照做）**：U4→C54823941（值 `LMR16006XDDCR (Tokmas)`、600kHz）；F11→JDT JFC1206-1100FS（值 `1A 63V`，C136343）；C42→C13832 1µF/100V 并新增 C44 并联（紧挨 U4.VIN，中心距 25.4mm）；C43→C59461 22µF/6.3V 0603。
+
+**可读性/版面**：F11 值 `1A 63V`（BOM + 库链接「1A-63V」双确认，换料说明明示不用再核 Littelfuse）；U4 值紧贴本体、远离 D7；图名/说明文字回左上角；`rev` → v0.3-draw-r4。
+
+## 自检结果（第 3 轮 8 项全重跑 + 新增 2 项，全过）
+
+| 检查 | 结果 |
+|---|---|
+| 幂等（跑两次 md5） | ✅ `0d2f6dc5a4b1eb13708ec55b6e4f6275` |
+| 几何检查 1–3 | ✅ PASS（导线 24 / junction 1 / 实例 12 / 引脚 28） |
+| ERC `--severity-all` | ✅ `/辅助电源/` 页 0 条；仅根图 1 条 BAT+ `isolated_pin_label`（01 页未画，预期） |
+| sch_conn 连通性 | ✅ **P0=0**；P1=2 均为 BAT+ 单脚（跨页预期）；同网多名 0 / 死头 0 / 孤立引脚 0 |
+| 文字重叠（pymupdf） | ✅ 仅 1 处 D7 引脚名 K/A（符号级 quirk，第 3 轮已记录） |
+| 网表逐脚 + Footprint | ✅ 全表见报告 §2，VIN_R 分离正确 |
+
+## 交付物（未提交，等你定是否 commit）
+
+- `hardware/gen/gen_04_power_supply.py`（更新）
+- `hardware/04_power_supply.kicad_sch`（重新生成）
+- `design/04_power_supply-draw-report.md`（开头加「第 4 轮变更」+ 自检 + 网表全表）
+- `obsidian-vault/.../8S-LFP-200A-BMS 方案.md`（写回两条新结论：竖放电容并排 25.4mm 教训、R42/换料结论）
+
+**需主代理跟进**：R42（C17903）是新器件，`docs/02-BOM.csv` 还没这行，本轮交付不含 BOM 更新。
+
+DONE
