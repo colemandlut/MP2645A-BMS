@@ -5,3 +5,4 @@ skills/
 *.kicad_prl
 *-backups/
 fp-info-cache
+hardware/lib/jlc/fetch_report.md
