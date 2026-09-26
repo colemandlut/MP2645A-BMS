@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>/home/user/MP2645A-BMS/hardware/mp2645a-bms.kicad_sch</source>
+    <date>2026-09-26T13:37:08</date>
+    <tool>Eeschema 10.0.6</tool>
+    <textvar name="PROJECT">8S LFP 200A BMS</textvar>
+    <textvar name="REV">v0.3-skeleton</textvar>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>8S LFP 200A BMS — 总图</title>
+        <company>MP2645A-BMS</company>
+        <rev>v0.3-skeleton</rev>
+        <date>2026-09-26</date>
+        <source>mp2645a-bms.kicad_sch</source>
+        <comment number="1" value="8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡"/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+    <sheet number="2" name="/功率回路/" tstamps="/938e7e56-d566-5323-870c-7a6740864203/">
+      <title_block>
+        <title>功率回路</title>
+        <company>MP2645A-BMS</company>
+        <rev>v0.3-skeleton</rev>
+        <date>2026-09-26</date>
+        <source>01_power_path.kicad_sch</source>
+        <comment number="1" value="8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡"/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+    <sheet number="3" name="/MP2797 采集与保护/" tstamps="/b7551ed3-1617-5b05-94f3-5ce7ab4e2107/">
+      <title_block>
+        <title>MP2797 采集与保护</title>
+        <company>MP2645A-BMS</company>
+        <rev>v0.3-skeleton</rev>
+        <date>2026-09-26</date>
+        <source>02_afe.kicad_sch</source>
+        <comment number="1" value="8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡"/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+    <sheet number="4" name="/开关电容主动均衡/" tstamps="/66cc3a14-196d-5f5c-9535-d482588cd3fc/">
+      <title_block>
+        <title>开关电容主动均衡</title>
+        <company>MP2645A-BMS</company>
+        <rev>v0.3-skeleton</rev>
+        <date>2026-09-26</date>
+        <source>03_balancer.kicad_sch</source>
+        <comment number="1" value="8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡"/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+    <sheet number="5" name="/辅助电源/" tstamps="/c20e45f9-c9d2-50e9-b477-f2356556af13/">
+      <title_block>
+        <title>辅助电源</title>
+        <company>MP2645A-BMS</company>
+        <rev>v0.3-draw-r2</rev>
+        <date>2026-09-26</date>
+        <source>04_power_supply.kicad_sch</source>
+        <comment number="1" value="8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡"/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+    <sheet number="6" name="/MCU 与通讯/" tstamps="/0739f2da-d4a5-5124-931f-263baaef6ebe/">
+      <title_block>
+        <title>MCU 与通讯</title>
+        <company>MP2645A-BMS</company>
+        <rev>v0.3-skeleton</rev>
+        <date>2026-09-26</date>
+        <source>05_mcu_comm.kicad_sch</source>
+        <comment number="1" value="8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡"/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="C40">
+      <value>47µF 63V</value>
+      <fields>
+        <field name="LCSC">C48971005</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="jlc" part="RV63V47M6X8" description=""/>
+      <property name="LCSC" value="C48971005"/>
+      <property name="Sheetname" value="辅助电源"/>
+      <property name="Sheetfile" value="04_power_supply.kicad_sch"/>
+      <sheetpath names="/辅助电源/" tstamps="/c20e45f9-c9d2-50e9-b477-f2356556af13/"/>
+      <tstamps>ef55c3b9-0738-50f0-97ee-7fea3a1b6540</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C41">
+      <value>100nF 16V</value>
+      <fields>
+        <field name="LCSC">C1525</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="jlc" part="CL05B104KO5NNNC" description="100nF (104) ±10% 16V"/>
+      <property name="LCSC" value="C1525"/>
+      <property name="Sheetname" value="辅助电源"/>
+      <property name="Sheetfile" value="04_power_supply.kicad_sch"/>
+      <property name="ki_keywords" value="Multilayer Ceramic Capacitors MLCC - SMD/SMT"/>
+      <sheetpath names="/辅助电源/" tstamps="/c20e45f9-c9d2-50e9-b477-f2356556af13/"/>
+      <tstamps>03c4272a-a2b5-5904-87ad-5965cb7c369f</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C42">
+      <value>4.7µF 100V</value>
+      <fields>
+        <field name="LCSC">C381466</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="jlc" part="FS32X475K101EGG" description=""/>
+      <property name="LCSC" value="C381466"/>
+      <property name="Sheetname" value="辅助电源"/>
+      <property name="Sheetfile" value="04_power_supply.kicad_sch"/>
+      <property name="ki_keywords" value="Multilayer Ceramic Capacitors MLCC - SMD/SMT"/>
+      <sheetpath names="/辅助电源/" tstamps="/c20e45f9-c9d2-50e9-b477-f2356556af13/"/>
+      <tstamps>582ee2f6-d66a-5a6d-b334-4ecdd0b94b73</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C43">
+      <value>22µF 25V</value>
+      <fields>
+        <field name="LCSC">C45783</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="jlc" part="CL21A226MAQNNNE" description=""/>
+      <property name="LCSC" value="C45783"/>
+      <property name="Sheetname" value="辅助电源"/>
+      <property name="Sheetfile" value="04_power_supply.kicad_sch"/>
+      <property name="ki_keywords" value="Multilayer Ceramic Capacitors MLCC - SMD/SMT"/>
+      <sheetpath names="/辅助电源/" tstamps="/c20e45f9-c9d2-50e9-b477-f2356556af13/"/>
+      <tstamps>82b03a1c-7cdf-5b47-bc18-cb68f143c703</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D7">
+      <value>SS210</value>
+      <fields>
+        <field name="LCSC">C14996</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="jlc" part="SS210" description="SS210"/>
+      <property name="LCSC" value="C14996"/>
+      <property name="Sheetname" value="辅助电源"/>
+      <property name="Sheetfile" value="04_power_supply.kicad_sch"/>
+      <property name="ki_keywords" value="Schottky Barrier Diodes (SBD)"/>
+      <sheetpath names="/辅助电源/" tstamps="/c20e45f9-c9d2-50e9-b477-f2356556af13/"/>
+      <tstamps>b3b3ee3a-b447-5163-b379-2bbabd06a203</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="F11">
+      <value>1A</value>
+      <fields>
+        <field name="LCSC">C151135</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="jlc" part="0466001.NRHF" description=""/>
+      <property name="LCSC" value="C151135"/>
+      <property name="Sheetname" value="辅助电源"/>
+      <property name="Sheetfile" value="04_power_supply.kicad_sch"/>
+      <property name="ki_keywords" value="Fuses"/>
+      <sheetpath names="/辅助电源/" tstamps="/c20e45f9-c9d2-50e9-b477-f2356556af13/"/>
+      <tstamps>11e46d17-118b-5777-8aab-660603889166</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="L1">
+      <value>22µH</value>
+      <fields>
+        <field name="LCSC">C68434</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="jlc" part="SWPA5040S220MT" description="22uH ±20%"/>
+      <property name="LCSC" value="C68434"/>
+      <property name="Sheetname" value="辅助电源"/>
+      <property name="Sheetfile" value="04_power_supply.kicad_sch"/>
+      <property name="ki_keywords" value="Power Inductors"/>
+      <sheetpath names="/辅助电源/" tstamps="/c20e45f9-c9d2-50e9-b477-f2356556af13/"/>
+      <tstamps>b53127ca-f740-5c4f-b401-7fff829b306f</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R40">
+      <value>33k 1%</value>
+      <fields>
+        <field name="LCSC">C25779</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="jlc" part="0402WGF3302TCE" description="33KΩ (3302) ±1%"/>
+      <property name="LCSC" value="C25779"/>
+      <property name="Sheetname" value="辅助电源"/>
+      <property name="Sheetfile" value="04_power_supply.kicad_sch"/>
+      <property name="ki_keywords" value="Resistors"/>
+      <sheetpath names="/辅助电源/" tstamps="/c20e45f9-c9d2-50e9-b477-f2356556af13/"/>
+      <tstamps>5d2d04a2-255f-52b3-a81e-57ff56225dff</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R41">
+      <value>10k 1%</value>
+      <fields>
+        <field name="LCSC">C25744</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="jlc" part="0402WGF1002TCE" description="10KΩ (1002) ±1%"/>
+      <property name="LCSC" value="C25744"/>
+      <property name="Sheetname" value="辅助电源"/>
+      <property name="Sheetfile" value="04_power_supply.kicad_sch"/>
+      <property name="ki_keywords" value="Resistors"/>
+      <sheetpath names="/辅助电源/" tstamps="/c20e45f9-c9d2-50e9-b477-f2356556af13/"/>
+      <tstamps>c8c2f69b-82bf-5ea7-8030-835c092a3af0</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="U4">
+      <value>LMR16006XDDCR</value>
+      <fields>
+        <field name="LCSC">C87080</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="jlc" part="LMR16006XDDCR" description=""/>
+      <property name="LCSC" value="C87080"/>
+      <property name="Sheetname" value="辅助电源"/>
+      <property name="Sheetfile" value="04_power_supply.kicad_sch"/>
+      <property name="ki_keywords" value="DC-DC Converters"/>
+      <sheetpath names="/辅助电源/" tstamps="/c20e45f9-c9d2-50e9-b477-f2356556af13/"/>
+      <tstamps>ec99e79d-f99f-5bcb-8cf1-17fd3b3ce4e8</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="6"/>
+            <pin num="5"/>
+            <pin num="4"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="jlc" part="0402WGF1002TCE">
+      <description>10KΩ (1002) ±1%</description>
+      <docs>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-1002-1_C25744.html</docs>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">0402WGF1002TCE</field>
+        <field name="Footprint">jlc:R0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10KR-1002-1_C25744.html</field>
+        <field name="Description">10KΩ (1002) ±1%</field>
+        <field name="Manufacturer">UNI-ROYAL(厚声)</field>
+        <field name="MPN">0402WGF1002TCE</field>
+        <field name="LCSC Part">C25744</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="jlc" part="0402WGF3302TCE">
+      <description>33KΩ (3302) ±1%</description>
+      <docs>https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_33KR-3302-1_C25779.html</docs>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">0402WGF3302TCE</field>
+        <field name="Footprint">jlc:R0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_33KR-3302-1_C25779.html</field>
+        <field name="Description">33KΩ (3302) ±1%</field>
+        <field name="Manufacturer">UNI-ROYAL(厚声)</field>
+        <field name="MPN">0402WGF3302TCE</field>
+        <field name="LCSC Part">C25779</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="jlc" part="0466001.NRHF">
+      <docs>https://lcsc.com/product-detail/Surface-Mount-Fuses_Littelfuse-0466001-NRHF_C151135.html</docs>
+      <fields>
+        <field name="Reference">F</field>
+        <field name="Value">0466001.NRHF</field>
+        <field name="Footprint">jlc:F1206</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Surface-Mount-Fuses_Littelfuse-0466001-NRHF_C151135.html</field>
+        <field name="Description"/>
+        <field name="Manufacturer">Littelfuse(美国力特)</field>
+        <field name="MPN">0466001.NRHF</field>
+        <field name="LCSC Part">C151135</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="jlc" part="CL05B104KO5NNNC">
+      <description>100nF (104) ±10% 16V</description>
+      <docs>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</docs>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">CL05B104KO5NNNC</field>
+        <field name="Footprint">jlc:C0402</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05B104KO5NNNC_100nF-104-10-16V_C1525.html</field>
+        <field name="Description">100nF (104) ±10% 16V</field>
+        <field name="Manufacturer">SAMSUNG(三星)</field>
+        <field name="MPN">CL05B104KO5NNNC</field>
+        <field name="LCSC Part">C1525</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="jlc" part="CL21A226MAQNNNE">
+      <docs>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A226MAQNNNE_22uF-226-20-25V_C45783.html</docs>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">CL21A226MAQNNNE</field>
+        <field name="Footprint">jlc:C0805</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21A226MAQNNNE_22uF-226-20-25V_C45783.html</field>
+        <field name="Description"/>
+        <field name="Manufacturer">SAMSUNG(三星)</field>
+        <field name="MPN">CL21A226MAQNNNE</field>
+        <field name="LCSC Part">C45783</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="jlc" part="FS32X475K101EGG">
+      <docs>https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_PSA-Prosperity-Dielectrics-FS32X475K101EGG_C381466.html</docs>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">FS32X475K101EGG</field>
+        <field name="Footprint">jlc:C1210</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_PSA-Prosperity-Dielectrics-FS32X475K101EGG_C381466.html</field>
+        <field name="Description"/>
+        <field name="Manufacturer">PSA(信昌电陶)</field>
+        <field name="MPN">FS32X475K101EGG</field>
+        <field name="LCSC Part">C381466</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="jlc" part="LMR16006XDDCR">
+      <docs>https://lcsc.com/product-detail/Switching-Controllers_TI_LMR16006XDDCR_LMR16006XDDCR_C87080.html</docs>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">LMR16006XDDCR</field>
+        <field name="Footprint">jlc:SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BR</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Switching-Controllers_TI_LMR16006XDDCR_LMR16006XDDCR_C87080.html</field>
+        <field name="Description"/>
+        <field name="Manufacturer">TI(德州仪器)</field>
+        <field name="MPN">LMR16006XDDCR</field>
+        <field name="LCSC Part">C87080</field>
+      </fields>
+      <pins>
+        <pin num="1" name="CB" type="passive"/>
+        <pin num="2" name="GND" type="passive"/>
+        <pin num="3" name="FB" type="passive"/>
+        <pin num="4" name="SHDN" type="passive"/>
+        <pin num="5" name="VIN" type="passive"/>
+        <pin num="6" name="SW" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="jlc" part="RV63V47M6X8">
+      <docs>https://www.lcsc.com/datasheet/C48971005.pdf</docs>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">RV63V47M6X8</field>
+        <field name="Footprint">jlc:CAP-SMD_BD6.3-L6.6-W6.6-LS7.3-FD</field>
+        <field name="Datasheet">https://www.lcsc.com/datasheet/C48971005.pdf</field>
+        <field name="Description"/>
+        <field name="Manufacturer">JIERR(捷而瑞)</field>
+        <field name="MPN">RV63V47M6X8</field>
+        <field name="LCSC Part">C48971005</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="jlc" part="SS210">
+      <description>SS210</description>
+      <docs>https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_SS210_C14996.html</docs>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">SS210</field>
+        <field name="Footprint">jlc:SMA_L4.3-W2.6-LS5.2-RD</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_SS210_C14996.html</field>
+        <field name="Description">SS210</field>
+        <field name="Manufacturer">MDD(辰达半导体)</field>
+        <field name="MPN">SS210</field>
+        <field name="LCSC Part">C14996</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="jlc" part="SWPA5040S220MT">
+      <description>22uH ±20%</description>
+      <docs>https://lcsc.com/product-detail/Power-Inductors_22uH-20_C68434.html</docs>
+      <fields>
+        <field name="Reference">L</field>
+        <field name="Value">SWPA5040S220MT</field>
+        <field name="Footprint">jlc:IND-SMD_L5.0-W5.0</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Power-Inductors_22uH-20_C68434.html</field>
+        <field name="Description">22uH ±20%</field>
+        <field name="Manufacturer">Sunlord(顺络)</field>
+        <field name="MPN">SWPA5040S220MT</field>
+        <field name="LCSC Part">C68434</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="jlc">
+      <uri>${KIPRJMOD}/lib/jlc/jlc.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="+3V3" class="LV_POWER">
+      <node ref="C43" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="L1" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R40" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="2" name="/辅助电源/CB_3V3" class="Default">
+      <node ref="C41" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U4" pin="1" pinfunction="CB_1" pintype="passive"/>
+    </net>
+    <net code="3" name="/辅助电源/FB_3V3" class="Default">
+      <node ref="R40" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R41" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U4" pin="3" pinfunction="FB_3" pintype="passive"/>
+    </net>
+    <net code="4" name="/辅助电源/SW_3V3" class="Default">
+      <node ref="C41" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="D7" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="L1" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U4" pin="6" pinfunction="SW_6" pintype="passive"/>
+    </net>
+    <net code="5" name="/辅助电源/VIN_F" class="Default">
+      <node ref="C40" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C42" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="F11" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="U4" pin="5" pinfunction="VIN_5" pintype="passive"/>
+    </net>
+    <net code="6" name="BAT+" class="HV_POWER">
+      <node ref="F11" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="7" name="GND" class="GND">
+      <node ref="C40" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C42" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C43" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="D7" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R41" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="U4" pin="2" pinfunction="GND_2" pintype="passive"/>
+    </net>
+    <net code="8" name="unconnected-(U4-SHDN-Pad4)" class="Default">
+      <node ref="U4" pin="4" pinfunction="SHDN_4" pintype="passive+no_connect"/>
+    </net>
+  </nets>
+</export>
