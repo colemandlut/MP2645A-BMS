@@ -1,0 +1,35 @@
+时间戳：2026-09-26 15:14 UTC。04_power_supply 第 5 轮画图完成，全部自检通过。
+
+## 变更摘要（按任务书逐项）
+
+1. **P1-1 R42 换熔断电阻**：`1206W4F100JT5E`(10Ω 厚膜) → `FCR1206J56RP055W`（值 `56Ω 5% 熔断 1206`，LCSC **C153337**，Footprint 取库值 `jlc:R1206`）。位置不变，新旧符号引脚 ±5.08 一致，接线不动。
+2. **P1-2 新增 C45**：`CL21B104KCFNNNE`（`100nF 100V`，LCSC **C28233**，`jlc:C0805`），接 VIN_F–GND，排在三颗输入陶瓷**最靠 U4.VIN 的一列**（C45@215.90 / C42@241.30 / C44@266.70，各距 25.4mm），GND 标签在下方。网表回读 `VIN_F` 新增 `C45.2`、`GND` 新增 `C45.1`。
+3. **P2-5 U4 Datasheet**：改 `https://www.lcsc.com/datasheet/C54823941.pdf`（`DATASHEET_OVERRIDE`，其余字段不动），网表 `<datasheet>` 已确认。
+4. **P2-6 T 接点补 junction**：C45.2(215.90,104.14)/C42.2(241.30,104.14)/C43.2(289.56,71.12) 三处「引脚+两段共线导线」补结点；`check_04_layout.py` 检查 3 扩展为「引脚处 ≥2 段导线端点相接必须有 junction」。
+5. **说明文字**：R42 句已改为任务书指定文案；`rev → v0.3-draw-r5`。
+
+## 自检结果（第 3/4 轮全部重跑）
+
+| 检查 | 结果 |
+|---|---|
+| 幂等（先跑 r4 确认 `0d2f6dc5`，改后连跑两次） | ✅ `1f16918a8cd811299e85684b4602d89c` |
+| 几何检查 1/2/3（含新增引脚 T 检查） | ✅ PASS（导线 26 / junction 4 / 实例 13 / 引脚 30） |
+| ERC `--severity-all` | ✅ `/辅助电源/` 页 0 条；仅根图 1 条 BAT+ `isolated_pin_label`（01 页未画，预期） |
+| 网表逐脚 + 连通性 | ✅ 13 器件 30 脚，无 `Pad??`、无孤立脚、无同网多名；仅 SHDN NC + BAT+ 单脚（预期） |
+| 文字重叠（pymupdf，199 span） | ⚠ 2 处，均为符号级 quirk：D7 K/A（第 3 轮已记录）+ **C45 引脚名 1/2**（0805 竖放自动摆位重叠，本轮新增，记录在案） |
+| Footprint/Datasheet/LCSC | ✅ 13/13 非空且与库一致；U4 Datasheet 已指向 Tokmas PDF |
+
+## 两点说明
+
+- **备份**：本会话沙箱禁写 `/tmp`（`cp` 到 `/tmp/draw-backup/` 被拦），无法按字面路径备份；但 r4 原图已由 git 提交 `0b40a1f` 与冻结快照 `review/04-r4/` 双重保留（我改动前核对了 md5 `0d2f6dc5` 与二者逐字节一致）。
+- **硬件文件已被主代理提交**：会话期间主代理（Opus 5.5）在提交 `62a074d` 时把我的 `04_power_supply.kicad_sch`、`gen_04_power_supply.py`、`check_04_layout.py` 一并提交了，工作树与 HEAD 三者 md5 一致（原理图 `1f16918a`）。
+
+## 交付物
+
+- `hardware/gen/gen_04_power_supply.py`、`hardware/gen/check_04_layout.py`、`hardware/04_power_supply.kicad_sch`（已提交）
+- `design/04_power_supply-draw-report.md`（第 5 轮变更 + 自检 + 网表全表，未提交，待主代理定夺）
+- `obsidian-vault/BMS/8S-LFP-200A-BMS 方案.md`（写回 R42/C45 结论 + 0805 引脚名重叠教训，未提交）
+
+**需主代理跟进**：R42(C153337)/C45(C28233) 的 `docs/02-BOM.csv` 行；C45 引脚名重叠的根治（库侧 `pin_names hide`，复核 P2-6 已建议）；R42 台架熔断验证。
+
+DONE
