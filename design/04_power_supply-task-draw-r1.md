@@ -13,8 +13,12 @@
 4. **器件只用嘉立创库**：符号从 `hardware/lib/jlc/jlc.kicad_sym` 复制到本图的 `(lib_symbols ...)`，
    `lib_id` 写成 `jlc:<符号名>`；封装字段写库里给的 `jlc:<封装名>`。**不许用 KiCad 官方库**（包括 power 库的 GND/+3V3 符号）。
    每个器件实例加字段 `LCSC`，值为立创编号（如 `C87080`），并隐藏显示。
-5. 本环境的 codex 沙箱里 **kicad-cli 跑不了**（chroot 被沙箱拦），不要自己造包装脚本绕过。
-   你用 python 自检（括号配对、每个引脚端点都落在导线端点/标签上）即可；**ERC 由主代理跑**，结果会在下一轮任务书里给你。
+5. **你可以直接运行 `kicad-cli`**（KiCad 10.0.6）。画完必须自己跑到 ERC 归零：
+   `kicad-cli sch erc --format json --output /tmp/erc04.json hardware/mp2645a-bms.kicad_sch`（**跑根图**，只看 04 页的条目；
+   其它页目前是空骨架），以及 `kicad-cli sch export netlist --format kicadxml --output /tmp/net04.xml hardware/mp2645a-bms.kicad_sch`，
+   用网表逐脚核对连接；再 `kicad-cli sch export pdf --output /tmp/sch04.pdf hardware/mp2645a-bms.kicad_sch` 目视版面。
+   ERC 的 `lib_symbol_issues`/`footprint_link_issues` 若出现，单独列出说明原因，不要和连通性问题混在一起。
+   **禁止**运行 `tools/gen_kicad_skeleton.py`、`git` 命令，禁止改动本任务书第 3 条以外的文件。
 
 ## 1. 文件格式要点（KiCad 10，`(version 20250610)`）
 
