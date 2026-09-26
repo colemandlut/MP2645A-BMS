@@ -6,7 +6,7 @@
 #
 # 用法:  sudo bash tools/setup_kicad.sh [版本号，默认 10.0.6]
 # 幂等：已安装且版本一致时只补挂载和包装脚本。
-# 安装后:  kicad-cli version      kicad-python -c "import pcbnew"
+# 安装后:  kicad-cli version      kicad-python -c "import pcbnew"      freerouting -de a.dsn -do a.ses
 # 限制：chroot 内只能访问 /home/user 和 /tmp 下的文件；镜像不含 3D 模型（需要时用 <ver>-full 标签）。
 set -euo pipefail
 
@@ -58,6 +58,28 @@ exec chroot $ROOT /bin/sh -c 'cd "\$0" 2>/dev/null || cd /; exec "\$@"' "\$PWD" 
 EOF
     chmod +x /usr/local/bin/$t
 done
+
+# ---- Freerouting（KiCad 自动布线，DSN/SES 往返）----
+# GitHub 被网络策略拦截，改从 Maven Central 取；2.4.x 需要 Java 25 (class file 69)
+FR_VER=2.4.1
+FR_URL=https://repo1.maven.org/maven2/app/freerouting/freerouting/$FR_VER/freerouting-$FR_VER-executable.jar
+if [ ! -x /usr/lib/jvm/java-25-openjdk-amd64/bin/java ]; then
+    apt-get update -qq || true
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq openjdk-25-jre-headless
+fi
+mkdir -p /opt/freerouting
+if [ ! -s /opt/freerouting/freerouting.jar ]; then
+    curl -fsS -m 600 -o /opt/freerouting/freerouting.jar "$FR_URL"
+    [ "$(sha1sum /opt/freerouting/freerouting.jar | cut -d' ' -f1)" = "$(curl -fsS "$FR_URL.sha1")" ] ||
+        { echo "Freerouting sha1 校验失败"; exit 1; }
+fi
+cat > /usr/local/bin/freerouting <<'EOF2'
+#!/bin/sh
+# Freerouting (Maven Central) + OpenJDK 25，由 tools/setup_kicad.sh 生成
+# 用法: freerouting -de in.dsn -do out.ses -mp 20
+exec /usr/lib/jvm/java-25-openjdk-amd64/bin/java -jar /opt/freerouting/freerouting.jar --gui.enabled=false "$@"
+EOF2
+chmod +x /usr/local/bin/freerouting
 
 have_ver && echo "KiCad $(kicad-cli version) 就绪" || { echo "安装后版本不符"; exit 1; }
 kicad-python -c "import pcbnew; print('pcbnew', pcbnew.Version())"
