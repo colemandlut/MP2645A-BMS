@@ -1,0 +1,23 @@
+[2026-09-26 13:10 UTC] 子图 04_power_supply（辅助电源）第 1 轮画图完成。
+
+## 交付物（3 个文件，未动其它任何文件）
+- `hardware/gen/gen_04_power_supply.py` — 幂等生成脚本（跑两次 md5 相同）
+- `hardware/04_power_supply.kicad_sch` — 生成好的原理图（rev `v0.3-draw-r1`）
+- `design/04_power_supply-draw-report.md` — 报告（手册点名 / 连接表 / 极性核对 / 自检 / 建议）
+
+## 关键结果
+- **ERC（根图）**：`0 error`。剩余 12 条 warning 均为两类**非连通性**问题，已在报告 §4 单独说明：
+  - `lib_symbol_issues` ×11 — 容器 `kicad-cli` 不加载工程 `sym-lib-table`（交接文档已预警的库表环境问题）
+  - `isolated_pin_label` ×1（BAT+）— 预期（本页 BAT+ 只接 F11.1，01 页绘制后消失）
+- **网表逐脚核对**：11 器件 29 引脚全部与预期网络一致，逐网列在报告 §2
+- **手册核对**：Pin Functions（第 3 页）、Figure 9（第 11 页）逐件点名、续流管反压 1.25×53V=66.25V < SS210 100V ✅，全部写进报告
+- **无断线/死头/短路/同网多名**，无交叉线、无越界
+
+## 需要向你报告的三处偏离任务书原文
+1. **位号改名**：KiCad 10 位号必须以数字结尾，`C_IN_E`/`C_BST` 会触发「annotation errors」，已改为 `C40`/`C41`，对照表在报告 §0（任务书已预期此情况并授权）。
+2. **lib_id 写法**：任务书要求 `jlc:<符号名>`，但实测该写法在 `kicad-cli` 下把引脚解析成 `Pad??`（网表断线），故用裸符号名 + 自包含 `lib_symbols`（`Footprint` 字段仍是 `jlc:<封装名>`），原因在报告 §4。
+3. **引脚电气类型**：复制进本图时把嘉立创库无源件的 `input/unspecified` 引脚归一为 `passive`（不改引脚号/名称/形状/封装/LCSC），使 `pin_not_driven`/`pin_to_pin` 归零。
+
+未擅自改的（SHDN 是否加 100k 上拉、运输模式预留）留在报告 §5 交用户定夺。备份在 `/tmp/draw-backup/04_power_supply.r0.kicad_sch`。
+
+DONE

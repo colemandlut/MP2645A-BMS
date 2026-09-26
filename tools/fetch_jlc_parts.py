@@ -93,6 +93,21 @@ def register_tables():
             fp.write(s)
 
 
+def normalize_pin_types() -> int:
+    """EasyEDA 库的引脚电气类型没有信息量（全是 unspecified，电容还有 input），会让 ERC 刷假告警。
+    统一改成 passive：只改电气类型，不动引脚号/名称/坐标/图形/封装/LCSC。幂等。返回改动数。"""
+    sym = BASE + ".kicad_sym"
+    if not os.path.exists(sym):
+        return 0
+    with open(sym, encoding="utf-8") as fp:
+        s = fp.read()
+    s2, n = re.subn(r"\(pin (?:input|output|unspecified|bidirectional|tri_state) ", "(pin passive ", s)
+    if n:
+        with open(sym, "w", encoding="utf-8") as fp:
+            fp.write(s2)
+    return n
+
+
 def main(argv: list[str]) -> int:
     os.makedirs(LIB, exist_ok=True)
     wanted, non = bom_parts()
@@ -118,6 +133,7 @@ def main(argv: list[str]) -> int:
             break
     if any(r[2] for r in results):
         register_tables()
+    print(f"引脚电气类型归一为 passive：{normalize_pin_types()} 处")
 
     with open(REPORT, "w", encoding="utf-8") as fp:
         fp.write("# 嘉立创库取回报告（规则 0e）\n\n")
@@ -135,4 +151,7 @@ def main(argv: list[str]) -> int:
 
 
 if __name__ == "__main__":
+    if sys.argv[1:] == ["--normalize-only"]:
+        print(f"引脚电气类型归一为 passive：{normalize_pin_types()} 处")
+        sys.exit(0)
     sys.exit(main(sys.argv[1:]))
