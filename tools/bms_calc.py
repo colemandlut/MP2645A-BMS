@@ -17,7 +17,7 @@ class DesignInput:
     cell_v_nom: float = 3.20
     cell_v_max: float = 3.65
     cell_v_min: float = 2.50
-    cell_capacity_ah: float = 200.0      # 假设 200Ah 电芯（1C = 200A）
+    cell_capacity_ah: float = 120.0      # 用户 2026-09-26：120Ah 电芯（1C = 120A）
 
     # ---- 电流 ----
     i_dsg_cont: float = 200.0            # 最大持续放电电流

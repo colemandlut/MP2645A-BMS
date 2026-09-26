@@ -36,8 +36,8 @@ class TestBmsCalc(unittest.TestCase):
     def test_active_balance_much_faster_than_passive(self):
         # 开关电容 @100mV 约 0.21A，比 50mA 被动快约 4 倍
         self.assertLess(self.r["bal_5pct_h"] * 3, self.r["bal_5pct_passive_h"])
-        # 200Ah*5% = 10Ah / (0.21A*0.95)
-        self.assertAlmostEqual(self.r["bal_5pct_h"], 10 / (0.21 * 0.95), places=3)
+        # 120Ah*5% = 6Ah / (0.21A*0.95)
+        self.assertAlmostEqual(self.r["bal_5pct_h"], 6 / (0.21 * 0.95), places=3)
 
     def test_balance_time_rejects_negative(self):
         with self.assertRaises(ValueError):
