@@ -5,7 +5,7 @@
 
 ## 1. 裸板：实时报价（`python3 tools/pcb_quote.py`）
 
-重放 JLCPCB 报价页的 `calculationGoodsCostsNew` 接口（模板 `tools/jlc_pcb_quote_template.json`：FR4 TG135、1.6mm、绿油白字、HASL 有铅、单板出货、无阻抗控制），2026-09-26 15:30 UTC 实测，美元总价（每块）：
+重放 JLCPCB 报价页的 `calculationGoodsCostsNew` 接口（模板 `tools/jlc_pcb_quote_template.json`：FR4 TG135、1.6mm、绿油白字、HASL 有铅、单板出货、无阻抗控制），2026-09-26 15:14 UTC 实测，美元总价（每块）：
 
 | 层 | 尺寸 mm | 外/内铜 oz | 5 块 | 10 块 | 50 块 | 100 块 |
 |---|---|---|---|---|---|---|
