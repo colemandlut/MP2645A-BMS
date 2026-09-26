@@ -1191,14 +1191,14 @@
 			)
 			(embedded_fonts no)
 		)
-	(symbol "jlc:CL31B105KCHNNNE"
+	(symbol "jlc:TCC1206X7R105K101HT"
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
 			(property "Reference" "C"
-				(at 0 5.08 0)
+				(at 0 10.16 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -1207,8 +1207,8 @@
 					)
 				)
 			)
-			(property "Value" "CL31B105KCHNNNE"
-				(at 0 -5.08 0)
+			(property "Value" "TCC1206X7R105K101HT"
+				(at 0 -10.16 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -1218,39 +1218,6 @@
 				)
 			)
 			(property "Footprint" "jlc:C1206"
-				(at 0 -7.62 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL31B105KCHNNNE_1uF-105-10-100V_C13832.html"
-				(at 0 -10.16 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "1uF (105) ±10% 100V"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Manufacturer" "SAMSUNG(三星)"
 				(at 0 -12.7 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1261,7 +1228,7 @@
 					)
 				)
 			)
-			(property "MPN" "CL31B105KCHNNNE"
+			(property "Datasheet" "https://lcsc.com/product-detail/High-Voltage-Capacitors_CCTC-TCC1206X7R105K101HT_C282823.html"
 				(at 0 -15.24 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1272,8 +1239,41 @@
 					)
 				)
 			)
-			(property "LCSC Part" "C13832"
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "CCTC(三环)"
 				(at 0 -17.78 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "TCC1206X7R105K101HT"
+				(at 0 -20.32 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "LCSC Part" "C282823"
+				(at 0 -22.86 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -1294,10 +1294,10 @@
 					)
 				)
 			)
-			(symbol "CL31B105KCHNNNE_0_1"
+			(symbol "TCC1206X7R105K101HT_0_1"
 				(polyline
 					(pts
-						(xy -0.51 0) (xy -2.54 0)
+						(xy -2.03 0.51) (xy 2.03 0.51)
 					)
 					(stroke
 						(width 0)
@@ -1309,7 +1309,7 @@
 				)
 				(polyline
 					(pts
-						(xy -0.51 -2.03) (xy -0.51 2.03)
+						(xy 0 2.54) (xy 0 0.51)
 					)
 					(stroke
 						(width 0)
@@ -1321,7 +1321,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0.51 2.03) (xy 0.51 -2.03)
+						(xy 0 -0.51) (xy 0 -2.54)
 					)
 					(stroke
 						(width 0)
@@ -1333,7 +1333,7 @@
 				)
 				(polyline
 					(pts
-						(xy 2.54 0) (xy 0.51 0)
+						(xy 2.03 -0.51) (xy -2.03 -0.51)
 					)
 					(stroke
 						(width 0)
@@ -1344,7 +1344,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 0 0)
+					(at 0 -5.08 90)
 					(length 2.54)
 					(name "1"
 						(effects
@@ -1362,7 +1362,7 @@
 					)
 				)
 				(pin passive line
-					(at 5.08 0 180)
+					(at 0 5.08 270)
 					(length 2.54)
 					(name "2"
 						(effects
@@ -2596,7 +2596,7 @@
 	(wire
 		(pts
 			(xy 215.90 104.14)
-			(xy 241.30 104.14)
+			(xy 236.22 109.22)
 		)
 		(stroke
 			(width 0)
@@ -2606,8 +2606,8 @@
 	)
 	(wire
 		(pts
-			(xy 241.30 104.14)
-			(xy 266.70 104.14)
+			(xy 236.22 109.22)
+			(xy 261.62 109.22)
 		)
 		(stroke
 			(width 0)
@@ -2628,7 +2628,7 @@
 	)
 	(wire
 		(pts
-			(xy 241.30 114.30)
+			(xy 246.38 109.22)
 			(xy 241.30 121.92)
 		)
 		(stroke
@@ -2639,7 +2639,7 @@
 	)
 	(wire
 		(pts
-			(xy 266.70 114.30)
+			(xy 271.78 109.22)
 			(xy 266.70 121.92)
 		)
 		(stroke
@@ -3187,7 +3187,7 @@
 		)
 	)
 	(symbol
-		(lib_id "jlc:CL31B105KCHNNNE")
+		(lib_id "jlc:TCC1206X7R105K101HT")
 		(at 241.30 109.22 90)
 		(unit 1)
 		(exclude_from_sim no)
@@ -3223,7 +3223,7 @@
 				hide
 			)
 		)
-		(property "Datasheet" "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL31B105KCHNNNE_1uF-105-10-100V_C13832.html"
+		(property "Datasheet" "https://lcsc.com/product-detail/High-Voltage-Capacitors_CCTC-TCC1206X7R105K101HT_C282823.html"
 			(at 241.30 116.84 0)
 			(effects
 				(font
@@ -3233,7 +3233,7 @@
 				hide
 			)
 		)
-		(property "LCSC" "C13832"
+		(property "LCSC" "C282823"
 			(at 241.30 116.84 0)
 			(effects
 				(font
@@ -3255,7 +3255,7 @@
 		)
 	)
 	(symbol
-		(lib_id "jlc:CL31B105KCHNNNE")
+		(lib_id "jlc:TCC1206X7R105K101HT")
 		(at 266.70 109.22 90)
 		(unit 1)
 		(exclude_from_sim no)
@@ -3291,7 +3291,7 @@
 				hide
 			)
 		)
-		(property "Datasheet" "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL31B105KCHNNNE_1uF-105-10-100V_C13832.html"
+		(property "Datasheet" "https://lcsc.com/product-detail/High-Voltage-Capacitors_CCTC-TCC1206X7R105K101HT_C282823.html"
 			(at 266.70 116.84 0)
 			(effects
 				(font
@@ -3301,7 +3301,7 @@
 				hide
 			)
 		)
-		(property "LCSC" "C13832"
+		(property "LCSC" "C282823"
 			(at 266.70 116.84 0)
 			(effects
 				(font
