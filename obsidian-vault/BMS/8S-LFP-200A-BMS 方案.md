@@ -28,3 +28,16 @@ repo: colemandlut/MP2645A-BMS
 - 预充可选：30Ω（2×15Ω 5W），单次 4.26J，1.5s 超时保护
 - MP9486A 若为非同步 buck 必须加续流肖特基（规则 00 ①a）
 - 阻塞：数据手册全部被网络拦截；codex(gpt-6-astra) 不可用 → 规则 00c 画图分工待用户裁定
+
+## v0.3（2026-09-26）均衡改为 MP2643 ×7
+- 用户指令：MP2645A 买不到 → 用 MP2643（MPS 官网：1 片 ¥19.28 / 10 片 ¥17.25 / 100 片 ¥14.46，库存 3639，运费 $5/单），客供给嘉立创贴片
+- 第 k 颗：PGND=BAL(k-1)、CL=BALk、CU=BAL(k+1)；7 个本地地铜岛
+- 外围（手册 Table 10/9）：L 2.2µH SLO0618H2R2MTT C216189；CCU/CCL 22µF 25V 0805 C45783；C4V5 1µF；CBST 100nF（值待 MPS 确认）
+- RUBC 120k → 1.78A（含容差 ≤2A）；RLBC 150k；R1/R2 = 2M/392k → VCU_LIM 7.32V
+- EN/MODE：每颗 2 只光耦 EL3H7(C) C92243（共 14），输出侧由 CL 供电、100k 下拉；MCU 复位即全部停止
+- 不照搬手册 Fig.7（EN 接 AFE 被动均衡开关），因我们还要用 MP2797 被动微调
+- 固件：边界电荷盈亏 E_k 决定方向（>0 buck 上→下，<0 boost 下→上），相邻两颗不同时开；仿真 90mV→10mV 44 步收敛
+- 均衡端子改 2×9 Micro-Fit（每节点 2 针），节点保险丝 7A 2410 C99548
+- 成本（元器件，不含 PCB/SMT 费）：10 块 ≈ ¥587/块，100 块 ≈ ¥460/块；MOSFET ×16 ≈ ¥214 最大头，MP2643 ≈ ¥121
+- 风险：STM32G0B1 与 4.7µF/100V 1210 嘉立创库存 0；降本候选：Tokmas MOSFET（省 ≈¥118）、CH32V203（省 ≈¥38）
+- 工具：tools/jlc_api.py（嘉立创 SMT 料号接口：jlcpcb.com/api/overseas-pcb-order/v1/shoppingCart/smtGood/selectSmtComponentList）、tools/cost.py

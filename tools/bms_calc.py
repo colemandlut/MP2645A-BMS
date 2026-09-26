@@ -35,9 +35,9 @@ class DesignInput:
     # ---- 分流器 ----
     shunt_uohm: float = 100.0
 
-    # ---- 主动均衡 (MP2645A x2) ----
-    bal_current_a: float = 3.0           # 设计取值，低于器件上限，留热裕量
-    bal_efficiency: float = 0.85
+    # ---- 主动均衡 (MP2643 x7，相邻对) ----
+    bal_current_a: float = 640 / (3 * 120)   # RUBC=120kΩ → 1.78A（手册式(1)，含容差不超 2A）
+    bal_efficiency: float = 0.89             # 手册 Table 2（VCL<3.65V）
 
     ambient_c: float = 45.0
 
@@ -108,6 +108,25 @@ def balance_time_h(d: DesignInput, soc_mismatch_pct: float) -> float:
 def passive_balance_time_h(d: DesignInput, soc_mismatch_pct: float, i_bleed_a: float = 0.05) -> float:
     ah = d.cell_capacity_ah * soc_mismatch_pct / 100.0
     return ah / i_bleed_a
+
+
+# ---------------- MP2643 手册公式 ----------------
+
+def mp2643_iubc(r_kohm: float) -> float:
+    """buck-balance 电流，手册式 (1)：IUBC = 640 / (3·RUBC[kΩ])。"""
+    return 640.0 / (3.0 * r_kohm)
+
+
+def mp2643_vcu_lim(r1: float, r2: float, vref: float = 1.2) -> float:
+    """boost-balance 的 CU 电压上限，手册式 (3)：VCU_LIM = 1.2·(R1+R2)/R2。"""
+    return vref * (r1 + r2) / r2
+
+
+def mp2643_inductor(vcu: float, vcl: float, iubc: float, l_uh: float, fsw_mhz: float = 1.08) -> dict:
+    """手册式 (17)(18)：纹波 ΔIL = (VCU-VCL)·VCL/(VCU·L·fsw)，峰值 = VCU/VCL·IUBC + ΔIL/2。"""
+    dil = (vcu - vcl) * vcl / (vcu * l_uh * fsw_mhz)
+    ipk = vcu / vcl * iubc + dil / 2
+    return {"ripple_a": dil, "peak_a": ipk, "isat_min_a": ipk + 1.0}
 
 
 # ---------------- v0.2 详细设计补充计算 ----------------

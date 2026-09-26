@@ -38,15 +38,15 @@ SHEETS = [
      "电芯采样 RC / 电流采样滤波 / 4 路 NTC / 高边驱动输出 / 通讯与中断 / 被动均衡",
      ["CELL0..CELL8", "SRP", "SRN", "CHG_G", "DSG_G", "FET_MID", "PACK+", "NTC_CELL1", "NTC_CELL2",
       "NTC_FET", "NTC_SHUNT", "I2C_SCL", "I2C_SDA", "AFE_ALERT", "AFE_WAKE", "+3V3", "GND"]),
-    ("03_balancer", "MP2645A x2 主动均衡",
-     "U2: BAL0..BAL5（C1~C5）/ U3: BAL3..BAL8（C4~C8，方案 A）/ 单线级联 / 功率电感（下方全层禁铜）",
-     ["BAL0..BAL8", "BAL_EN", "BAL_FAULT", "GND"]),
+    ("03_balancer", "MP2643 x7 主动均衡",
+     "U_BAL1..7：第 k 颗 PGND=BAL(k-1)、CL=BALk、CU=BAL(k+1) / 每颗 2 只光耦(EN、MODE) / 电感下方全层禁铜 / 7 个本地地铜岛",
+     ["BAL0..BAL8", "BAL_EN1..BAL_EN7", "BAL_MODE1..BAL_MODE7", "NTC_BAL", "+3V3", "GND"]),
     ("04_power_supply", "辅助电源",
      "BAT+ → 输入保护 → MP9486A buck → +5V → LDO → +3V3 / 唤醒与休眠",
      ["BAT+", "BAT-", "+5V", "+3V3", "GND", "PWR_EN"]),
     ("05_mcu_comm", "MCU 与通讯",
      "STM32G0B1 / SWD / CAN(TJA1051T/3 + ESD + 可选 120Ω) / RS485 可选 / 状态 LED / 按键",
-     ["I2C_SCL", "I2C_SDA", "AFE_ALERT", "AFE_WAKE", "BAL_EN", "BAL_FAULT", "PRECHG_EN", "PWR_EN",
+     ["I2C_SCL", "I2C_SDA", "AFE_ALERT", "AFE_WAKE", "BAL_EN1..7", "BAL_MODE1..7", "NTC_BAL", "PRECHG_EN", "PWR_EN",
       "CAN_H", "CAN_L", "RS485_A", "RS485_B", "+5V", "+3V3", "GND"]),
 ]
 
@@ -55,7 +55,7 @@ SHEETS = [
 NETCLASSES = [
     ("Default",    0.20, 0.20, 0.60, 0.30, 0.20, 0.20, []),
     ("HV_POWER",   3.00, 0.50, 1.00, 0.50, 3.00, 0.50, ["BAT+", "BAT-", "PACK+", "PACK-", "FET_MID"]),
-    ("BAL_3A",     1.20, 0.30, 0.80, 0.40, 1.20, 0.30, ["BAL*", "/03_balancer/SW*"]),
+    ("BAL_3A",     1.20, 0.30, 0.80, 0.40, 1.20, 0.30, ["BAL?", "/03_balancer/SW*", "/03_balancer/LX*"]),
     ("CELL_SENSE", 0.25, 0.30, 0.60, 0.30, 0.25, 0.30, ["CELL*"]),
     ("GATE",       0.40, 0.30, 0.60, 0.30, 0.40, 0.30, ["CHG_G", "DSG_G"]),
     ("KELVIN",     0.20, 0.20, 0.60, 0.30, 0.20, 0.20, ["SRP", "SRN"]),
@@ -87,7 +87,7 @@ def write_project():
         "net_settings": {"classes": classes, "meta": {"version": 5}, "net_colors": None,
                          "netclass_assignments": None, "netclass_patterns": patterns},
         "sheets": [[uid("root"), "Root"]] + [[uid(f), f] for f, *_ in SHEETS],
-        "text_variables": {"PROJECT": "8S LFP 200A BMS", "REV": "v0.2-skeleton"},
+        "text_variables": {"PROJECT": "8S LFP 200A BMS", "REV": "v0.3-skeleton"},
     }
     with open(os.path.join(HW, f"{PROJ}.kicad_pro"), "w") as fp:
         json.dump(pro, fp, indent=2, ensure_ascii=False)
@@ -107,14 +107,14 @@ def sch_header(name, title, page_uuid):
     return (f'(kicad_sch\n\t(version 20250610)\n\t(generator "gen_kicad_skeleton")\n'
             f'\t(generator_version "10.0")\n\t(uuid "{page_uuid}")\n\t(paper "A3")\n'
             f'\t(title_block\n\t\t(title "{s(title)}")\n\t\t(date "2026-09-26")\n'
-            f'\t\t(rev "v0.2-skeleton")\n\t\t(company "MP2645A-BMS")\n'
-            f'\t\t(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2645A")\n\t)\n'
+            f'\t\t(rev "v0.3-skeleton")\n\t\t(company "MP2645A-BMS")\n'
+            f'\t\t(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2643x7")\n\t)\n'
             f'\t(lib_symbols)\n')
 
 
 def write_root():
     out = sch_header("root", "8S LFP 200A BMS — 总图", uid("root"))
-    out += text_item(20, 20, "层次结构（v0.2 骨架）：电路待 MP2797 / MP2645A / MP9486A 正式数据手册核对后再画", 3.0)
+    out += text_item(20, 20, "层次结构（v0.3 骨架）：主动均衡 MP2643 x7；电路按 datasheets/ 手册逐 IC 核对后再画", 3.0)
     for i, (f, title, desc, _) in enumerate(SHEETS):
         x, y = 20 + (i % 3) * 130, 50 + (i // 3) * 90
         out += (f'\t(sheet\n\t\t(at {x} {y})\n\t\t(size 110 60)\n\t\t(exclude_from_sim no)\n'

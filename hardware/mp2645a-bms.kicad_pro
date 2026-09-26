@@ -205,11 +205,15 @@
       },
       {
         "netclass": "BAL_3A",
-        "pattern": "BAL*"
+        "pattern": "BAL?"
       },
       {
         "netclass": "BAL_3A",
         "pattern": "/03_balancer/SW*"
+      },
+      {
+        "netclass": "BAL_3A",
+        "pattern": "/03_balancer/LX*"
       },
       {
         "netclass": "CELL_SENSE",
@@ -289,6 +293,6 @@
   ],
   "text_variables": {
     "PROJECT": "8S LFP 200A BMS",
-    "REV": "v0.2-skeleton"
+    "REV": "v0.3-skeleton"
   }
 }

@@ -7,9 +7,9 @@
 	(title_block
 		(title "功率回路")
 		(date "2026-09-26")
-		(rev "v0.2-skeleton")
+		(rev "v0.3-skeleton")
 		(company "MP2645A-BMS")
-		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2645A")
+		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2643x7")
 	)
 	(lib_symbols)
 	(text "功率回路"

@@ -7,12 +7,12 @@
 	(title_block
 		(title "8S LFP 200A BMS — 总图")
 		(date "2026-09-26")
-		(rev "v0.2-skeleton")
+		(rev "v0.3-skeleton")
 		(company "MP2645A-BMS")
-		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2645A")
+		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2643x7")
 	)
 	(lib_symbols)
-	(text "层次结构（v0.2 骨架）：电路待 MP2797 / MP2645A / MP9486A 正式数据手册核对后再画"
+	(text "层次结构（v0.3 骨架）：主动均衡 MP2643 x7；电路按 datasheets/ 手册逐 IC 核对后再画"
 		(exclude_from_sim no)
 		(at 20 20 0)
 		(effects
@@ -21,7 +21,7 @@
 			)
 			(justify left top)
 		)
-		(uuid "93bfc4b7-fdcf-5ef7-b574-d4d8fd6b612c")
+		(uuid "5cfd9338-365b-54b6-84dd-503172b1f206")
 	)
 	(sheet
 		(at 20 50)
@@ -120,7 +120,7 @@
 			(color 0 0 0 0.0000)
 		)
 		(uuid "66cc3a14-196d-5f5c-9535-d482588cd3fc")
-		(property "Sheetname" "MP2645A x2 主动均衡"
+		(property "Sheetname" "MP2643 x7 主动均衡"
 			(at 280 49.2 0)
 			(effects
 				(font
