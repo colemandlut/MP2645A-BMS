@@ -84,3 +84,10 @@ repo: colemandlut/MP2645A-BMS
 - D6 删除；C_IN_E → 63V C48971005；R_RS → 0Ω（高速模式，原 10k 实为斜率控制）
 - 成本（元器件）：10 块 ≈ ¥186.5/块，100 块 ≈ ¥144.8/块，扩展库 24 种
 - 未决：第 2 轮其余推荐（C_IN1→2×C13832、C_OUT1→C59461、U8 UMW）与可选（U4 Tokmas、U7 HGSEMI、F11 JDT）
+
+## 原理图绘制（2026-09-26 会话 2）
+- 流程：DeepSeek（`tools/deepseek_claude.sh`）按任务书写幂等脚本 `hardware/gen/gen_<子图>.py` 生成子图 → 主代理核 ERC/网表 → Opus 复核（`design/<子图>-review-opus.md`）
+- KiCad 要点：嵌入 `lib_symbols` 的顶层符号名必须等于 lib_id（`jlc:NAME`），子单元名不带昵称（`NAME_0_1`），否则引脚成 `Pad??`、ERC 报 library ''
+- 位号必须「前缀+数字」（`C_IN_E` 这种字母结尾会报 annotation error）→ 04 页用 C40–C43、R40–R41
+- jlc 库引脚电气类型已统一为 passive（`fetch_jlc_parts.py --normalize-only`，取库后自动做）
+- ⚠ 上一个会话（session_01Ey…）仍在并行推送用户决定（第 2 轮：删 D6、C_IN_E→C48971005 63V、栅极网络改手册拓扑、MP2797 外围按 Table 18 补全、R_RS 0Ω）→ 每步前 `git pull --rebase`，画图以最新 BOM 为准
