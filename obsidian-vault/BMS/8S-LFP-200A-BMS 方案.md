@@ -92,3 +92,10 @@ repo: colemandlut/MP2645A-BMS
 - jlc 库引脚电气类型已统一为 passive（`fetch_jlc_parts.py --normalize-only`，取库后自动做）
 - 🔴 **lib_symbol_mismatch 误报（KiCad 10.0.6）**：嵌入符号与库**逐字节一致**时，带「4 段半圆 arc」的电感符号（SWPA5040S220MT、SLO0618H2R2MTT，pin length 1.27）仍会被 ERC 报 `doesn't match copy in library`——库加载路径与嵌入加载路径对 arc 的内部归一化不一致。二分定位：同时删两侧 arc 即消失，改 pin length / 删 ki_description / 反转 arc start/end 均无效。**非电路问题**，不影响网表/PDF；根治需在 `fetch_jlc_parts.py` 加「电感 arc 归一化」（类似 normalize_pin_types），画 03 页（用 SLO0618H2R2MTT）前应处理
 - ⚠ 上一个会话（session_01Ey…）仍在并行推送用户决定（第 2 轮：删 D6、C_IN_E→C48971005 63V、栅极网络改手册拓扑、MP2797 外围按 Table 18 补全、R_RS 0Ω）→ 每步前 `git pull --rebase`，画图以最新 BOM 为准
+
+## 第 2 轮推荐 + 可选全采用（用户 2026-09-26 13:57）
+- 推荐：C_IN1 → C_IN1/C_IN2 2×1µF/100V 1206 C13832；C_OUT1 → 22µF/6.3V 0603 C59461；U8 → UMW PESD2CAN C2687131
+- 可选：U4 → Tokmas LMR16006XDDCR C54823941（600kHz、VFB 0.770V→3.31V、Iq 80µA，待机 +50µA）；U7 → HGSEMI SN65HVD230M C55259679；F11 → JDT JFC1206-1100FS C136343
+- **U4 Tokmas 在 EasyEDA 取不到库** → 符号/封装沿用嘉立创 C87080（TI 同名件）：引脚与 TSOT-23-6 尺寸按 Tokmas 手册核对一致；原理图 LCSC 字段填 C54823941
+- 成本（元器件）：10 块 ≈ ¥180.1/块，100 块 ≈ ¥140.3/块，扩展库 23 种
+- 表 6 另外三项可选（D1–D3 DOWO C2976503、QN AO3416 C479060、RT APV C52155402）未在本次采用范围，待用户确认
