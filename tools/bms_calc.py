@@ -36,7 +36,7 @@ class DesignInput:
     shunt_uohm: float = 100.0
 
     # ---- 主动均衡（v0.3：分立开关电容，电流随压差变化）----
-    bal_current_a: float = 0.18          # 相邻两节压差 100mV 时的估算电流（sc_equalizer 默认参数）
+    bal_current_a: float = 0.19          # 相邻两节压差 100mV 时的估算电流（sc_equalizer 默认参数）
     bal_efficiency: float = 0.95         # 小压差下开关电容损耗很小，取 0.95 保守
 
     ambient_c: float = 45.0
@@ -112,16 +112,16 @@ def passive_balance_time_h(d: DesignInput, soc_mismatch_pct: float, i_bleed_a: f
 
 # ---------------- 开关电容均衡（v0.3） ----------------
 
-def sc_equalizer(dv: float, c_uf: float = 150.0, f_khz: float = 50.0,
-                 r_n: float = 0.036, r_p: float = 0.042, r_extra: float = 0.055) -> dict:
+def sc_equalizer(dv: float, c_uf: float = 100.0, f_khz: float = 75.0,
+                 r_n: float = 0.022, r_p: float = 0.042, r_extra: float = 0.061) -> dict:
     """相邻两节之间的开关电容均衡电流估算。
 
     每相回路 = 一只 N 管 + 一只 P 管 + 电容 ESR/走线：R_phase = r_n + r_p + r_extra；
     慢开关极限 R_SSL = 1/(f·C)，快开关极限 R_FSL = 4·R_phase（占空比 50%），
     合成 R_eq ≈ sqrt(R_SSL² + R_FSL²)，I = ΔV / R_eq。
-    默认：3×100µF/6.3V 1206（3.6V 偏置下有效约 50% → 150µF），50kHz，
-    AO3400A / AO3415A 在 Vgs≈3.3V 时的导通电阻约 36 / 42mΩ；
-    r_extra = 电容 ESR/走线 0.015Ω + 每相经过的 2 只 BAL 节点保险丝冷阻（0466003.NRHF 约 2×0.020Ω）。
+    默认：2×100µF/6.3V 1206（3.6V 偏置下有效约 50% → 100µF），75kHz（R_SSL 与原 3 颗 @50kHz 相同），
+    AO3416 / AO3415A 在 Vgs≈3.3V 时的导通电阻约 22 / 42mΩ；
+    r_extra = 电容 ESR/走线 0.015Ω + 每相经过的 2 只 BAL 节点保险丝冷阻（CFS12V3T3R00 约 2×0.023Ω）。
     """
     r_phase = r_n + r_p + r_extra
     r_ssl = 1.0 / (f_khz * 1e3 * c_uf * 1e-6)
