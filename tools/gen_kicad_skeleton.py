@@ -42,12 +42,12 @@ SHEETS = [
      "U_BAL1..7：第 k 颗 PGND=BAL(k-1)、CL=BALk、CU=BAL(k+1) / 每颗 2 只光耦(EN、MODE) / 电感下方全层禁铜 / 7 个本地地铜岛",
      ["BAL0..BAL8", "BAL_EN1..BAL_EN7", "BAL_MODE1..BAL_MODE7", "NTC_BAL", "+3V3", "GND"]),
     ("04_power_supply", "辅助电源",
-     "BAT+ → 输入保护 → MP9486A buck → +5V → LDO → +3V3 / 唤醒与休眠",
-     ["BAT+", "BAT-", "+5V", "+3V3", "GND", "PWR_EN"]),
+     "BAT+ → 输入保护 → LMR16006X buck → +3V3（取消 5V 轨与 LDO）",
+     ["BAT+", "BAT-", "+3V3", "GND"]),
     ("05_mcu_comm", "MCU 与通讯",
-     "CH32V203C8T6 / SWD / CAN(TJA1051T/3 + ESD + 可选 120Ω) / RS485 可选 / 状态 LED / 按键",
-     ["I2C_SCL", "I2C_SDA", "AFE_ALERT", "AFE_WAKE", "BAL_EN1..7", "BAL_MODE1..7", "NTC_BAL", "PRECHG_EN", "PWR_EN",
-      "CAN_H", "CAN_L", "RS485_A", "RS485_B", "+5V", "+3V3", "GND"]),
+     "CH32V203C8T6 / SWD / CAN(SN65HVD230 3.3V + ESD + 可选 120Ω) / RS485 可选 / 状态 LED / 按键",
+     ["I2C_SCL", "I2C_SDA", "AFE_ALERT", "AFE_WAKE", "BAL_EN1..7", "BAL_MODE1..7", "NTC_BAL", "PRECHG_EN",
+      "CAN_H", "CAN_L", "RS485_A", "RS485_B", "+3V3", "GND"]),
 ]
 
 # (名称, 线宽, 间距, 过孔外径, 过孔孔径, 差分线宽, 差分间距, 匹配网络名的通配符)
@@ -61,7 +61,7 @@ NETCLASSES = [
     ("KELVIN",     0.20, 0.20, 0.60, 0.30, 0.20, 0.20, ["SRP", "SRN"]),
     # CAN 120Ω 差分：线宽/线距必须按嘉立创实际叠层用阻抗计算器重算（规则 0c），此处为占位
     ("CAN_DIFF",   0.20, 0.20, 0.60, 0.30, 0.20, 0.20, ["CAN_H", "CAN_L", "RS485_A", "RS485_B"]),
-    ("LV_POWER",   0.50, 0.20, 0.60, 0.30, 0.50, 0.20, ["+5V", "+3V3"]),
+    ("LV_POWER",   0.50, 0.20, 0.60, 0.30, 0.50, 0.20, ["+3V3"]),
     ("GND",        0.50, 0.20, 0.60, 0.30, 0.50, 0.20, ["GND"]),
 ]
 

@@ -23,7 +23,7 @@
 		)
 		(uuid "6b31ae99-754a-57cb-b507-b8c84fe6830f")
 	)
-	(text "内容：BAT+ → 输入保护 → MP9486A buck → +5V → LDO → +3V3 / 唤醒与休眠"
+	(text "内容：BAT+ → 输入保护 → LMR16006X buck → +3V3（取消 5V 轨与 LDO）"
 		(exclude_from_sim no)
 		(at 20 35 0)
 		(effects
@@ -32,7 +32,7 @@
 			)
 			(justify left top)
 		)
-		(uuid "7b02c6fb-70b5-5f6a-9aae-9890bf654d55")
+		(uuid "e0cc1f59-8627-520d-b641-82440e5d72ce")
 	)
 	(text "接口网络（跨页用全局标签，名称以本清单为准）："
 		(exclude_from_sim no)
@@ -67,20 +67,9 @@
 		)
 		(uuid "729f0c67-d38a-52bb-be25-6446448a5ba4")
 	)
-	(text "· +5V"
-		(exclude_from_sim no)
-		(at 25 62 0)
-		(effects
-			(font
-				(size 1.8 1.8)
-			)
-			(justify left top)
-		)
-		(uuid "7daa7782-bbeb-5159-8e32-c9148545c07d")
-	)
 	(text "· +3V3"
 		(exclude_from_sim no)
-		(at 25 67 0)
+		(at 25 62 0)
 		(effects
 			(font
 				(size 1.8 1.8)
@@ -91,7 +80,7 @@
 	)
 	(text "· GND"
 		(exclude_from_sim no)
-		(at 25 72 0)
+		(at 25 67 0)
 		(effects
 			(font
 				(size 1.8 1.8)
@@ -99,17 +88,6 @@
 			(justify left top)
 		)
 		(uuid "c0ec8652-71a8-5cda-a81e-f92fb7d53ea5")
-	)
-	(text "· PWR_EN"
-		(exclude_from_sim no)
-		(at 25 77 0)
-		(effects
-			(font
-				(size 1.8 1.8)
-			)
-			(justify left top)
-		)
-		(uuid "5033bafc-2152-5bce-b379-0c3e75854931")
 	)
 	(text "状态：待画。详细设计见 docs/03-详细设计.md；按 pcb-workflow 规则 00/00c/00d 执行。"
 		(exclude_from_sim no)

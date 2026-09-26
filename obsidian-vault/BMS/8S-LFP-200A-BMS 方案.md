@@ -51,3 +51,12 @@ repo: colemandlut/MP2645A-BMS
 - 成本（元器件，不含 PCB/SMT 费）：10 块 ≈ ¥393/块（原 ¥587），100 块 ≈ ¥294/块（原 ¥460）
 - MP2643 封装：用户提供 MPS 原厂（Ultra Librarian）KiCad 库 → hardware/lib/mps，已核对手册 p22（FCQFN 无散热焊盘）
 - 云端 KiCad 的 chroot 挂载会随容器重启丢失：用前 `mountpoint /opt/kicad-root/home/user || sudo bash tools/setup_kicad.sh`
+
+## v0.3 电源改版（2026-09-26 用户同意换通用降压）
+- MP9486A + MP2013A + TJA1051(5V) → **TI LMR16006XDDCR C87080 直降 3.3V** + SS210 C14996 续流 + **SN65HVD230DR C12084（3.3V CAN）**；取消 5V 轨、唤醒或门
+- LMR16006：VIN abs 65V，VFB 0.765V（33k/10k→3.29V），SHDN 悬空=常开，ECO 28µA
+- 成本（元器件）：10 块 ≈ ¥359/块，100 块 ≈ ¥267/块
+- 全器件降本排查由 Opus 取料代理完成 → docs/06-降本排查.md（待用户决定）
+
+## 会话交接
+- 2026-09-26 用户在环境变量加了 DEEPSEEK_API_KEY，要求开新会话并转移上下文 → docs/00-会话交接.md；技能压缩包 transfer/pcb-workflow-skill.tar.gz

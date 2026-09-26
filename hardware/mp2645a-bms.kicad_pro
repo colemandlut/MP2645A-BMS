@@ -253,10 +253,6 @@
       },
       {
         "netclass": "LV_POWER",
-        "pattern": "+5V"
-      },
-      {
-        "netclass": "LV_POWER",
         "pattern": "+3V3"
       },
       {
