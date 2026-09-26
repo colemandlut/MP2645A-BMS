@@ -42,8 +42,8 @@ class TestBmsCalc(unittest.TestCase):
             bc.balance_time_h(self.d, -1)
 
     def test_gate_turnoff(self):
-        # 8*170nC = 1.36µC @1A -> 1.36µs
-        self.assertAlmostEqual(bc.gate_turnoff_us(self.d, 1.0), 1.36, places=3)
+        # 8*178nC = 1.424µC @1A -> 1.424µs
+        self.assertAlmostEqual(bc.gate_turnoff_us(self.d, 1.0), 1.424, places=3)
 
     def test_fewer_fets_gets_hotter(self):
         d4 = bc.DesignInput(fet_parallel=4)
