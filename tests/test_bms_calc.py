@@ -19,12 +19,13 @@ class TestBmsCalc(unittest.TestCase):
 
     def test_fet_thermal_margin_at_200a(self):
         fet = self.r["fet_dsg"]
-        self.assertLess(fet["tj_worst_c"], 125.0)       # 留 50°C 以上裕量 (Tj,max=175)
-        self.assertLess(fet["p_path_w"], 25.0)
+        # Tokmas Tj,max = 150°C：最坏值（Rds 取最大 1.2mΩ）下仍留 ≥ 30°C 裕量
+        self.assertLess(fet["tj_worst_c"], 150.0 - 30.0)
+        self.assertLess(fet["p_path_w"], 30.0)
 
     def test_fet_path_resistance(self):
-        # 1.2mΩ*1.7/8*2 = 0.51mΩ
-        self.assertAlmostEqual(self.r["fet_dsg"]["r_path_mohm"], 0.51, places=3)
+        # 1.2mΩ*1.7/6*2 = 0.68mΩ
+        self.assertAlmostEqual(self.r["fet_dsg"]["r_path_mohm"], 0.68, places=3)
 
     def test_shunt_signal_levels(self):
         s = self.r["shunt"]
@@ -42,8 +43,8 @@ class TestBmsCalc(unittest.TestCase):
             bc.balance_time_h(self.d, -1)
 
     def test_gate_turnoff(self):
-        # 8*178nC = 1.424µC @1A -> 1.424µs
-        self.assertAlmostEqual(bc.gate_turnoff_us(self.d, 1.0), 1.424, places=3)
+        # 6*240nC = 1.44µC @1A -> 1.44µs
+        self.assertAlmostEqual(bc.gate_turnoff_us(self.d, 1.0), 1.44, places=3)
 
     def test_fewer_fets_gets_hotter(self):
         d4 = bc.DesignInput(fet_parallel=4)

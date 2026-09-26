@@ -23,7 +23,7 @@
 		)
 		(uuid "ac59e484-b99c-5b3e-9073-951a18848367")
 	)
-	(text "内容：STM32G0B1 / SWD / CAN(TJA1051T/3 + ESD + 可选 120Ω) / RS485 可选 / 状态 LED / 按键"
+	(text "内容：CH32V203C8T6 / SWD / CAN(TJA1051T/3 + ESD + 可选 120Ω) / RS485 可选 / 状态 LED / 按键"
 		(exclude_from_sim no)
 		(at 20 35 0)
 		(effects
@@ -32,7 +32,7 @@
 			)
 			(justify left top)
 		)
-		(uuid "b922f300-d29e-59b6-9e8f-24b79afa3189")
+		(uuid "543155c2-882f-569b-a970-463986efd950")
 	)
 	(text "接口网络（跨页用全局标签，名称以本清单为准）："
 		(exclude_from_sim no)

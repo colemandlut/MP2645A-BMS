@@ -45,7 +45,7 @@ SHEETS = [
      "BAT+ → 输入保护 → MP9486A buck → +5V → LDO → +3V3 / 唤醒与休眠",
      ["BAT+", "BAT-", "+5V", "+3V3", "GND", "PWR_EN"]),
     ("05_mcu_comm", "MCU 与通讯",
-     "STM32G0B1 / SWD / CAN(TJA1051T/3 + ESD + 可选 120Ω) / RS485 可选 / 状态 LED / 按键",
+     "CH32V203C8T6 / SWD / CAN(TJA1051T/3 + ESD + 可选 120Ω) / RS485 可选 / 状态 LED / 按键",
      ["I2C_SCL", "I2C_SDA", "AFE_ALERT", "AFE_WAKE", "BAL_EN1..7", "BAL_MODE1..7", "NTC_BAL", "PRECHG_EN", "PWR_EN",
       "CAN_H", "CAN_L", "RS485_A", "RS485_B", "+5V", "+3V3", "GND"]),
 ]

@@ -41,3 +41,13 @@ repo: colemandlut/MP2645A-BMS
 - 成本（元器件，不含 PCB/SMT 费）：10 块 ≈ ¥587/块，100 块 ≈ ¥460/块；MOSFET ×16 ≈ ¥214 最大头，MP2643 ≈ ¥121
 - 风险：STM32G0B1 与 4.7µF/100V 1210 嘉立创库存 0；降本候选：Tokmas MOSFET（省 ≈¥118）、CH32V203（省 ≈¥38）
 - 工具：tools/jlc_api.py（嘉立创 SMT 料号接口：jlcpcb.com/api/overseas-pcb-order/v1/shoppingCart/smtGood/selectSmtComponentList）、tools/cost.py
+
+## v0.3 降本（2026-09-26 用户同意全部降本选项）
+- MOSFET：Tokmas IPT012N08N5 C19626224 ×12（每方向 6）；Rds 0.9 typ/1.2 max，Tj,max 150°C，Qg 240nC；最坏 Tj≈105°C、通路 27.2W；封装 jlc:HSOF-8_IPT007N06N（与英飞凌 TOLL 焊盘略不同，符号 1G/2S/3D 已核）；嘉立创库存 746（够 62 块）
+- MCU：CH32V203C8T6 C3001172（CAN 2.0B）替代 STM32G0B1（嘉立创库存 0）
+- 4.7µF/100V 1210：风华 C381466 替代库存 0 的 C162515
+- 基础库化：MP2643 的 120k/150k/2M 改 0603 基础库；33Ω 0805；CAN 单 120Ω；MP9486A 反馈 470k/20k → 4.9V；100nF/50V 用 0603 C14663
+- 与规则 00②（封装下探）冲突：为省扩展库上料费选 0603，已在文档注明
+- 成本（元器件，不含 PCB/SMT 费）：10 块 ≈ ¥393/块（原 ¥587），100 块 ≈ ¥294/块（原 ¥460）
+- MP2643 封装：用户提供 MPS 原厂（Ultra Librarian）KiCad 库 → hardware/lib/mps，已核对手册 p22（FCQFN 无散热焊盘）
+- 云端 KiCad 的 chroot 挂载会随容器重启丢失：用前 `mountpoint /opt/kicad-root/home/user || sudo bash tools/setup_kicad.sh`

@@ -25,10 +25,10 @@ class DesignInput:
     i_scp: float = 800.0                 # 短路保护阈值
 
     # ---- 功率 MOSFET（每个方向并联数量相同，背靠背共源）----
-    fet_rds_25c_mohm: float = 1.2        # 80V TOLL, Rds(on) max @25°C, Vgs=10V
+    fet_rds_25c_mohm: float = 1.2        # Tokmas 85V TOLL, Rds(on) max @25°C, Vgs=10V（典型 0.9）
     fet_rds_tempco: float = 1.7          # Tj=100°C 相对 25°C 的倍率
-    fet_parallel: int = 8                # 每个方向并联数量
-    fet_qg_nc: float = 178.0             # IPT012N08N5 Qg ≈ 178nC (C531199)
+    fet_parallel: int = 6                # 每个方向并联数量（v0.3 降本：8→6）
+    fet_qg_nc: float = 240.0             # Tokmas IPT012N08N5 (C19626224) Qg 240nC
     fet_rth_ja_eff: float = 20.0         # 装散热器后单管等效 Rth(j-a) K/W
     fet_current_share: float = 1.15      # 均流不平衡系数（最坏的那颗多分 15%）
 
