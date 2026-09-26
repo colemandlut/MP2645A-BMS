@@ -110,6 +110,62 @@ def passive_balance_time_h(d: DesignInput, soc_mismatch_pct: float, i_bleed_a: f
     return ah / i_bleed_a
 
 
+# ---------------- v0.2 详细设计补充计算 ----------------
+
+CU_RHO_OHM_M = 1.72e-8      # 20°C 铜电阻率
+CU_ALPHA = 0.00393          # 铜电阻温度系数 /K
+
+
+def precharge(v_pack: float, c_load_f: float, r_ohm: float) -> dict:
+    """预充电阻: 峰值电流、峰值功率、单次能量、充到 95% 的时间。
+
+    电阻上消耗的能量恒等于电容最终储能 ½CV²（与 R 无关）。
+    """
+    return {
+        "i_peak_a": v_pack / r_ohm,
+        "p_peak_w": v_pack ** 2 / r_ohm,
+        "energy_j": 0.5 * c_load_f * v_pack ** 2,
+        "t95_s": 3 * r_ohm * c_load_f,
+    }
+
+
+def resistor_power_w(i_a: float, r_ohm: float) -> float:
+    return i_a ** 2 * r_ohm
+
+
+def rc_corner_hz(r_ohm: float, c_f: float) -> float:
+    return 1.0 / (2 * math.pi * r_ohm * c_f)
+
+
+def ntc_divider(t_c: float, r_pullup: float = 10e3, r25: float = 10e3,
+                beta: float = 3435.0, v_ref: float = 1.0) -> float:
+    """NTC 接地、上拉到 v_ref 的分压比（返回 NTC 端电压 / v_ref）。"""
+    t = t_c + 273.15
+    r_ntc = r25 * math.exp(beta * (1.0 / t - 1.0 / 298.15))
+    return v_ref * r_ntc / (r_ntc + r_pullup)
+
+
+def busbar(i_a: float, width_mm: float, thick_mm: float, length_mm: float,
+           temp_c: float = 80.0) -> dict:
+    a_m2 = width_mm * thick_mm * 1e-6
+    rho = CU_RHO_OHM_M * (1 + CU_ALPHA * (temp_c - 20))
+    r = rho * length_mm * 1e-3 / a_m2
+    return {
+        "j_a_per_mm2": i_a / (width_mm * thick_mm),
+        "r_uohm": r * 1e6,
+        "p_w": i_a ** 2 * r,
+    }
+
+
+def ipc2221_width_mm(i_a: float, dt_c: float = 10.0, oz: float = 2.0,
+                     external: bool = True) -> float:
+    """IPC-2221 线宽估算：I = k·ΔT^0.44·A^0.725（A 单位 mil²）。"""
+    k = 0.048 if external else 0.024
+    area_mil2 = (i_a / (k * dt_c ** 0.44)) ** (1 / 0.725)
+    thick_mil = 1.378 * oz
+    return area_mil2 / thick_mil * 0.0254
+
+
 def evaluate(d: DesignInput | None = None) -> DesignResult:
     d = d or DesignInput()
     r = DesignResult()
@@ -120,6 +176,12 @@ def evaluate(d: DesignInput | None = None) -> DesignResult:
     r.values["gate_off_us_1a"] = gate_turnoff_us(d, 1.0)
     r.values["bal_5pct_h"] = balance_time_h(d, 5.0)
     r.values["bal_5pct_passive_h"] = passive_balance_time_h(d, 5.0)
+    v = d.series * d.cell_v_max
+    r.values["precharge"] = precharge(v, 10e-3, 30.0)
+    r.values["busbar"] = busbar(d.i_dsg_cont, 20, 2, 150)
+    r.values["bal_trace_mm"] = ipc2221_width_mm(d.bal_current_a * 1.5)   # 按 1.5 倍均衡电流
+    r.values["cell_rc_hz"] = rc_corner_hz(100, 0.1e-6)
+    r.values["shunt_rc_hz"] = rc_corner_hz(2 * 100, 0.1e-6)
     return r
 
 
@@ -142,6 +204,12 @@ def main() -> None:
     print("== 均衡 (5% SOC 偏差) ==")
     print(f"  MP2645A 主动 {d.bal_current_a}A : {r['bal_5pct_h']:.2f} h")
     print(f"  被动 50mA 对比        : {r['bal_5pct_passive_h']:.1f} h")
+    print("== 预充 (30Ω, 负载 10mF) ==")
+    print(_fmt(r["precharge"]))
+    print("== 铜排 20x2mm x150mm @200A, 80°C ==")
+    print(_fmt(r["busbar"]))
+    print(f"== 均衡走线 (4.5A, ΔT10°C, 2oz 外层) ≥ {r['bal_trace_mm']:.2f} mm")
+    print(f"== 滤波转折: 电芯 100Ω/0.1µF {r['cell_rc_hz']:,.0f} Hz, 分流器差模 2x100Ω/0.1µF {r['shunt_rc_hz']:,.0f} Hz")
     ok = r["fet_dsg"]["tj_worst_c"] < 125
     print(f"\n结论: 最坏 MOSFET Tj = {r['fet_dsg']['tj_worst_c']:.1f}°C -> {'OK' if ok else '超限，需增加并联数/散热'}")
 

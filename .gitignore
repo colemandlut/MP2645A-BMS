@@ -2,3 +2,6 @@ firmware/build/
 __pycache__/
 *.pyc
 skills/
+*.kicad_prl
+*-backups/
+fp-info-cache

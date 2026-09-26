@@ -50,5 +50,35 @@ class TestBmsCalc(unittest.TestCase):
         self.assertGreater(bc.fet_path(d4, 200)["tj_worst_c"], self.r["fet_dsg"]["tj_worst_c"])
 
 
+class TestDetailCalc(unittest.TestCase):
+    def test_precharge_energy_independent_of_r(self):
+        a = bc.precharge(29.2, 10e-3, 30)
+        b = bc.precharge(29.2, 10e-3, 100)
+        self.assertAlmostEqual(a["energy_j"], b["energy_j"])
+        self.assertAlmostEqual(a["energy_j"], 0.5 * 10e-3 * 29.2 ** 2)
+        self.assertAlmostEqual(a["i_peak_a"], 29.2 / 30)
+        self.assertAlmostEqual(a["t95_s"], 0.9)
+
+    def test_rc_corner(self):
+        self.assertAlmostEqual(bc.rc_corner_hz(100, 0.1e-6), 15915.49, places=1)
+
+    def test_ntc_divider_25c_is_half(self):
+        self.assertAlmostEqual(bc.ntc_divider(25.0), 0.5)
+        self.assertGreater(bc.ntc_divider(0.0), bc.ntc_divider(60.0))   # NTC: 温度越高电压越低
+
+    def test_busbar(self):
+        b = bc.busbar(200, 20, 2, 150, temp_c=20)
+        self.assertAlmostEqual(b["j_a_per_mm2"], 5.0)
+        self.assertAlmostEqual(b["r_uohm"], 1.72e-8 * 0.15 / 40e-6 * 1e6)
+
+    def test_ipc2221_monotonic(self):
+        self.assertGreater(bc.ipc2221_width_mm(5), bc.ipc2221_width_mm(3))
+        self.assertGreater(bc.ipc2221_width_mm(3, oz=1), bc.ipc2221_width_mm(3, oz=2))
+        self.assertGreater(bc.ipc2221_width_mm(3, external=False), bc.ipc2221_width_mm(3))
+
+    def test_resistor_power(self):
+        self.assertAlmostEqual(bc.resistor_power_w(0.058, 30), 0.10092)
+
+
 if __name__ == "__main__":
     unittest.main()

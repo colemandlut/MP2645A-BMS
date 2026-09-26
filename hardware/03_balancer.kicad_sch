@@ -1,0 +1,104 @@
+(kicad_sch
+	(version 20250610)
+	(generator "gen_kicad_skeleton")
+	(generator_version "10.0")
+	(uuid "249fa7f7-2571-5b26-9553-df94514122d0")
+	(paper "A3")
+	(title_block
+		(title "MP2645A x2 主动均衡")
+		(date "2026-09-26")
+		(rev "v0.2-skeleton")
+		(company "MP2645A-BMS")
+		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2645A")
+	)
+	(lib_symbols)
+	(text "MP2645A x2 主动均衡"
+		(exclude_from_sim no)
+		(at 20 20 0)
+		(effects
+			(font
+				(size 4.0 4.0)
+			)
+			(justify left top)
+		)
+		(uuid "a524602d-c1e3-5ea4-b227-d51e07747fb3")
+	)
+	(text "内容：U2: BAL0..BAL5（C1~C5）/ U3: BAL3..BAL8（C4~C8，方案 A）/ 单线级联 / 功率电感（下方全层禁铜）"
+		(exclude_from_sim no)
+		(at 20 35 0)
+		(effects
+			(font
+				(size 2.0 2.0)
+			)
+			(justify left top)
+		)
+		(uuid "7e2044f2-7ccb-5706-8237-0c50c8f61a25")
+	)
+	(text "接口网络（跨页用全局标签，名称以本清单为准）："
+		(exclude_from_sim no)
+		(at 20 45 0)
+		(effects
+			(font
+				(size 2.0 2.0)
+			)
+			(justify left top)
+		)
+		(uuid "198d2c41-68d7-5b8c-b402-1982c1473eda")
+	)
+	(text "· BAL0..BAL8"
+		(exclude_from_sim no)
+		(at 25 52 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "31ca6f13-0f35-5b98-917f-3eb84f86c538")
+	)
+	(text "· BAL_EN"
+		(exclude_from_sim no)
+		(at 25 57 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "3b9456be-2ae6-53c0-aa50-5a27a2c198ab")
+	)
+	(text "· BAL_FAULT"
+		(exclude_from_sim no)
+		(at 25 62 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "07fc43dd-44da-54e5-8d19-3657a320a178")
+	)
+	(text "· GND"
+		(exclude_from_sim no)
+		(at 25 67 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "c0ec8652-71a8-5cda-a81e-f92fb7d53ea5")
+	)
+	(text "状态：待画。详细设计见 docs/03-详细设计.md；按 pcb-workflow 规则 00/00c/00d 执行。"
+		(exclude_from_sim no)
+		(at 20 130 0)
+		(effects
+			(font
+				(size 2.0 2.0)
+			)
+			(justify left top)
+		)
+		(uuid "200a695b-4e85-55f9-88d5-cb3a8c6589d6")
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,294 @@
+{
+  "meta": {
+    "filename": "mp2645a-bms.kicad_pro",
+    "version": 3
+  },
+  "net_settings": {
+    "classes": [
+      {
+        "bus_width": 12,
+        "clearance": 0.2,
+        "diff_pair_gap": 0.2,
+        "diff_pair_via_gap": 0.2,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "Default",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 2147483647,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.2,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.5,
+        "diff_pair_gap": 0.5,
+        "diff_pair_via_gap": 0.5,
+        "diff_pair_width": 3.0,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "HV_POWER",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 1,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 3.0,
+        "tuning_profile": "",
+        "via_diameter": 1.0,
+        "via_drill": 0.5,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.3,
+        "diff_pair_gap": 0.3,
+        "diff_pair_via_gap": 0.3,
+        "diff_pair_width": 1.2,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "BAL_3A",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 2,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 1.2,
+        "tuning_profile": "",
+        "via_diameter": 0.8,
+        "via_drill": 0.4,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.3,
+        "diff_pair_gap": 0.3,
+        "diff_pair_via_gap": 0.3,
+        "diff_pair_width": 0.25,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "CELL_SENSE",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 3,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.25,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.3,
+        "diff_pair_gap": 0.3,
+        "diff_pair_via_gap": 0.3,
+        "diff_pair_width": 0.4,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "GATE",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 4,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.4,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.2,
+        "diff_pair_gap": 0.2,
+        "diff_pair_via_gap": 0.2,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "KELVIN",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 5,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.2,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.2,
+        "diff_pair_gap": 0.2,
+        "diff_pair_via_gap": 0.2,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "CAN_DIFF",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 6,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.2,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.2,
+        "diff_pair_gap": 0.2,
+        "diff_pair_via_gap": 0.2,
+        "diff_pair_width": 0.5,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "LV_POWER",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 7,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.5,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.2,
+        "diff_pair_gap": 0.2,
+        "diff_pair_via_gap": 0.2,
+        "diff_pair_width": 0.5,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "GND",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 8,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.5,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "wire_width": 6
+      }
+    ],
+    "meta": {
+      "version": 5
+    },
+    "net_colors": null,
+    "netclass_assignments": null,
+    "netclass_patterns": [
+      {
+        "netclass": "HV_POWER",
+        "pattern": "BAT+"
+      },
+      {
+        "netclass": "HV_POWER",
+        "pattern": "BAT-"
+      },
+      {
+        "netclass": "HV_POWER",
+        "pattern": "PACK+"
+      },
+      {
+        "netclass": "HV_POWER",
+        "pattern": "PACK-"
+      },
+      {
+        "netclass": "HV_POWER",
+        "pattern": "FET_MID"
+      },
+      {
+        "netclass": "BAL_3A",
+        "pattern": "BAL*"
+      },
+      {
+        "netclass": "BAL_3A",
+        "pattern": "/03_balancer/SW*"
+      },
+      {
+        "netclass": "CELL_SENSE",
+        "pattern": "CELL*"
+      },
+      {
+        "netclass": "GATE",
+        "pattern": "CHG_G"
+      },
+      {
+        "netclass": "GATE",
+        "pattern": "DSG_G"
+      },
+      {
+        "netclass": "KELVIN",
+        "pattern": "SRP"
+      },
+      {
+        "netclass": "KELVIN",
+        "pattern": "SRN"
+      },
+      {
+        "netclass": "CAN_DIFF",
+        "pattern": "CAN_H"
+      },
+      {
+        "netclass": "CAN_DIFF",
+        "pattern": "CAN_L"
+      },
+      {
+        "netclass": "CAN_DIFF",
+        "pattern": "RS485_A"
+      },
+      {
+        "netclass": "CAN_DIFF",
+        "pattern": "RS485_B"
+      },
+      {
+        "netclass": "LV_POWER",
+        "pattern": "+5V"
+      },
+      {
+        "netclass": "LV_POWER",
+        "pattern": "+3V3"
+      },
+      {
+        "netclass": "GND",
+        "pattern": "GND"
+      }
+    ]
+  },
+  "sheets": [
+    [
+      "632f74a5-cd8f-58d8-9ac1-1bfbb611d555",
+      "Root"
+    ],
+    [
+      "0bd21588-0d58-5b84-baa9-df8c63e335b0",
+      "01_power_path"
+    ],
+    [
+      "ea51a1fb-02d6-595f-bc45-e0bda117a63c",
+      "02_afe"
+    ],
+    [
+      "44941aa1-16f9-5b02-a1db-c7ecc6ecd681",
+      "03_balancer"
+    ],
+    [
+      "90709137-67a7-585a-82d8-a2043b6cfd39",
+      "04_power_supply"
+    ],
+    [
+      "ed102768-6eac-5465-ab27-d98fa95c024c",
+      "05_mcu_comm"
+    ]
+  ],
+  "text_variables": {
+    "PROJECT": "8S LFP 200A BMS",
+    "REV": "v0.2-skeleton"
+  }
+}

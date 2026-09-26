@@ -1,0 +1,192 @@
+(kicad_sch
+	(version 20250610)
+	(generator "gen_kicad_skeleton")
+	(generator_version "10.0")
+	(uuid "fafe85a9-191a-5b9c-9e84-2f5f8e518f3a")
+	(paper "A3")
+	(title_block
+		(title "功率回路")
+		(date "2026-09-26")
+		(rev "v0.2-skeleton")
+		(company "MP2645A-BMS")
+		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2645A")
+	)
+	(lib_symbols)
+	(text "功率回路"
+		(exclude_from_sim no)
+		(at 20 20 0)
+		(effects
+			(font
+				(size 4.0 4.0)
+			)
+			(justify left top)
+		)
+		(uuid "9663840e-06c4-5b4c-9930-8cb415949f29")
+	)
+	(text "内容：B+ 熔断器 / CHG、DSG 各 8 并联 NMOS / 栅极网络与 PNP 快速关断 / 分流器 / TVS / 预充 / P+ P- 端子"
+		(exclude_from_sim no)
+		(at 20 35 0)
+		(effects
+			(font
+				(size 2.0 2.0)
+			)
+			(justify left top)
+		)
+		(uuid "bf0fcaf0-3ba2-585b-a2df-86c7f94d0bd2")
+	)
+	(text "接口网络（跨页用全局标签，名称以本清单为准）："
+		(exclude_from_sim no)
+		(at 20 45 0)
+		(effects
+			(font
+				(size 2.0 2.0)
+			)
+			(justify left top)
+		)
+		(uuid "198d2c41-68d7-5b8c-b402-1982c1473eda")
+	)
+	(text "· BAT+"
+		(exclude_from_sim no)
+		(at 25 52 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "3d9f906c-160f-590d-8af9-80ae2cc1dcc9")
+	)
+	(text "· BAT-"
+		(exclude_from_sim no)
+		(at 25 57 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "729f0c67-d38a-52bb-be25-6446448a5ba4")
+	)
+	(text "· PACK+"
+		(exclude_from_sim no)
+		(at 25 62 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "284464b6-d11c-5bc2-a45c-c4a7b3cd2080")
+	)
+	(text "· PACK-"
+		(exclude_from_sim no)
+		(at 25 67 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "c731d755-9475-5720-87f9-480f90ac8e7d")
+	)
+	(text "· FET_MID"
+		(exclude_from_sim no)
+		(at 25 72 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "7509ecd4-d5c3-5d93-b0f2-95cc76ca13da")
+	)
+	(text "· CHG_G"
+		(exclude_from_sim no)
+		(at 25 77 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "6a5597c5-d573-5526-86ee-f8c6da5b6053")
+	)
+	(text "· DSG_G"
+		(exclude_from_sim no)
+		(at 25 82 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "1235769d-8610-59a6-9553-5c05b86f27db")
+	)
+	(text "· SRP"
+		(exclude_from_sim no)
+		(at 25 87 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "bdfb6362-1a88-5ec1-80fb-606a136321c3")
+	)
+	(text "· SRN"
+		(exclude_from_sim no)
+		(at 25 92 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "c796a17b-4dc6-5392-bd23-b7b400ab6f5e")
+	)
+	(text "· NTC_FET"
+		(exclude_from_sim no)
+		(at 25 97 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "96ce00cf-c48f-5964-b726-907ccd0270f9")
+	)
+	(text "· NTC_SHUNT"
+		(exclude_from_sim no)
+		(at 25 102 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "8255a08b-5407-5cd5-b845-2a35f5a8676c")
+	)
+	(text "· PRECHG_EN"
+		(exclude_from_sim no)
+		(at 25 107 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "682bc130-086d-5be5-8fb1-2166253c9319")
+	)
+	(text "状态：待画。详细设计见 docs/03-详细设计.md；按 pcb-workflow 规则 00/00c/00d 执行。"
+		(exclude_from_sim no)
+		(at 20 130 0)
+		(effects
+			(font
+				(size 2.0 2.0)
+			)
+			(justify left top)
+		)
+		(uuid "200a695b-4e85-55f9-88d5-cb3a8c6589d6")
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,237 @@
+(kicad_sch
+	(version 20250610)
+	(generator "gen_kicad_skeleton")
+	(generator_version "10.0")
+	(uuid "632f74a5-cd8f-58d8-9ac1-1bfbb611d555")
+	(paper "A3")
+	(title_block
+		(title "8S LFP 200A BMS — 总图")
+		(date "2026-09-26")
+		(rev "v0.2-skeleton")
+		(company "MP2645A-BMS")
+		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2645A")
+	)
+	(lib_symbols)
+	(text "层次结构（v0.2 骨架）：电路待 MP2797 / MP2645A / MP9486A 正式数据手册核对后再画"
+		(exclude_from_sim no)
+		(at 20 20 0)
+		(effects
+			(font
+				(size 3.0 3.0)
+			)
+			(justify left top)
+		)
+		(uuid "93bfc4b7-fdcf-5ef7-b574-d4d8fd6b612c")
+	)
+	(sheet
+		(at 20 50)
+		(size 110 60)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "938e7e56-d566-5323-870c-7a6740864203")
+		(property "Sheetname" "功率回路"
+			(at 20 49.2 0)
+			(effects
+				(font
+					(size 2 2)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "01_power_path.kicad_sch"
+			(at 20 111 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "mp2645a-bms"
+				(path "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 150 50)
+		(size 110 60)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "b7551ed3-1617-5b05-94f3-5ce7ab4e2107")
+		(property "Sheetname" "MP2797 采集与保护"
+			(at 150 49.2 0)
+			(effects
+				(font
+					(size 2 2)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "02_afe.kicad_sch"
+			(at 150 111 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "mp2645a-bms"
+				(path "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 280 50)
+		(size 110 60)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "66cc3a14-196d-5f5c-9535-d482588cd3fc")
+		(property "Sheetname" "MP2645A x2 主动均衡"
+			(at 280 49.2 0)
+			(effects
+				(font
+					(size 2 2)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "03_balancer.kicad_sch"
+			(at 280 111 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "mp2645a-bms"
+				(path "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 20 140)
+		(size 110 60)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "c20e45f9-c9d2-50e9-b477-f2356556af13")
+		(property "Sheetname" "辅助电源"
+			(at 20 139.2 0)
+			(effects
+				(font
+					(size 2 2)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "04_power_supply.kicad_sch"
+			(at 20 201 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "mp2645a-bms"
+				(path "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 150 140)
+		(size 110 60)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "0739f2da-d4a5-5124-931f-263baaef6ebe")
+		(property "Sheetname" "MCU 与通讯"
+			(at 150 139.2 0)
+			(effects
+				(font
+					(size 2 2)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "05_mcu_comm.kicad_sch"
+			(at 150 201 0)
+			(effects
+				(font
+					(size 1.5 1.5)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "mp2645a-bms"
+				(path "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)

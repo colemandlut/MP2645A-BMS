@@ -1,0 +1,247 @@
+(kicad_sch
+	(version 20250610)
+	(generator "gen_kicad_skeleton")
+	(generator_version "10.0")
+	(uuid "d1c7b78c-1731-540c-8187-6dd957cc111f")
+	(paper "A3")
+	(title_block
+		(title "MP2797 采集与保护")
+		(date "2026-09-26")
+		(rev "v0.2-skeleton")
+		(company "MP2645A-BMS")
+		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2645A")
+	)
+	(lib_symbols)
+	(text "MP2797 采集与保护"
+		(exclude_from_sim no)
+		(at 20 20 0)
+		(effects
+			(font
+				(size 4.0 4.0)
+			)
+			(justify left top)
+		)
+		(uuid "7ff5e2f0-b69d-51b3-b914-238635bd03d9")
+	)
+	(text "内容：电芯采样 RC / 电流采样滤波 / 4 路 NTC / 高边驱动输出 / 通讯与中断 / 被动均衡"
+		(exclude_from_sim no)
+		(at 20 35 0)
+		(effects
+			(font
+				(size 2.0 2.0)
+			)
+			(justify left top)
+		)
+		(uuid "42a68797-2116-5d65-b084-21f6e02dd4d2")
+	)
+	(text "接口网络（跨页用全局标签，名称以本清单为准）："
+		(exclude_from_sim no)
+		(at 20 45 0)
+		(effects
+			(font
+				(size 2.0 2.0)
+			)
+			(justify left top)
+		)
+		(uuid "198d2c41-68d7-5b8c-b402-1982c1473eda")
+	)
+	(text "· CELL0..CELL8"
+		(exclude_from_sim no)
+		(at 25 52 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "8afeec02-7889-5e3c-8bc4-960e388cf709")
+	)
+	(text "· SRP"
+		(exclude_from_sim no)
+		(at 25 57 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "bdfb6362-1a88-5ec1-80fb-606a136321c3")
+	)
+	(text "· SRN"
+		(exclude_from_sim no)
+		(at 25 62 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "c796a17b-4dc6-5392-bd23-b7b400ab6f5e")
+	)
+	(text "· CHG_G"
+		(exclude_from_sim no)
+		(at 25 67 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "6a5597c5-d573-5526-86ee-f8c6da5b6053")
+	)
+	(text "· DSG_G"
+		(exclude_from_sim no)
+		(at 25 72 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "1235769d-8610-59a6-9553-5c05b86f27db")
+	)
+	(text "· FET_MID"
+		(exclude_from_sim no)
+		(at 25 77 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "7509ecd4-d5c3-5d93-b0f2-95cc76ca13da")
+	)
+	(text "· PACK+"
+		(exclude_from_sim no)
+		(at 25 82 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "284464b6-d11c-5bc2-a45c-c4a7b3cd2080")
+	)
+	(text "· NTC_CELL1"
+		(exclude_from_sim no)
+		(at 25 87 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "91ea0798-0b6d-5310-ac6c-583adeb75c36")
+	)
+	(text "· NTC_CELL2"
+		(exclude_from_sim no)
+		(at 25 92 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "e3595430-06ea-5afd-bdac-2bb5bdf09f87")
+	)
+	(text "· NTC_FET"
+		(exclude_from_sim no)
+		(at 25 97 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "96ce00cf-c48f-5964-b726-907ccd0270f9")
+	)
+	(text "· NTC_SHUNT"
+		(exclude_from_sim no)
+		(at 25 102 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "8255a08b-5407-5cd5-b845-2a35f5a8676c")
+	)
+	(text "· I2C_SCL"
+		(exclude_from_sim no)
+		(at 25 107 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "50c65603-1da5-5fcd-9e0e-ecce2d9ac0fa")
+	)
+	(text "· I2C_SDA"
+		(exclude_from_sim no)
+		(at 95 52 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "9ddbf85e-2575-562a-b9b7-ddbbbff63287")
+	)
+	(text "· AFE_ALERT"
+		(exclude_from_sim no)
+		(at 95 57 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "3b533043-6d46-586a-9926-0763e2976dfc")
+	)
+	(text "· AFE_WAKE"
+		(exclude_from_sim no)
+		(at 95 62 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "419ae2a2-3a28-5153-8a08-976055ed6517")
+	)
+	(text "· +3V3"
+		(exclude_from_sim no)
+		(at 95 67 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "ba05add3-c341-57d9-bb45-861a86cf689a")
+	)
+	(text "· GND"
+		(exclude_from_sim no)
+		(at 95 72 0)
+		(effects
+			(font
+				(size 1.8 1.8)
+			)
+			(justify left top)
+		)
+		(uuid "c0ec8652-71a8-5cda-a81e-f92fb7d53ea5")
+	)
+	(text "状态：待画。详细设计见 docs/03-详细设计.md；按 pcb-workflow 规则 00/00c/00d 执行。"
+		(exclude_from_sim no)
+		(at 20 130 0)
+		(effects
+			(font
+				(size 2.0 2.0)
+			)
+			(justify left top)
+		)
+		(uuid "200a695b-4e85-55f9-88d5-cb3a8c6589d6")
+	)
+	(embedded_fonts no)
+)
