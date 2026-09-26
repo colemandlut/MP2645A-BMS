@@ -16,6 +16,10 @@
 - `firmware/` —— 与硬件无关的保护状态机 + LFP 均衡策略（C11），附主机端单元测试
 - `obsidian-vault/` —— 项目知识库（Obsidian 仓库，可直接用 Obsidian 打开）
 
+## EDA
+
+全部使用 **KiCad 10**。云端容器安装：`sudo bash tools/setup_kicad.sh`（之后可用 `kicad-cli`、`kicad-python`）。
+
 ## 运行
 
 ```bash
