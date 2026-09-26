@@ -8,3 +8,4 @@ fp-info-cache
 hardware/lib/jlc/fetch_report.md
 datasheets/*.pdf
 hardware/.easyeda_cache/
+hardware/lib/jlc/jlc.3dshapes/

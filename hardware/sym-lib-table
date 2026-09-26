@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "jlc")(type "KiCad")(uri "${KIPRJMOD}/lib/jlc/jlc.kicad_sym")(options "")(descr "嘉立创/立创 EasyEDA 库，规则 0e"))
+)
