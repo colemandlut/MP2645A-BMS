@@ -5,14 +5,14 @@
 	(uuid "249fa7f7-2571-5b26-9553-df94514122d0")
 	(paper "A3")
 	(title_block
-		(title "MP2643 x7 主动均衡")
+		(title "开关电容主动均衡")
 		(date "2026-09-26")
 		(rev "v0.3-skeleton")
 		(company "MP2645A-BMS")
-		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2643x7")
+		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡")
 	)
 	(lib_symbols)
-	(text "MP2643 x7 主动均衡"
+	(text "开关电容主动均衡"
 		(exclude_from_sim no)
 		(at 20 20 0)
 		(effects
@@ -21,9 +21,9 @@
 			)
 			(justify left top)
 		)
-		(uuid "1e8efcc4-0350-500b-a886-483d586a7cb6")
+		(uuid "cbfcf782-1898-53e7-ab95-822580c716f6")
 	)
-	(text "内容：U_BAL1..7：第 k 颗 PGND=BAL(k-1)、CL=BALk、CU=BAL(k+1) / 每颗 2 只光耦(EN、MODE) / 电感下方全层禁铜 / 7 个本地地铜岛"
+	(text "内容：8 个互补半桥 QN/QP(AO3400A/AO3401A) + 8 个 74LVC1G17（本节电芯供电）+ 7 级飞电容 3x100µF / 时钟 BAL_CLK 逐级电容耦合 / 均衡节点 3A 保险丝"
 		(exclude_from_sim no)
 		(at 20 35 0)
 		(effects
@@ -32,7 +32,7 @@
 			)
 			(justify left top)
 		)
-		(uuid "6d7f2ab6-26d1-5bcf-ac62-2b8fb3b9ecd5")
+		(uuid "77c596bb-ddcb-5c99-a5cf-c26c37a11e44")
 	)
 	(text "接口网络（跨页用全局标签，名称以本清单为准）："
 		(exclude_from_sim no)
@@ -56,7 +56,7 @@
 		)
 		(uuid "31ca6f13-0f35-5b98-917f-3eb84f86c538")
 	)
-	(text "· BAL_EN1..BAL_EN7"
+	(text "· BAL_CLK"
 		(exclude_from_sim no)
 		(at 25 57 0)
 		(effects
@@ -65,44 +65,11 @@
 			)
 			(justify left top)
 		)
-		(uuid "40246dca-e017-55d7-b693-180fc8efaca9")
-	)
-	(text "· BAL_MODE1..BAL_MODE7"
-		(exclude_from_sim no)
-		(at 25 62 0)
-		(effects
-			(font
-				(size 1.8 1.8)
-			)
-			(justify left top)
-		)
-		(uuid "3803bd74-0345-5fbf-bbc7-0382f349ecc3")
-	)
-	(text "· NTC_BAL"
-		(exclude_from_sim no)
-		(at 25 67 0)
-		(effects
-			(font
-				(size 1.8 1.8)
-			)
-			(justify left top)
-		)
-		(uuid "7840a115-c296-53c0-94ae-e66265e57f80")
-	)
-	(text "· +3V3"
-		(exclude_from_sim no)
-		(at 25 72 0)
-		(effects
-			(font
-				(size 1.8 1.8)
-			)
-			(justify left top)
-		)
-		(uuid "ba05add3-c341-57d9-bb45-861a86cf689a")
+		(uuid "6f493939-c9e0-50cc-b094-263e4d1c3035")
 	)
 	(text "· GND"
 		(exclude_from_sim no)
-		(at 25 77 0)
+		(at 25 62 0)
 		(effects
 			(font
 				(size 1.8 1.8)

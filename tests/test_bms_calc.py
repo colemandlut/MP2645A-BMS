@@ -34,9 +34,10 @@ class TestBmsCalc(unittest.TestCase):
         self.assertAlmostEqual(s["p_at_dsg_w"], 4.0)
 
     def test_active_balance_much_faster_than_passive(self):
-        self.assertLess(self.r["bal_5pct_h"] * 10, self.r["bal_5pct_passive_h"])
-        # 200Ah*5% = 10Ah / (1.778A*0.89)
-        self.assertAlmostEqual(self.r["bal_5pct_h"], 10 / (640 / 360 * 0.89), places=3)
+        # 开关电容 @100mV 约 0.21A，比 50mA 被动快约 4 倍
+        self.assertLess(self.r["bal_5pct_h"] * 3, self.r["bal_5pct_passive_h"])
+        # 200Ah*5% = 10Ah / (0.21A*0.95)
+        self.assertAlmostEqual(self.r["bal_5pct_h"], 10 / (0.21 * 0.95), places=3)
 
     def test_balance_time_rejects_negative(self):
         with self.assertRaises(ValueError):
@@ -79,6 +80,26 @@ class TestDetailCalc(unittest.TestCase):
 
     def test_resistor_power(self):
         self.assertAlmostEqual(bc.resistor_power_w(0.058, 30), 0.10092)
+
+
+class TestSwitchedCap(unittest.TestCase):
+    def test_current_proportional_to_dv(self):
+        a, b = bc.sc_equalizer(0.1)["i_a"], bc.sc_equalizer(0.3)["i_a"]
+        self.assertAlmostEqual(b / a, 3.0)
+
+    def test_default_design_point(self):
+        r = bc.sc_equalizer(0.1)
+        # R_SSL = 1/(50k*150µ) = 0.133Ω；R_FSL = 4*(0.036+0.065+0.015) = 0.464Ω
+        self.assertAlmostEqual(r["r_ssl_ohm"], 0.1333, places=3)
+        self.assertAlmostEqual(r["r_fsl_ohm"], 0.464, places=3)
+        self.assertAlmostEqual(r["i_a"], 0.1 / (0.1333 ** 2 + 0.464 ** 2) ** 0.5, places=3)
+        self.assertGreater(r["i_a"], 0.2)
+
+    def test_default_matches_design_input(self):
+        self.assertAlmostEqual(bc.DesignInput().bal_current_a, round(bc.sc_equalizer(0.1)["i_a"], 2))
+
+    def test_higher_freq_lower_resistance(self):
+        self.assertLess(bc.sc_equalizer(0.1, f_khz=100)["r_eq_ohm"], bc.sc_equalizer(0.1)["r_eq_ohm"])
 
 
 class TestMP2643(unittest.TestCase):

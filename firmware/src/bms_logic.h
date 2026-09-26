@@ -39,18 +39,15 @@ typedef struct {
     uint32_t faults;
     uint32_t tmr[16];                  /* 每个故障位的去抖/恢复计时 */
     uint32_t rest_ms;
-    bool     bal_session;              /* 一轮主动均衡进行中 */
+    bool     bal_session;              /* 开关电容均衡运行中（BAL_CLK 输出） */
     bool     bal_rest_mode;            /* 本轮均衡由静置条件触发 */
-    uint8_t  bal_en;                   /* bit k = 芯片 U(k+1) EN（经光耦） */
-    uint8_t  bal_boost;                /* bit k = 1: MODE 高, 下→上 (boost); 0: 上→下 (buck) */
     uint8_t  passive_mask;             /* MP2797 内部被动均衡位图 */
 } bms_state_t;
 
 typedef struct {
     bool     chg_fet;
     bool     dsg_fet;
-    uint8_t  bal_en;                   /* 7 路 BAL_ENk 光耦 */
-    uint8_t  bal_boost;                /* 7 路 BAL_MODEk 光耦 */
+    bool     bal_clk;                  /* 开关电容均衡时钟 BAL_CLK 使能 */
     uint8_t  passive_mask;
     uint32_t faults;
 } bms_out_t;

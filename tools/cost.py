@@ -37,6 +37,8 @@ ROUGH = {"F1": (30, 60), "BUS": (30, 60), "HS": (30, 80)}
 NOTES = """
 ## 已采用的降本（2026-09-26 用户同意）
 
+- **主动均衡改为分立开关电容（方案 B）**：替代 MP2643×7 及其电感、22µF、光耦、7A 保险丝、2×9 端子；均衡部分约 ¥186/块 → 约 ¥25/块；代价：电流随压差变化（100mV≈0.2A），平台区几乎不搬。
+
 | 项 | 原方案 | 现方案 | 风险 / 代价 |
 |---|---|---|---|
 | 主 MOSFET | Infineon IPT012N08N5 ×16（C531199） | **Tokmas IPT012N08N5 ×12（C19626224）**，每方向 6 颗 | Rds(on) 典型 0.9 / 最大 1.2mΩ（同原厂），但 **Tj,max 150°C**（原厂 175°C），Qg 240nC；最坏值下 200A 通路 27.2W、最坏单管 Tj ≈ 105°C（45°C 环境），裕量 45°C；嘉立创库存 746（够 62 块） |
@@ -48,7 +50,7 @@ NOTES = """
 
 - Tokmas MOSFET 嘉立创库存 746：每块 12 颗，最多 62 块；量产前需备货或确认补货。
 - MP2013AGQ-33-Z（C6096988）库存约 49、SMBJ33A（C78419）约 47：够小批量，不够 100 块。
-- MP2643 不在嘉立创：MPS 官网购买后客供（MPS 库存 3639，运费每单 5 美元）。
+- v0.3 起主动均衡改为分立开关电容（全部嘉立创料），不再有 MPS 客供件。
 """
 
 
@@ -100,11 +102,12 @@ def compute(rows, info, n):
             mps_total += cost
             lines.append((r["模块"], r["位号"], q, r["制造商型号"], "MPS", "客供", "-", unit, cost))
     ext_fee = len(ext_types) * EXT_FEE_CNY
+    ship = MPS_SHIP_CNY if mps_total else 0.0
     return {
         "n": n, "lines": lines, "jlc_parts": total, "mps_parts": mps_total,
-        "mps_ship_per_board": MPS_SHIP_CNY / n, "ext_types": len(ext_types),
+        "mps_ship_per_board": ship / n, "ext_types": len(ext_types),
         "ext_fee_per_board": ext_fee / n, "missing": missing,
-        "per_board": total + mps_total + MPS_SHIP_CNY / n + ext_fee / n,
+        "per_board": total + mps_total + ship / n + ext_fee / n,
     }
 
 
@@ -121,7 +124,7 @@ def main(argv):
            f"嘉立创价为实时接口的美元阶梯价 × {USD_CNY}（假设汇率）；MP2643 为 MPS 官网人民币价。",
            "> **不含 PCB 制板、SMT 工程/钢网/焊点费、运费、税**，这些以嘉立创下单页报价为准。\n",
            "## 每块板成本（元）\n",
-           "| 批量(块) | 嘉立创元器件 | MP2643×7（MPS） | MPS 运费分摊 | 扩展库上料费分摊 | **元器件合计/块** | MP2643 占比 |",
+           "| 批量(块) | 嘉立创元器件 | MPS 客供件 | MPS 运费分摊 | 扩展库上料费分摊 | **元器件合计/块** | 客供件占比 |",
            "|---|---|---|---|---|---|---|"]
     for r in res:
         out.append(f"| {r['n']} | {r['jlc_parts']:.2f} | {r['mps_parts']:.2f} | {r['mps_ship_per_board']:.2f} | "
@@ -155,7 +158,7 @@ def main(argv):
         fp.write("\n".join(out) + "\n")
 
     for r in res:
-        print(f"{r['n']:>4} 块：元器件 ¥{r['per_board']:.2f}/块（嘉立创 {r['jlc_parts']:.2f} + MP2643 {r['mps_parts']:.2f}"
+        print(f"{r['n']:>4} 块：元器件 ¥{r['per_board']:.2f}/块（嘉立创 {r['jlc_parts']:.2f} + MPS客供 {r['mps_parts']:.2f}"
               f" + 运费 {r['mps_ship_per_board']:.2f} + 上料费 {r['ext_fee_per_board']:.2f}）")
     print(f"机械件粗估 ¥{rough_lo}–{rough_hi}/套；报告 {os.path.relpath(OUT, ROOT)}")
     return 0

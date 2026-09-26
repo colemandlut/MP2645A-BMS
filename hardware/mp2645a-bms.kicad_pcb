@@ -97,7 +97,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "fdbca2e9-e54d-4935-81d7-fb9e16528c2e")
+		(uuid "9ee002e4-437c-44db-b0bc-6de8370cc72f")
 	)
 	(gr_line
 		(start 20 130)
@@ -107,7 +107,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a18d1c4b-c8b3-4edb-9a88-7c1511871c4c")
+		(uuid "4b22edde-c458-48c1-bd4c-656223bc2aa7")
 	)
 	(gr_line
 		(start 180 20)
@@ -117,7 +117,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "1ff1eab4-cdc1-41d8-99f7-99c5429b2f6a")
+		(uuid "825c12b7-7831-4e45-9667-e8e20d25b3a0")
 	)
 	(gr_line
 		(start 180 130)
@@ -127,7 +127,7 @@
 			(type default)
 		)
 		(layer "Edge.Cuts")
-		(uuid "69444d28-75a3-4623-b7c9-1f939ee35a02")
+		(uuid "a45975b6-b47a-4daa-8ea4-117bfc6168e3")
 	)
 	(embedded_fonts no)
 )

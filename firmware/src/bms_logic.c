@@ -78,20 +78,6 @@ static void protect(bms_state_t *s, const bms_meas_t *m)
          TEMP_DELAY_MS, TEMP_DELAY_MS);
 }
 
-/* 第 k 对边界（cell k 与 cell k+1 之间）需要向下搬运的电荷，单位 mV·节 ×BMS_CELLS
- * （乘 BMS_CELLS 避免除法）：> 0 表示上方偏高, 应 buck 上→下；< 0 应 boost 下→上 */
-static int32_t boundary_excess(const bms_meas_t *m, int k)
-{
-    int32_t sum_all = 0, sum_up = 0;
-    for (int j = 0; j < BMS_CELLS; j++) {
-        sum_all += m->cell_mv[j];
-        if (j > k) sum_up += m->cell_mv[j];
-    }
-    return (int32_t)BMS_CELLS * sum_up - (int32_t)(BMS_CELLS - 1 - k) * sum_all;
-}
-
-static int32_t iabs32(int32_t x) { return x < 0 ? -x : x; }
-
 static void balance(bms_state_t *s, const bms_meas_t *m)
 {
     uint16_t vmax = bms_cell_max(m), vmin = bms_cell_min(m);
@@ -111,6 +97,8 @@ static void balance(bms_state_t *s, const bms_meas_t *m)
             temp_ok = false;
     /* 过压时均衡正好有用, 其他任何故障都停止均衡 */
     bool fault_ok = (s->faults & ~(uint32_t)FLT_CELL_OV) == 0;
+    /* 开关电容的电流随压差增大：压差异常大或电芯过低时不开 */
+    bool range_ok = dv <= BAL_MAX_DIFF_MV && vmin >= BAL_MIN_CELL_MV;
 
     bool top = vmax >= BAL_TOP_START_MV;
     /* 静置触发的均衡一旦有电流立即退出; 顶部触发的均衡带电压迟滞退出 */
@@ -118,8 +106,7 @@ static void balance(bms_state_t *s, const bms_meas_t *m)
                    : s->bal_rest_mode ? rested
                    : vmax + BAL_TOP_HYST_MV >= BAL_TOP_START_MV;
 
-    /* ---- 一轮均衡的起停（看整组压差） ---- */
-    if (!temp_ok || !fault_ok || !region_ok) {
+    if (!temp_ok || !fault_ok || !range_ok || !region_ok) {
         s->bal_session = false;
     } else if (s->bal_session) {
         if (dv <= BAL_DIFF_STOP_MV) s->bal_session = false;
@@ -130,51 +117,6 @@ static void balance(bms_state_t *s, const bms_meas_t *m)
         s->bal_session = true;
         s->bal_rest_mode = true;
     }
-
-    /* ---- 逐对选择：方向由边界两侧的电荷盈亏决定；相邻两颗不同时开（交错） ---- */
-    uint8_t en = 0, boost = 0;
-    if (s->bal_session) {
-        int32_t ex[BAL_PAIRS];
-        uint8_t want = 0;
-        for (int k = 0; k < BAL_PAIRS; k++) {
-            ex[k] = boundary_excess(m, k);
-            bool was = s->bal_en & (1u << k);
-            bool same_dir = ((s->bal_boost >> k) & 1u) == (ex[k] < 0);
-            int32_t thr = (was && same_dir ? BAL_PAIR_STOP_MV : BAL_PAIR_START_MV) * BMS_CELLS;
-            if (iabs32(ex[k]) >= thr) want |= 1u << k;
-        }
-        /* 先保留已在运行且仍需要的对（避免来回切换），再按需求大小依次加入，跳过相邻 */
-        for (int pass = 0; pass < 2; pass++) {
-            for (;;) {
-                int best = -1;
-                for (int k = 0; k < BAL_PAIRS; k++) {
-                    uint8_t b = 1u << k;
-                    if (!(want & b) || (en & b)) continue;
-                    if (pass == 0 && !(s->bal_en & b)) continue;
-                    if ((k > 0 && (en & (b >> 1))) || (k < BAL_PAIRS - 1 && (en & (b << 1)))) continue;
-                    if (best < 0 || iabs32(ex[k]) > iabs32(ex[best])) best = k;
-                }
-                if (best < 0) break;
-                en |= 1u << best;
-                if (ex[best] < 0) boost |= 1u << best;
-            }
-        }
-        /* 整组压差仍未收敛但各边界都低于门限（电荷分布成缓坡）：取需求最大的一对继续，
-         * 只有全部边界都 < 1 mV·节 才算搬不动了、结束本轮 */
-        if (!en) {
-            int best = -1;
-            for (int k = 0; k < BAL_PAIRS; k++)
-                if (iabs32(ex[k]) >= BMS_CELLS && (best < 0 || iabs32(ex[k]) > iabs32(ex[best]))) best = k;
-            if (best >= 0) {
-                en = 1u << best;
-                if (ex[best] < 0) boost = 1u << best;
-            } else {
-                s->bal_session = false;
-            }
-        }
-    }
-    s->bal_en = en;
-    s->bal_boost = boost;
 
     /* 被动微调: 主动均衡未运行、处于顶部区间; 相邻两节不同时放电 */
     s->passive_mask = 0;
@@ -201,8 +143,7 @@ bms_out_t bms_step(bms_state_t *s, const bms_meas_t *m)
     if (s->faults == FLT_CELL_OV && m->current_a <= -2) o.chg_fet = true;
     if (s->faults == FLT_CELL_UV && m->current_a >= 2)  o.dsg_fet = true;
 
-    o.bal_en = s->bal_en;
-    o.bal_boost = s->bal_boost;
+    o.bal_clk = s->bal_session;
     o.passive_mask = s->passive_mask;
     return o;
 }

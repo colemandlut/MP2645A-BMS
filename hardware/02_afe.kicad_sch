@@ -9,7 +9,7 @@
 		(date "2026-09-26")
 		(rev "v0.3-skeleton")
 		(company "MP2645A-BMS")
-		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2643x7")
+		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡")
 	)
 	(lib_symbols)
 	(text "MP2797 采集与保护"

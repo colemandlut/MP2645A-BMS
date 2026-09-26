@@ -9,7 +9,7 @@
 		(date "2026-09-26")
 		(rev "v0.3-skeleton")
 		(company "MP2645A-BMS")
-		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + MP2643x7")
+		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡")
 	)
 	(lib_symbols)
 	(text "MCU 与通讯"
@@ -89,7 +89,7 @@
 		)
 		(uuid "419ae2a2-3a28-5153-8a08-976055ed6517")
 	)
-	(text "· BAL_EN1..7"
+	(text "· BAL_CLK"
 		(exclude_from_sim no)
 		(at 25 72 0)
 		(effects
@@ -98,33 +98,11 @@
 			)
 			(justify left top)
 		)
-		(uuid "63d62bbf-6f2a-512b-abf3-cde296181131")
-	)
-	(text "· BAL_MODE1..7"
-		(exclude_from_sim no)
-		(at 25 77 0)
-		(effects
-			(font
-				(size 1.8 1.8)
-			)
-			(justify left top)
-		)
-		(uuid "8ac6de75-1567-5af9-9313-a9ee7cce7a91")
-	)
-	(text "· NTC_BAL"
-		(exclude_from_sim no)
-		(at 25 82 0)
-		(effects
-			(font
-				(size 1.8 1.8)
-			)
-			(justify left top)
-		)
-		(uuid "7840a115-c296-53c0-94ae-e66265e57f80")
+		(uuid "6f493939-c9e0-50cc-b094-263e4d1c3035")
 	)
 	(text "· PRECHG_EN"
 		(exclude_from_sim no)
-		(at 25 87 0)
+		(at 25 77 0)
 		(effects
 			(font
 				(size 1.8 1.8)
@@ -135,7 +113,7 @@
 	)
 	(text "· CAN_H"
 		(exclude_from_sim no)
-		(at 25 92 0)
+		(at 25 82 0)
 		(effects
 			(font
 				(size 1.8 1.8)
@@ -146,7 +124,7 @@
 	)
 	(text "· CAN_L"
 		(exclude_from_sim no)
-		(at 25 97 0)
+		(at 25 87 0)
 		(effects
 			(font
 				(size 1.8 1.8)
@@ -157,7 +135,7 @@
 	)
 	(text "· RS485_A"
 		(exclude_from_sim no)
-		(at 25 102 0)
+		(at 25 92 0)
 		(effects
 			(font
 				(size 1.8 1.8)
@@ -168,7 +146,7 @@
 	)
 	(text "· RS485_B"
 		(exclude_from_sim no)
-		(at 25 107 0)
+		(at 25 97 0)
 		(effects
 			(font
 				(size 1.8 1.8)
@@ -179,7 +157,7 @@
 	)
 	(text "· +3V3"
 		(exclude_from_sim no)
-		(at 95 52 0)
+		(at 25 102 0)
 		(effects
 			(font
 				(size 1.8 1.8)
@@ -190,7 +168,7 @@
 	)
 	(text "· GND"
 		(exclude_from_sim no)
-		(at 95 57 0)
+		(at 25 107 0)
 		(effects
 			(font
 				(size 1.8 1.8)

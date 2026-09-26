@@ -48,8 +48,9 @@
 #define FET_OT_RECOVER_DC       800
 #define TEMP_DELAY_MS           2000
 
-/* ---- 均衡 (MP2643 x7 相邻对主动均衡 + MP2797 被动补充) ---- */
-#define BAL_PAIRS               (BMS_CELLS - 1)   /* 第 k 对 = 芯片 U(k+1)：下节 cell k, 上节 cell k+1 */
+/* ---- 均衡 (分立开关电容均衡 + MP2797 被动补充) ----
+ * 开关电容：MCU 输出 BAL_CLK（约 50kHz 方波）即全部 8 个半桥同步切换，电荷按相邻两节的压差自动流动；
+ * 停止时钟即停止。只能按电压拉平, 所以只在顶部区 / 长时间静置时开启。 */
 #define BAL_TOP_START_MV        3400    /* LFP 平台区电压差不能反映 SOC 差, 只在顶部均衡 */
 #define BAL_DIFF_START_MV       30
 #define BAL_DIFF_STOP_MV        10
@@ -58,11 +59,9 @@
 #define BAL_REST_TIME_MS        1800000 /* 30 min */
 #define BAL_MIN_TEMP_DC         0
 #define BAL_MAX_TEMP_DC         500
+#define BAL_MAX_DIFF_MV         300     /* 压差过大（坏电芯/采样断线）时开关电容电流会很大：禁止均衡, 只告警 */
+#define BAL_MIN_CELL_MV         3000    /* 半桥栅压取自本节电芯, 低于此值 MOSFET 导通不充分 */
 #define BAL_PASSIVE_MIN_MV      5       /* 主动未运行时, 高于 min+5mV 的电芯由 MP2797 被动放电微调 */
 #define BAL_TOP_HYST_MV         50      /* 顶部均衡退出迟滞 */
-/* 相邻对的启停门限：按「边界以上各节相对均值的电压超出之和」判断，
- * 即要让整组拉平、必须穿过这条边界的电荷量（折算成 mV·节） */
-#define BAL_PAIR_START_MV       8
-#define BAL_PAIR_STOP_MV        3
 
 #endif

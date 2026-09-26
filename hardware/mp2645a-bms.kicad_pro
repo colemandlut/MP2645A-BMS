@@ -209,11 +209,7 @@
       },
       {
         "netclass": "BAL_3A",
-        "pattern": "/03_balancer/SW*"
-      },
-      {
-        "netclass": "BAL_3A",
-        "pattern": "/03_balancer/LX*"
+        "pattern": "/03_balancer/X*"
       },
       {
         "netclass": "CELL_SENSE",
