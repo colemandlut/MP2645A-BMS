@@ -21,7 +21,7 @@ class DesignInput:
 
     # ---- 电流 ----
     i_dsg_cont: float = 200.0            # 最大持续放电电流
-    i_chg_cont: float = 100.0            # 最大持续充电电流 (0.5C)
+    i_chg_cont: float = 120.0            # 最大持续充电电流：电芯 1C = 120A（用户 2026-09-26）
     i_scp: float = 800.0                 # 短路保护阈值
 
     # ---- 功率 MOSFET（每个方向并联数量相同，背靠背共源）----

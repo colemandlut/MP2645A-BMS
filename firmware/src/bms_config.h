@@ -31,7 +31,7 @@
 #define OCD1_DELAY_MS           10000
 #define OCD2_TRIP_A             300
 #define OCD2_DELAY_MS           1000
-#define OCC_TRIP_A              110     /* 持续充电上限 100A + 10% */
+#define OCC_TRIP_A              132     /* 电芯充电上限 1C = 120A（120Ah）+ 10% */
 #define OCC_DELAY_MS            3000
 #define OC_RECOVER_MS           30000   /* 过流后自动重试间隔, 或负载移除 */
 

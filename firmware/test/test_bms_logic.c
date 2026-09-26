@@ -99,9 +99,12 @@ static void test_occ(void)
 {
     bms_state_t s; bms_init(&s);
     bms_meas_t m = nominal();
-    m.current_a = 115;
-    bms_out_t o = run(&s, &m, OCC_DELAY_MS);
-    CHECK(!o.chg_fet && o.dsg_fet);
+    m.current_a = 120;                         /* 1C 充电：允许 */
+    bms_out_t o = run(&s, &m, 60000);
+    CHECK(o.chg_fet && o.faults == 0);
+    m.current_a = 135;                         /* > 1.1C：跳闸 */
+    o = run(&s, &m, OCC_DELAY_MS);
+    CHECK(!o.chg_fet && o.dsg_fet && (o.faults & FLT_OCC));
 }
 
 static void test_hw_scp_latch_until_load_removed(void)
