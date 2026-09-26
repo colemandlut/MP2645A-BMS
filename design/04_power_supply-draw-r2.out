@@ -1,0 +1,33 @@
+[2026-09-26 13:34 UTC] 第 2 轮画图完成，报告如下。
+
+## 交付总结（04_power_supply，第 2 轮）
+
+**改动文件（4 个）**
+- `hardware/gen/gen_04_power_supply.py` — 脚本（幂等）
+- `hardware/04_power_supply.kicad_sch` — 原理图产物
+- `design/04_power_supply-draw-report.md` — 报告（开头加「第 2 轮变更」小节）
+- `obsidian-vault/BMS/8S-LFP-200A-BMS 方案.md` — 知识库（写入 lib_symbol_mismatch 结论）
+
+**主代理核查项，全部照做**
+1. ✅ `lib_id` 带 `jlc:` 前缀，嵌入符号顶层名 = lib_id（`jlc:NAME`）、子单元不带昵称 → **11 条 `lib_symbol_issues`（library ''）全部归 0**
+2. ✅ 引脚电气类型不再在脚本里改，从库原样复制（库已由 `fetch_jlc_parts.py` 统一 passive）
+3. ✅ 位号统一 40 段：C_IN_E→C40、C_BST→C41、C_IN1→C42、C_OUT1→C43、R_FB1→R40、R_FB2→R41；U4/F11/D7/L1 不变（报告 §1 有对照表）
+4. ✅ 删 D6；C40 换 **RV63V47M6X8 47µF/63V（C48971005）**，封装 `CAP-SMD_BD6.3-L6.6-W6.6-LS7.3-FD`
+5. ✅ 电解正负极重新核对：符号 pin1=正极（「+」号）↔ 封装 pad1=正极（左「+」丝印）一致；正极→VIN_F、负极→GND
+
+**验收结果**
+| 项 | 结果 |
+|---|---|
+| 幂等（跑两次 md5） | ✅ `e10b0aa9…` 相同 |
+| ERC error | ✅ 0 |
+| ERC `lib_symbol_issues` | ✅ **0** |
+| 网表 | ✅ 无 `Pad??`、无 `unconnected-*`（除 SHDN 预期）、LCSC 全可见、逐脚核对一致 |
+| PDF 目视 | ✅ 无重叠/交叉/越界/文字压线 |
+
+**⚠ 新发现（需你定夺，已在报告 §5.1 + 知识库记录）**
+- ERC 剩 1 条 `lib_symbol_mismatch`（L1 电感 SWPA5040S220MT）。**嵌入符号与库逐字节一致**，二分定位根因是电感符号「4 段半圆 arc」在 KiCad 10.0.6 库加载/嵌入加载两路径内部归一化不一致导致的**误报**；改 pin length、删 ki_description、反转 arc 均无效，同时删两侧 arc 才消失。
+- 不影响网表/PDF/连通性。库中另一颗同结构电感 **SLO0618H2R2MTT（03_balancer 用）** 画 03 页时会遇到同样误报。根治建议在 `fetch_jlc_parts.py` 加「电感 arc 归一化」（库侧改动，超出本图「不改库」纪律，未擅动）。
+
+另外说明：本次只改原理图/脚本/报告/知识库，未触碰 `firmware/` 与 `tests/`，故未跑固件单测（任务验收以 ERC/网表/PDF/幂等为准，均已跑完）。
+
+DONE

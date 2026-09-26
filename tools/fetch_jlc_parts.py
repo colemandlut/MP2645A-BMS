@@ -93,6 +93,21 @@ def register_tables():
             fp.write(s)
 
 
+def upgrade_library() -> str:
+    """用 kicad-cli 把 easyeda2kicad 写的旧格式库重存为 KiCad 当前格式（同时去掉重复定义）。
+    不做这一步，嵌入原理图的符号（arc 等图元）与库加载后的内部表示不一致，ERC 报 lib_symbol_mismatch 假告警。"""
+    sym = BASE + ".kicad_sym"
+    cli = shutil.which("kicad-cli")
+    if not (cli and os.path.exists(sym)):
+        return "跳过（无 kicad-cli）"
+    tmp = BASE + "_up.kicad_sym"
+    p = subprocess.run([cli, "sym", "upgrade", "--force", "-o", tmp, sym], capture_output=True, text=True, cwd=HW)
+    if p.returncode or not os.path.exists(tmp):
+        return f"失败：{(p.stdout + p.stderr).strip()[-200:]}"
+    os.replace(tmp, sym)
+    return "完成"
+
+
 def normalize_pin_types() -> int:
     """EasyEDA 库的引脚电气类型没有信息量（全是 unspecified，电容还有 input），会让 ERC 刷假告警。
     统一改成 passive：只改电气类型，不动引脚号/名称/坐标/图形/封装/LCSC。幂等。返回改动数。"""
@@ -133,6 +148,7 @@ def main(argv: list[str]) -> int:
             break
     if any(r[2] for r in results):
         register_tables()
+    print(f"库升级为 KiCad 当前格式：{upgrade_library()}")
     print(f"引脚电气类型归一为 passive：{normalize_pin_types()} 处")
 
     with open(REPORT, "w", encoding="utf-8") as fp:
@@ -152,6 +168,7 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["--normalize-only"]:
+        print(f"库升级为 KiCad 当前格式：{upgrade_library()}")
         print(f"引脚电气类型归一为 passive：{normalize_pin_types()} 处")
         sys.exit(0)
     sys.exit(main(sys.argv[1:]))

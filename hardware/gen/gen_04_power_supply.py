@@ -7,7 +7,15 @@
     python3 hardware/gen/gen_04_power_supply.py
 
 器件符号从 hardware/lib/jlc/jlc.kicad_sym 复制到本图 (lib_symbols ...)；
-lib_id 用 jlc:<符号名>，实例加 LCSC 字段（隐藏）。只改本图，不动库/根图/其它子图。
+lib_id 用 jlc:<符号名>（顶层嵌入符号名 = lib_id，带 jlc: 前缀；子单元名不带昵称），
+实例加 LCSC 字段（隐藏）。只改本图，不动库/根图/其它子图。
+
+第 2 轮变更（主代理核查）：
+  * lib_id 带 jlc: 前缀，嵌入符号与库一致 → 消除 11 条 lib_symbol_issues（library ''）。
+  * 引脚电气类型不再在脚本里改（库已由 fetch_jlc_parts.py 统一归一为 passive），原样复制。
+  * 位号统一「前缀+数字」40 段：C_IN_E→C40(47µF/63V RV63V47M6X8)、C_BST→C41、
+    C_IN1→C42、C_OUT1→C43、R_FB1→R40、R_FB2→R41；U4/F11/D7/L1 不变。
+  * 删 D6（SMBJ33A，BAT+ 上 D3 已钳位 ≈53V < VIN 65V）。
 
 注意（KiCad 10 实测）：
   * 每条 (wire ...) 只能有 2 个点；折线要拆成多段 2 点导线。
@@ -48,8 +56,8 @@ def esc(txt: str) -> str:
 
 def read_symbol(name: str) -> str:
     """从 jlc.kicad_sym 抽出 (symbol "name" ...) 完整块（括号配对），
-    并把引脚电气类型归一为 passive（嘉立创库把无源件引脚标成 input/unspecified，
-    会触发 pin_not_driven / pin_to_pin；passive 才是无源件正确类型，不改形状/编号/名称）。"""
+    只把顶层符号名加 jlc: 前缀（子单元名不带昵称，保持与库一致）；
+    引脚电气类型原样保留（库已由 fetch_jlc_parts.py 统一归一为 passive，不在这里改）。"""
     s = open(JLCSYM, encoding="utf-8").read()
     key = f'(symbol "{name}"'
     start = s.index(key)
@@ -64,8 +72,7 @@ def read_symbol(name: str) -> str:
                 break
         i += 1
     block = s[start:i + 1]
-    block = re.sub(r'\(pin (input|unspecified|output|bidirectional|tri_state|power_in|power_out|open_collector|open_emitter) ',
-                   r'(pin passive ', block)
+    block = block.replace(f'(symbol "{name}"', f'(symbol "jlc:{name}"', 1)
     return block
 
 
@@ -99,32 +106,30 @@ def pin_world(px: float, py: float, rot: int, ix: float, iy: float):
 # ---------------------------------------------------------------------------
 COMPONENTS = [
     # ref, symbol, value, lcsc, x, y, rot
-    ("U4",     "LMR16006XDDCR",    "LMR16006XDDCR", "C87080",  121.92, 50.80,   0),
-    ("F11",    "0466001.NRHF",     "1A",            "C151135",  50.80, 50.80,   0),
-    ("D6",     "SMBJ33A-C78419",   "SMBJ33A",       "C78419",   66.04, 55.88, 270),
-    ("C40",    "EEE-FT1H470AP",    "47µF 50V",      "C92059",   78.74, 54.61,   0),
-    ("C_IN1",  "FS32X475K101EGG",  "4.7µF 100V",    "C381466",  91.44, 55.88,  90),
-    ("C41",    "CL05B104KO5NNNC",  "100nF 16V",     "C1525",   121.92, 43.18,   0),
-    ("D7",     "SS210",            "SS210",         "C14996",  139.70, 53.34, 270),
-    ("L1",     "SWPA5040S220MT",   "22µH",          "C68434",  157.48, 48.26,   0),
-    ("C_OUT1", "CL21A226MAQNNNE",  "22µF 25V",      "C45783",  170.18, 53.34,  90),
-    ("R_FB1",  "0402WGF3302TCE",   "33k 1%",        "C25779",  177.80, 60.96,   0),
-    ("R_FB2",  "0402WGF1002TCE",   "10k 1%",        "C25744",  195.58, 60.96,   0),
+    ("U4",   "LMR16006XDDCR",   "LMR16006XDDCR", "C87080",   121.92, 50.80,   0),
+    ("F11",  "0466001.NRHF",    "1A",            "C151135",   50.80, 50.80,   0),
+    ("C40",  "RV63V47M6X8",     "47µF 63V",      "C48971005", 78.74, 55.88, 270),
+    ("C42",  "FS32X475K101EGG", "4.7µF 100V",    "C381466",   91.44, 55.88,  90),
+    ("C41",  "CL05B104KO5NNNC", "100nF 16V",     "C1525",    121.92, 43.18,   0),
+    ("D7",   "SS210",           "SS210",         "C14996",   139.70, 53.34, 270),
+    ("L1",   "SWPA5040S220MT",  "22µH",          "C68434",   157.48, 48.26,   0),
+    ("C43",  "CL21A226MAQNNNE", "22µF 25V",      "C45783",   170.18, 53.34,  90),
+    ("R40",  "0402WGF3302TCE",  "33k 1%",        "C25779",   177.80, 60.96,   0),
+    ("R41",  "0402WGF1002TCE",  "10k 1%",        "C25744",   195.58, 60.96,   0),
 ]
 
 # 位号/值文字位置（绝对坐标，justify left），避开导线与符号
 PROP_POS = {
-    "U4":     (("U4", 104.14, 43.18), ("Value", 127.00, 60.96)),
-    "F11":    (("F11", 45.72, 45.72), ("Value", 50.80, 55.88)),
-    "D6":     (("D6", 60.96, 55.88), ("Value", 60.96, 68.58)),
-    "C40":    (("C40", 73.66, 45.72), ("Value", 78.74, 66.04)),
-    "C_IN1":  (("C_IN1", 86.36, 45.72), ("Value", 91.44, 66.04)),
-    "C41":    (("C41", 111.76, 40.64), ("Value", 121.92, 40.64)),
-    "D7":     (("D7", 134.62, 55.88), ("Value", 139.70, 68.58)),
-    "L1":     (("L1", 152.40, 43.18), ("Value", 157.48, 53.34)),
-    "C_OUT1": (("C_OUT1", 165.10, 55.88), ("Value", 170.18, 68.58)),
-    "R_FB1":  (("R_FB1", 177.80, 58.42), ("Value", 177.80, 66.04)),
-    "R_FB2":  (("R_FB2", 195.58, 58.42), ("Value", 190.50, 66.04)),
+    "U4":  (("U4", 104.14, 43.18), ("Value", 127.00, 60.96)),
+    "F11": (("F11", 45.72, 45.72), ("Value", 50.80, 55.88)),
+    "C40": (("C40", 73.66, 45.72), ("Value", 78.74, 66.04)),
+    "C42": (("C42", 86.36, 45.72), ("Value", 91.44, 66.04)),
+    "C41": (("C41", 111.76, 40.64), ("Value", 121.92, 40.64)),
+    "D7":  (("D7", 134.62, 55.88), ("Value", 139.70, 68.58)),
+    "L1":  (("L1", 152.40, 43.18), ("Value", 157.48, 53.34)),
+    "C43": (("C43", 165.10, 55.88), ("Value", 170.18, 68.58)),
+    "R40": (("R40", 177.80, 58.42), ("Value", 177.80, 66.04)),
+    "R41": (("R41", 195.58, 58.42), ("Value", 190.50, 66.04)),
 }
 
 
@@ -168,7 +173,7 @@ def gen():
     A('\t(title_block\n')
     A('\t\t(title "辅助电源")\n')
     A('\t\t(date "2026-09-26")\n')
-    A('\t\t(rev "v0.3-draw-r1")\n')
+    A('\t\t(rev "v0.3-draw-r2")\n')
     A('\t\t(company "MP2645A-BMS")\n')
     A('\t\t(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡")\n')
     A('\t)\n')
@@ -196,7 +201,7 @@ def gen():
         A('\t)\n')
 
     text_item(20, 20, "辅助电源（LMR16006X 直降 3.3V）", 4.0, "left top")
-    text_item(20, 32, "LMR16006X 700kHz 非同步 buck；D7 续流必需；SHDN 悬空=常开；L1 下方全层禁铜（规则 2d）", 2.0, "left top")
+    text_item(20, 32, "LMR16006X 700kHz 非同步 buck；D7 续流必需；SHDN 悬空=常开；输入 C40 47µF/63V；L1 下方全层禁铜（规则 2d）", 2.0, "left top")
 
     # 全局标签
     def global_label(name, shape, x, y, just="left"):
@@ -230,7 +235,7 @@ def gen():
     global_label("+3V3", "output", 203.20, 48.26, "left")
 
     # GND 全局标签（多个同名）
-    for x, y in [(66.04, 63.50), (78.74, 63.50), (91.44, 63.50), (104.14, 55.88),
+    for x, y in [(78.74, 63.50), (91.44, 63.50), (104.14, 55.88),
                  (139.70, 63.50), (170.18, 63.50), (200.66, 66.04)]:
         global_label("GND", "input", x, y, "left")
 
@@ -266,23 +271,22 @@ def gen():
     wire([pt("C41", "2"), (132.08, 43.18), pt("U4", "6")], "bst_sw")
     wire([pt("U4", "6"), pt("L1", "1")], "sw_rail")
     wire([pt("L1", "2"), (203.20, 48.26)], "out_rail")
-    wire([pt("R_FB1", "1"), (172.72, 48.26)], "fb1_rail")
-    wire([pt("R_FB1", "2"), pt("R_FB2", "1")], "fb_node")
+    wire([pt("R40", "1"), (172.72, 48.26)], "fb1_rail")
+    wire([pt("R40", "2"), pt("R41", "1")], "fb_node")
     wire([(185.42, 60.96), (185.42, 63.50)], "fb_stub")
-    wire([pt("R_FB2", "2"), (200.66, 66.04)], "fb2_gnd")
-    wire([pt("D6", "2"), (66.04, 63.50)], "d6_gnd")
+    wire([pt("R41", "2"), (200.66, 66.04)], "fb2_gnd")
     wire([pt("C40", "2"), (78.74, 63.50)], "cine_gnd")
-    wire([pt("C_IN1", "1"), (91.44, 63.50)], "cin1_gnd")
+    wire([pt("C42", "1"), (91.44, 63.50)], "cin1_gnd")
     wire([pt("U4", "2"), (104.14, 50.80), (104.14, 55.88)], "u4_gnd")
     wire([pt("D7", "2"), (139.70, 63.50)], "d7_gnd")
-    wire([pt("C_OUT1", "1"), (170.18, 63.50)], "cout1_gnd")
+    wire([pt("C43", "1"), (170.18, 63.50)], "cout1_gnd")
 
     # 结点（T 型接点）
     def junction(x, y):
         ju = uid("jct:" + fmt(x) + ":" + fmt(y))
         A(f'\t(junction (at {fmt(x)} {fmt(y)}) (diameter 0) (color 0 0 0 0) (uuid "{ju}"))\n')
 
-    for x, y in [(66.04, 50.80), (78.74, 50.80), (91.44, 50.80), (132.08, 48.26),
+    for x, y in [(78.74, 50.80), (91.44, 50.80), (132.08, 48.26),
                  (139.70, 48.26), (170.18, 48.26), (172.72, 48.26), (185.42, 60.96)]:
         junction(x, y)
 
@@ -297,7 +301,7 @@ def gen():
         pins = pins_of((ref, sym, val, lcsc, x, y, rot))
         su = uid("sym:" + ref)
         A('\t(symbol\n')
-        A(f'\t\t(lib_id "{esc(sym)}")\n')
+        A(f'\t\t(lib_id "jlc:{esc(sym)}")\n')
         A(f'\t\t(at {fmt(x)} {fmt(y)} {rot})\n')
         A('\t\t(unit 1)\n')
         A('\t\t(exclude_from_sim no)\n')
