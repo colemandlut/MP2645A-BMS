@@ -298,7 +298,8 @@ def main():
                 if not (a_is_pin or b_is_pin):
                     fails.append(f"[2] 导线#{wi} {a}→{b} 穿过 {ref} 本体 {box}")
 
-    # 3. T 型连接必须有结点
+    # 3. T 型连接必须有结点（两种情形）
+    #    a) 导线端点落在另一段导线内部（wire-wire T）
     for wi, (a, b) in enumerate(wires):
         for ep in (a, b):
             for wj, (c, d) in enumerate(wires):
@@ -308,6 +309,17 @@ def main():
                     key = (round(ep[0], 4), round(ep[1], 4))
                     if key not in junctions:
                         fails.append(f"[3] 导线#{wi} 端点 {ep} 落在导线#{wj} {c}→{d} 内部，但无 junction")
+    #    b) 引脚处两段共线导线端点相接（pin + 两段导线三方 T，复核 P2-6）
+    for (ref, num), q in pin_pos.items():
+        n_ep = 0
+        for (a, b) in wires:
+            if (abs(a[0] - q[0]) < EPS and abs(a[1] - q[1]) < EPS) or \
+               (abs(b[0] - q[0]) < EPS and abs(b[1] - q[1]) < EPS):
+                n_ep += 1
+        if n_ep >= 2:
+            key = (round(q[0], 4), round(q[1], 4))
+            if key not in junctions:
+                fails.append(f"[3] 引脚 {ref}.{num} {q} 有 {n_ep} 段导线端点相接（T 型连接），但无 junction")
 
     print(f"图元解析：导线 {len(wires)} 段，junction {len(junctions)} 个，实例 {len(instances)} 个，引脚 {len(pin_pos)} 个")
     if fails:

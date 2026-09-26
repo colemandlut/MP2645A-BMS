@@ -7,7 +7,7 @@
 	(title_block
 		(title "辅助电源")
 		(date "2026-09-26")
-		(rev "v0.3-draw-r4")
+		(rev "v0.3-draw-r5")
 		(company "MP2645A-BMS")
 		(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡")
 	)
@@ -203,13 +203,13 @@
 			)
 			(embedded_fonts no)
 		)
-	(symbol "jlc:1206W4F100JT5E"
+	(symbol "jlc:FCR1206J56RP055W"
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "R"
+			(property "Reference" "U"
 				(at 0 5.08 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -219,7 +219,7 @@
 					)
 				)
 			)
-			(property "Value" "1206W4F100JT5E"
+			(property "Value" "FCR1206J56RP055W"
 				(at 0 -5.08 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -240,7 +240,7 @@
 					)
 				)
 			)
-			(property "Datasheet" "https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10R-10R0-1_C17903.html"
+			(property "Datasheet" "https://lcsc.com/product-detail/Fusible-Chip-Resistor_Ever-Ohms-Tech-FCR1206J56RP055W_C153337.html"
 				(at 0 -10.16 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -251,8 +251,8 @@
 					)
 				)
 			)
-			(property "Description" "10Ω (10R0) ±1%"
-				(at 0 -22.86 0)
+			(property "Description" ""
+				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -262,7 +262,7 @@
 					)
 				)
 			)
-			(property "Manufacturer" "UNI-ROYAL(厚声)"
+			(property "Manufacturer" "EVER OHMS(天二科技)"
 				(at 0 -12.7 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -273,7 +273,7 @@
 					)
 				)
 			)
-			(property "MPN" "1206W4F100JT5E"
+			(property "MPN" "FCR1206J56R0P05Z"
 				(at 0 -15.24 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -284,7 +284,7 @@
 					)
 				)
 			)
-			(property "LCSC Part" "C17903"
+			(property "LCSC Part" "C153337"
 				(at 0 -17.78 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -306,7 +306,7 @@
 					)
 				)
 			)
-			(symbol "1206W4F100JT5E_0_1"
+			(symbol "FCR1206J56RP055W_0_1"
 				(rectangle
 					(start -2.54 1.02)
 					(end 2.54 -1.02)
@@ -981,6 +981,197 @@
 				)
 				(pin passive line
 					(at 5.08 0 180)
+					(length 2.54)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	(symbol "jlc:CL21B104KCFNNNE"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "C"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "CL21B104KCFNNNE"
+				(at 0 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "jlc:C0805"
+				(at 0 -7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21B104KCFNNNE_100nF-104-10-100V_C28233.html"
+				(at 0 -10.16 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "100nF (104) ±10% 100V"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "SAMSUNG(三星)"
+				(at 0 -12.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "CL21B104KCFNNNE"
+				(at 0 -15.24 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "LCSC Part" "C28233"
+				(at 0 -17.78 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "Multilayer Ceramic Capacitors MLCC - SMD/SMT"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "CL21B104KCFNNNE_0_1"
+				(polyline
+					(pts
+						(xy -1.27 0) (xy -0.51 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.51 2.03) (xy -0.51 -2.03)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.51 2.03) (xy 0.51 -2.03)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.51 0) (xy 1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
 					(length 2.54)
 					(name "2"
 						(effects
@@ -2071,7 +2262,7 @@
 		)
 		(uuid "4cc300ec-4583-5505-a172-7cb02243d270")
 	)
-	(text "R42 10Ω 与 C40 构成输入 RC：限上电浪涌与短路电流，替代已删的 D6；L1 下方全层禁铜（规则 2d）"
+	(text "R42 56Ω 熔断电阻与 C40 构成输入 RC：限上电浪涌与短路电流，VIN_F 短路时受控开路；C45 100nF/100V 贴 VIN（Tokmas 手册 p14）"
 		(exclude_from_sim no)
 		(at 40.64 38.10 0)
 		(effects
@@ -2080,7 +2271,7 @@
 			)
 			(justify left top)
 		)
-		(uuid "9fe4a899-a166-56ca-866a-bcb6c2f1cae8")
+		(uuid "0a33fd49-2495-5290-9bab-71dd6b840ca4")
 	)
 	(global_label "BAT+"
 		(shape input)
@@ -2147,6 +2338,17 @@
 			(justify left)
 		)
 		(uuid "d90f6bf0-162d-567f-a2d1-8535d7e3f174")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 266.70 121.92 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "8efa36c3-42f6-50ca-98f2-6de23973afd0")
 	)
 	(global_label "GND"
 		(shape input)
@@ -2389,7 +2591,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "86d78377-e767-5d41-ac8f-a03d6974bd09")
+		(uuid "3ad63a07-ce58-5b92-a1a5-3391362015c9")
 	)
 	(wire
 		(pts
@@ -2400,12 +2602,34 @@
 			(width 0)
 			(type default)
 		)
+		(uuid "86d78377-e767-5d41-ac8f-a03d6974bd09")
+	)
+	(wire
+		(pts
+			(xy 241.30 104.14)
+			(xy 266.70 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
 		(uuid "956ffbd6-1aca-5205-9733-4f5ca7fe08c5")
 	)
 	(wire
 		(pts
-			(xy 215.90 114.30)
+			(xy 215.90 111.76)
 			(xy 215.90 121.92)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ff8b6ca4-598d-5fef-851f-d0b2cb56ae5f")
+	)
+	(wire
+		(pts
+			(xy 241.30 114.30)
+			(xy 241.30 121.92)
 		)
 		(stroke
 			(width 0)
@@ -2415,8 +2639,8 @@
 	)
 	(wire
 		(pts
-			(xy 241.30 114.30)
-			(xy 241.30 121.92)
+			(xy 266.70 114.30)
+			(xy 266.70 121.92)
 		)
 		(stroke
 			(width 0)
@@ -2546,6 +2770,9 @@
 		(uuid "946d342d-87bd-55fa-a07a-42b45b581594")
 	)
 	(junction (at 304.80 71.12) (diameter 0) (color 0 0 0 0) (uuid "5c666a94-47b1-55b4-a408-d969a4d153b3"))
+	(junction (at 215.90 104.14) (diameter 0) (color 0 0 0 0) (uuid "c17c2d12-6719-5660-8e05-3ee557ef5ab1"))
+	(junction (at 241.30 104.14) (diameter 0) (color 0 0 0 0) (uuid "f7e2ede3-9cd1-512b-99cc-2fd26a727371"))
+	(junction (at 289.56 71.12) (diameter 0) (color 0 0 0 0) (uuid "661352de-8f06-5e7b-922d-cd9773785b09"))
 	(no_connect (at 195.58 106.68) (uuid "1810d608-a416-5338-9adf-1eaff1435c2f"))
 	(symbol
 		(lib_id "jlc:JFC1206-1100FS")
@@ -2616,7 +2843,7 @@
 		)
 	)
 	(symbol
-		(lib_id "jlc:1206W4F100JT5E")
+		(lib_id "jlc:FCR1206J56RP055W")
 		(at 114.30 71.12 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -2633,7 +2860,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10Ω 1% 1206"
+		(property "Value" "56Ω 5% 熔断 1206"
 			(at 114.30 73.66 0)
 			(effects
 				(font
@@ -2652,7 +2879,7 @@
 				hide
 			)
 		)
-		(property "Datasheet" "https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_10R-10R0-1_C17903.html"
+		(property "Datasheet" "https://lcsc.com/product-detail/Fusible-Chip-Resistor_Ever-Ohms-Tech-FCR1206J56RP055W_C153337.html"
 			(at 114.30 78.74 0)
 			(effects
 				(font
@@ -2662,7 +2889,7 @@
 				hide
 			)
 		)
-		(property "LCSC" "C17903"
+		(property "LCSC" "C153337"
 			(at 114.30 78.74 0)
 			(effects
 				(font
@@ -2788,7 +3015,7 @@
 				hide
 			)
 		)
-		(property "Datasheet" "https://lcsc.com/product-detail/Switching-Controllers_TI_LMR16006XDDCR_LMR16006XDDCR_C87080.html"
+		(property "Datasheet" "https://www.lcsc.com/datasheet/C54823941.pdf"
 			(at 185.42 111.76 0)
 			(effects
 				(font
@@ -2892,16 +3119,16 @@
 		)
 	)
 	(symbol
-		(lib_id "jlc:CL31B105KCHNNNE")
-		(at 215.90 109.22 90)
+		(lib_id "jlc:CL21B104KCFNNNE")
+		(at 215.90 107.95 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "582ee2f6-d66a-5a6d-b334-4ecdd0b94b73")
-		(property "Reference" "C42"
-			(at 220.98 106.68 270)
+		(uuid "e5c4ba9e-c6d3-57c3-9fb0-7a0a83f4c27b")
+		(property "Reference" "C45"
+			(at 220.98 105.41 270)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2909,8 +3136,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1µF 100V"
-			(at 220.98 111.76 270)
+		(property "Value" "100nF 100V"
+			(at 220.98 110.49 270)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2918,18 +3145,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "jlc:C1206"
-			(at 215.90 116.84 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				hide
-			)
-		)
-		(property "Datasheet" "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL31B105KCHNNNE_1uF-105-10-100V_C13832.html"
-			(at 215.90 116.84 0)
+		(property "Footprint" "jlc:C0805"
+			(at 215.90 115.57 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2938,8 +3155,8 @@
 				hide
 			)
 		)
-		(property "LCSC" "C13832"
-			(at 215.90 116.84 0)
+		(property "Datasheet" "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL21B104KCFNNNE_100nF-104-10-100V_C28233.html"
+			(at 215.90 115.57 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2948,12 +3165,22 @@
 				hide
 			)
 		)
-		(pin "1" (uuid "30c23f70-cdbe-5f42-95f3-f70c4614c326"))
-		(pin "2" (uuid "8d5b897b-a6e0-58df-b953-afa2098b7a60"))
+		(property "LCSC" "C28233"
+			(at 215.90 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				hide
+			)
+		)
+		(pin "1" (uuid "81d4f0c4-4cec-59a2-99e1-06db43585ff6"))
+		(pin "2" (uuid "4310d88c-f799-5a19-a261-e4784e7702c7"))
 		(instances
 			(project "mp2645a-bms"
 				(path "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/c20e45f9-c9d2-50e9-b477-f2356556af13"
-					(reference "C42")
+					(reference "C45")
 					(unit 1)
 				)
 			)
@@ -2967,8 +3194,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "39062da3-00da-5489-af46-9556617f9064")
-		(property "Reference" "C44"
+		(uuid "582ee2f6-d66a-5a6d-b334-4ecdd0b94b73")
+		(property "Reference" "C42"
 			(at 246.38 106.68 270)
 			(effects
 				(font
@@ -3008,6 +3235,74 @@
 		)
 		(property "LCSC" "C13832"
 			(at 241.30 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				hide
+			)
+		)
+		(pin "1" (uuid "30c23f70-cdbe-5f42-95f3-f70c4614c326"))
+		(pin "2" (uuid "8d5b897b-a6e0-58df-b953-afa2098b7a60"))
+		(instances
+			(project "mp2645a-bms"
+				(path "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/c20e45f9-c9d2-50e9-b477-f2356556af13"
+					(reference "C42")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "jlc:CL31B105KCHNNNE")
+		(at 266.70 109.22 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "39062da3-00da-5489-af46-9556617f9064")
+		(property "Reference" "C44"
+			(at 271.78 106.68 270)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1µF 100V"
+			(at 271.78 111.76 270)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "jlc:C1206"
+			(at 266.70 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				hide
+			)
+		)
+		(property "Datasheet" "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL31B105KCHNNNE_1uF-105-10-100V_C13832.html"
+			(at 266.70 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				hide
+			)
+		)
+		(property "LCSC" "C13832"
+			(at 266.70 116.84 0)
 			(effects
 				(font
 					(size 1.27 1.27)
