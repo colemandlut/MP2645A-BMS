@@ -45,22 +45,35 @@ def bom_parts() -> tuple[list[tuple[str, str]], list[tuple[str, str, str]]]:
     return ok, non
 
 
-def fetch_one(c: str) -> tuple[bool, str]:
+def _run(args: list[str]) -> tuple[int, str]:
     exe = shutil.which("easyeda2kicad")
-    if not exe:
-        return False, "未安装 easyeda2kicad（pip install easyeda2kicad）"
-    cmd = [exe, "--full", f"--lcsc_id={c}", "--output", BASE, "--project-relative", "--use-cache", "--overwrite"]
+    cmd = [exe, *args, "--output", BASE, "--project-relative", "--use-cache", "--overwrite"]
     try:
         p = subprocess.run(cmd, capture_output=True, text=True, timeout=180, cwd=HW)
     except subprocess.TimeoutExpired:
-        return False, "超时"
-    out = (p.stdout + p.stderr).strip()
+        return -1, "超时"
+    return p.returncode, (p.stdout + p.stderr).strip()
+
+
+def _why(rc: int, out: str) -> str:
     if "Tunnel connection failed: 403" in out:
-        return False, "网络策略拦截 easyeda.com（403）"
-    if "[ERROR]" in out or p.returncode != 0:
-        last = [ln for ln in out.splitlines() if "ERROR" in ln] or out.splitlines()[-1:]
-        return False, last[-1][:160] if last else f"退出码 {p.returncode}"
-    return True, "ok"
+        return "网络策略拦截（403）"
+    last = [ln for ln in out.splitlines() if "ERROR" in ln or "Error" in ln] or out.splitlines()[-1:]
+    return (last[-1][:160] if last else f"退出码 {rc}")
+
+
+def fetch_one(c: str) -> tuple[bool, str]:
+    """符号 + 封装为必需（规则 0e）；3D 模型单独取（在 modules.easyeda.com，可能被拦），失败只记录。"""
+    if not shutil.which("easyeda2kicad"):
+        return False, "未安装 easyeda2kicad（pip install easyeda2kicad）"
+    rc, out = _run(["--symbol", "--footprint", f"--lcsc_id={c}"])
+    ok = rc == 0 and f"Created Kicad symbol for ID : {c}" in out and "footprint" in out.lower() and "[ERROR]" not in out
+    if not ok:
+        return False, "符号/封装失败：" + _why(rc, out)
+    rc3, out3 = _run(["--3d", f"--lcsc_id={c}"])
+    if rc3 == 0 and "[ERROR]" not in out3 and "Traceback" not in out3:
+        return True, "符号+封装+3D"
+    return True, "符号+封装（3D 未取到：" + _why(rc3, out3) + "）"
 
 
 def register_tables():
