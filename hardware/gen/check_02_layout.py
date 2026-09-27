@@ -649,6 +649,20 @@ PART_EXPECT = {
     "C220": {"1": "GND", "2": "VMID"},
     "R215": {"1": "PACK+", "2": "PACKP"},
     "C221": {"1": "GND", "2": "PACKP"},
+    # §10 J5 采样端子（spec §10.2）：1 NTC_CELL1 / 2 GND / 3 NTC_CELL2 / 4 GND / 5–13 CELL0–CELL8
+    "J5": {"1": "NTC_CELL1", "2": "GND", "3": "NTC_CELL2", "4": "GND",
+           **{str(5 + n): f"CELL{n}" for n in range(9)}},
+    # §4 电芯采样 RC：CELLn → R20(n+1) 33Ω → VCn；C20(n+1) 跨 VCn↔VC(n+1)；
+    # D201 阴极（脚 1，符号里脚名叫 C）→ VC0、阳极（脚 2，A）→ GND。
+    **{f"R{n}": {"1": f"CELL{n - 201}", "2": f"VC{n - 201}"} for n in range(201, 210)},
+    **{f"C{n}": {"1": f"VC{n - 201}", "2": f"VC{n - 200}"} for n in range(201, 209)},
+    "D201": {"1": "VC0", "2": "GND"},
+    # §5 电流采样（spec §5）
+    "R210": {"1": "SRP", "2": "SRP_F"},
+    "R211": {"1": "SRN", "2": "SRN_F"},
+    "C209": {"1": "SRP_F", "2": "SRN_F"},
+    "C210": {"1": "GND", "2": "SRP_F"},
+    "C211": {"1": "GND", "2": "SRN_F"},
 }
 
 
@@ -733,6 +747,13 @@ def netlist_pin_check(sch_path, root_sch):
     # 9e：AFE_3V3 不许与 +3V3 同网（§1.3 脚 26 注明「局部，不接 +3V3」）
     if nodes.get("U1", {}).get("26") == "+3V3":
         fails.append("[9e] U1.26（3V3）接到了 +3V3，§1.3 要求独立成 AFE_3V3")
+    # 9g：本页不许出现 BAL* 网络（spec §4.4：电芯采样与均衡是两条独立走线，均衡脚在 03 页，
+    #     本页只有 CELLn/VCn。这里量的是 KiCad 自己连出来的网——采样线一旦误接到 BALn，
+    #     03 页的均衡电流就会灌进 33Ω/100nF 采样网络，属于会烧板的接错）。
+    for ref, pins in nodes.items():
+        for pin, net in pins.items():
+            if net and re.fullmatch(r"BAL[0-9]*", net):
+                fails.append(f"[9g] {ref}.{pin} 落在均衡网络 {net!r} 上，本页只允许 CELLn/VCn（spec §4.4）")
 
     n = len(U1_EXPECT) + sum(len(v) for v in PART_EXPECT.values())
     return fails, f"逐脚核对 {n} 项（U1 48 脚 + 外围件 {sum(len(v) for v in PART_EXPECT.values())} 端子）"
