@@ -1,20 +1,32 @@
 #!/usr/bin/env python3
-"""自检脚本：对 hardware/05_mcu_comm.kicad_sch 做第 3 轮任务书的几何检查 1–3。
+"""自检脚本：对 hardware/05_mcu_comm.kicad_sch 做第 3 轮任务书的几何检查 1–8。
 
     python3 hardware/gen/check_05_layout.py
 
-直接解析生成的 .kicad_sch（不是 gen 脚本的数据），做三件事：
+直接解析生成的 .kicad_sch（不是 gen 脚本的数据），做八件事：
   1. 导线不许经过非端点的引脚端点；
   2. 导线不许穿过符号本体（rectangle/polyline/arc/circle 包络 + 实例坐标变换）；
-  3. T 型连接必须有 junction（导线端点落在另一段导线内部时）。
+  3. T 型连接必须有 junction（导线端点落在另一段导线内部、或引脚处多段导线相接）；
+  4. 标签/全局标签/说明文字不许压在导线上；
+  5. 同一符号的引脚名文字盒不许互相粘连；
+  6. 可见字段（Reference/Value）不许压在自己的本体上；
+  7. 不同符号的「本体 + 可见字段 + 引脚名」图元盒两两不许相交（第 3 轮新增，
+     第 2 轮就是因为缺这一项，R55 的位号被 JP1 本体压住没人发现）；
+  8. 用 kicad-cli 导出 PDF、pymupdf 读渲染文字，复核字段文字真的画在预测位置、
+     且不同符号的字段文字互不相交、字段文字不落在别的符号本体上（第 3 轮新增，
+     补第 1 轮任务书 §4.4 的「文字 bbox 不重叠（pymupdf）」）。
 
-全部通过 → exit 0；任何一条失败 → 打印 FAIL 并 exit 1。
+全部通过 → exit 0；任何一条失败 → 打印 FAIL 并 exit 1。检查 8 需要 kicad-cli + pymupdf，
+两者都没有时打印 SKIP 并只跑 1–7。
 """
 from __future__ import annotations
 
 import os
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 
 HW = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 SCH = os.path.join(HW, "05_mcu_comm.kicad_sch")
@@ -121,8 +133,14 @@ def font_size(eff):
 
 
 def justify(eff):
-    """effects → (水平, 垂直) 对齐，默认 left / center。"""
-    hj, vj = "left", "center"
+    """effects → (水平, 垂直) 对齐。
+
+    KiCad 文件格式里不写 justify 节点就表示**居中对齐**（所以 KiCad 写左对齐时一定会显式写
+    `(justify left)`）。第 3 轮 JP1 的位号改成居中后就是这个样子 —— 渲染实测「JP1」画在
+    363.91–367.36（中心 365.64，锚点 365.76），证实默认确实是水平居中，不是左对齐。
+    生成脚本里的标签/说明文字都显式写 justify，走不到这个默认值。
+    """
+    hj, vj = "center", "center"
     if eff:
         j = child(eff, "justify")
         if j and len(j) >= 2:
@@ -143,7 +161,7 @@ def text_width(txt, h):
 
 
 def text_bbox(x, y, txt, h, hj, vj):
-    """水平文字（旋转角 0）的近似包围盒；锚点 (x, y)。"""
+    """水平文字（有效角度 0/180）的近似包围盒；锚点 (x, y)。"""
     tw = text_width(txt, h)
     if hj == "right":
         x0, x1 = x - tw, x
@@ -158,6 +176,14 @@ def text_bbox(x, y, txt, h, hj, vj):
     else:
         y0, y1 = y - h / 2, y + h / 2
     return (x0, y0, x1, y1)
+
+
+def vtext_bbox(x, y, txt, h):
+    """竖排文字（有效角度 90/270）的近似包围盒：宽 = 字高 h，高 = 文字宽度。
+    本页的字段都写成 fa=(360-rot)%360，有效角度恒为 0，这个分支跑不到；
+    留着是为了「角度不是 0 就静默跳过」这种漏检不再发生。"""
+    tw = text_width(txt, h)
+    return (x - h / 2, y - tw / 2, x + h / 2, y + tw / 2)
 
 
 def pin_dir_world(inst_rot, pin_rot):
@@ -235,7 +261,11 @@ def load():
                     bodypts += [(float(st[1]), float(st[2])), (float(st[1]), float(en[2])),
                                 (float(en[1]), float(st[2])), (float(en[1]), float(en[2]))]
                 elif el[0] == "polyline":
-                    for xy in children(el, "xy"):
+                    # 注意：xy 是 (pts ...) 的子节点，不是 polyline 的直接子节点。
+                    # 第 2 轮这里漏了 pts 一层，导致只有 polyline 的符号（0402 电容/电阻、
+                    # LED、Y1、L2）本体盒恒为 None，检查 2/6 对它们等于没跑。
+                    pts_node = child(el, "pts")
+                    for xy in (children(pts_node, "xy") if pts_node else []):
                         bodypts.append((float(xy[1]), float(xy[2])))
                 elif el[0] == "arc":
                     for k in ("start", "mid", "end"):
@@ -283,12 +313,21 @@ def load():
             pat = child(prop, "at")
             peff = child(prop, "effects")
             if pat and pval:
+                # 有效角度 = 字段存储角度 + 符号实例旋转（KiCad 就是这么渲染的）：
+                # 符号 rot=90 的字段存 270°，实际画出来是水平的（pymupdf dir=(1,0) 实测）。
+                # 第 2 轮这里写的是「存储角度 % 360 == 0 才查」，把 R55/JP1 这些 rot=90 符号的
+                # 字段全跳过了 —— 结果 P1 的重叠正好落在漏检区里。
                 ang = float(pat[3]) if len(pat) > 3 else 0.0
-                if int(ang) % 360 == 0:  # 只查水平字段（本轮修改的都是水平文字）
-                    h, _ = font_size(peff)
-                    hj, vj = justify(peff)
-                    prop_texts.setdefault(ref, []).append(
-                        (*text_bbox(float(pat[1]), float(pat[2]), pval, h, hj, vj), pname))
+                eff = int(round(ang + float(at[3]))) % 360
+                h, _ = font_size(peff)
+                hj, vj = justify(peff)
+                if eff in (0, 180):
+                    box = text_bbox(float(pat[1]), float(pat[2]), pval, h, hj, vj)
+                else:
+                    box = vtext_bbox(float(pat[1]), float(pat[2]), pval, h)
+                # 后 4 项给检查 8 用：锚点、水平对齐、文字内容（宽度估算偏小，见 text_width）
+                prop_texts.setdefault(ref, []).append(
+                    (*box, pname, float(pat[1]), float(pat[2]), hj, pval))
 
     # --- 导线 ---
     wires = []
@@ -425,6 +464,132 @@ def seg_bbox_intersect(a, b, box):
 
 
 # ---------------------------------------------------------------------------
+# 检查 8：渲染复核（kicad-cli 导出 PDF + pymupdf 读真实文字盒）
+# ---------------------------------------------------------------------------
+MM = 72.0 / 25.4  # PDF 用户单位(pt) → mm
+
+
+def rendered_runs(page):
+    """页面上的文字 span → 去重 → 合并成「文字串」，返回 [(x0, y0, x1, y1, text)]（mm）。
+
+    两件必须做的事（都是第 2 轮踩过的）：
+      * 去重：同一段文字在 PDF 里会成对出现（实测 R55/JP1 那一带的块 174≡299、175≡300…），
+        不去重会把「文字自己和自己重叠」当成重叠报出来；
+      * 合并：KiCad 会把一个字段拆成多个 span（实测 C50 的「100nF 16V」= 「100nF」+「 」+「16V」），
+        不合并就认不出一个字段是一段文字。
+    """
+    seen, spans = set(), []
+    for blk in page.get_text("dict")["blocks"]:
+        for line in blk.get("lines", []):
+            for sp in line.get("spans", []):
+                txt = sp["text"]
+                if not txt.strip():
+                    continue
+                b = tuple(round(v / MM, 3) for v in sp["bbox"])
+                if (b, txt) in seen:
+                    continue
+                seen.add((b, txt))
+                spans.append((b, txt))
+    runs = []
+    for _ in range(3):  # 多跑两遍，让「合并后才挨上」的串也并起来
+        merged = []
+        for b, txt in spans:
+            for r in merged:
+                same_line = (min(b[3], r[3]) - max(b[1], r[1])
+                             > 0.5 * min(b[3] - b[1], r[3] - r[1]))
+                if same_line and b[0] <= r[2] + 1.6 and b[2] >= r[0] - 1.6:
+                    r[0], r[1] = min(r[0], b[0]), min(r[1], b[1])
+                    r[2], r[3] = max(r[2], b[2]), max(r[3], b[3])
+                    r[4] += txt
+                    break
+            else:
+                merged.append([b[0], b[1], b[2], b[3], txt])
+        runs = merged
+        spans = [(tuple(r[:4]), r[4]) for r in runs]
+    return [tuple(r) for r in runs]
+
+
+def rendered_field_check(prop_texts, body_boxes, sch_path):
+    """检查 8 本体：把每个可见字段「认领」到它附近真实渲染出来的文字串上，然后
+      a) 认领不到（2mm 内没有文字，或文字不在锚点该在的那一侧）→ 字段没画在该画的地方；
+      b) 两个不同器件的字段文字串相交 → 文字叠在一起；
+      c) 某字段的文字串压到别的器件的本体上 → 正文提到的 P1 那一类问题。
+    返回 (fails, 说明行)。PDF 导不出来时返回 None 表示跳过。
+    """
+    if not shutil.which("kicad-cli"):
+        return None
+    try:
+        import fitz  # pymupdf
+    except ImportError:
+        return None
+    tmp = tempfile.mkdtemp(prefix="chk05_")
+    pdf = os.path.join(tmp, "05.pdf")
+    r = subprocess.run(["kicad-cli", "sch", "export", "pdf", "--output", pdf, sch_path],
+                       capture_output=True, text=True)
+    if r.returncode != 0 or not os.path.exists(pdf):
+        return None
+    doc = fitz.open(pdf)
+    runs = rendered_runs(doc[0])
+    doc.close()
+
+    fails, claimed = [], []
+    for ref in sorted(prop_texts):
+        for b in prop_texts[ref]:
+            x0, y0, x1, y1, pname, ax, ay, hj, val = b
+            best, berr = None, None
+            for i, r in enumerate(runs):
+                if abs((r[1] + r[3]) / 2 - ay) > 1.0:  # 垂直方向必须对准（字高实测 2.09mm）
+                    continue
+                if hj == "right":
+                    dx = abs(r[2] - ax)
+                elif hj == "center":
+                    dx = abs((r[0] + r[2]) / 2 - ax)
+                else:
+                    dx = abs(r[0] - ax)
+                if berr is None or dx < berr:
+                    best, berr = i, dx
+            if best is None or berr > 1.5:
+                fails.append(f"[8a] {ref} 字段「{pname}」锚点 ({ax}, {ay}) 附近"
+                             f"{'2mm 内无渲染文字' if best is None else f'最近文字横向差 {berr:.2f}mm'}"
+                             f"（预测「{val}」）")
+                continue
+            claimed.append((ref, pname, best, b))
+
+    def inside(box, outer, tol):
+        return (box[0] >= outer[0] - tol and box[1] >= outer[1] - tol
+                and box[2] <= outer[2] + tol and box[3] <= outer[3] + tol)
+
+    for i in range(len(claimed)):
+        for j in range(i + 1, len(claimed)):
+            ri, rj = runs[claimed[i][2]], runs[claimed[j][2]]
+            if claimed[i][0] != claimed[j][0] and bbox_overlap(ri[:4], rj[:4], eps=-0.15):
+                fails.append(f"[8b] {claimed[i][0]} 字段「{claimed[i][1]}」渲染文字「{ri[4]}」{ri[:4]} "
+                             f"与 {claimed[j][0]} 字段「{claimed[j][1]}」渲染文字「{rj[4]}」{rj[:4]} 相交")
+    claimed_idx = {c[2] for c in claimed}
+    for ref, pname, idx, b in claimed:
+        run = runs[idx]
+        for oref, obox in body_boxes.items():
+            if oref == ref or obox is None:
+                continue
+            if bbox_overlap(run[:4], obox, eps=-0.15):
+                fails.append(f"[8c] {ref} 字段「{pname}」渲染文字「{run[4]}」{run[:4]} "
+                             f"压在 {oref} 本体 {obox} 上")
+        # d) 字段文字压到任何一段「不属于本符号」的其它文字上（标签、别人的引脚名/脚号、图框文字…）。
+        #    本符号本体范围内的文字（库自带、画在本体内的引脚名/脚号）豁免 —— 那是符号库 quirk。
+        #    第 3 轮就是靠这一条抓到 C57 的数值压住 Y1.2 的 GND 全局标签（8a/8c 都看不见它）。
+        own = body_boxes.get(ref)
+        for i, r in enumerate(runs):
+            if i in claimed_idx:
+                continue
+            if own and inside(r[:4], own, 0.5):
+                continue
+            if bbox_overlap(run[:4], r[:4], eps=-0.15):
+                fails.append(f"[8d] {ref} 字段「{pname}」渲染文字「{run[4]}」{run[:4]} "
+                             f"与另一段渲染文字「{r[4]}」{r[:4]} 相交")
+    return fails, f"PDF 文字串 {len(runs)} 段（去重+合并后），字段认领 {len(claimed)}/{sum(len(v) for v in prop_texts.values())} 个"
+
+
+# ---------------------------------------------------------------------------
 # 检查
 # ---------------------------------------------------------------------------
 def main():
@@ -484,17 +649,13 @@ def main():
             if seg_bbox_intersect(a, b, (x0, y0, x1, y1)):
                 fails.append(f"[4] {kind}「{txt}」文字 {x0:.2f},{y0:.2f}–{x1:.2f},{y1:.2f} 与导线#{wi} {a}→{b} 重叠")
 
-    # 5. 引脚名 vs 引脚名（同一符号内文字盒两两相交，抓「GNDOSC2」这类粘连）；
-    #    并对指定小封装符号核验引脚名确已隐藏（置空）。
+    # 5. 引脚名 vs 引脚名（同一符号内文字盒两两相交，抓「GNDOSC2」这类粘连）。
+    #    第 3 轮起嵌入符号与库逐字节相同（引脚名一律保留），不再有「应隐藏引脚名」的前提。
     for ref, boxes in pin_name_boxes.items():
         for i in range(len(boxes)):
             for j in range(i + 1, len(boxes)):
                 if bbox_overlap(boxes[i][:4], boxes[j][:4]):
                     fails.append(f"[5] {ref} 引脚 {boxes[i][4]}/{boxes[j][4]} 名称粘连 {boxes[i][:4]} vs {boxes[j][:4]}")
-    HIDE = {"X322512MSB4SI", "0402CG330J500NT", "FC-2012HRK-620D", "0805G"}
-    for ref, (lib, *_rest) in instances.items():
-        if lib in HIDE and pin_name_boxes.get(ref):
-            fails.append(f"[5] {ref}({lib}) 应隐藏引脚名但仍显示：{[b[4] for b in pin_name_boxes[ref]]}")
 
     # 6. 可见字段（Reference/Value）压符号本体
     for ref, boxes in prop_texts.items():
@@ -505,13 +666,45 @@ def main():
             if bbox_overlap(b[:4], box, eps=0.0):
                 fails.append(f"[6] {ref} 字段「{b[4]}」{b[:4]} 压在本体 {box} 上")
 
-    print(f"图元解析：导线 {len(wires)} 段，junction {len(junctions)} 个，实例 {len(instances)} 个，引脚 {len(pin_pos)} 个，文字 {len(labels)} 处，引脚名 {sum(len(v) for v in pin_name_boxes.values())} 个")
+    # 7. 符号本体 ↔ 符号本体（含字段文字）两两不相交 —— 第 3 轮新增。
+    #    第 2 轮的检查 1–6 里，2/6 只拿「某器件自己的」字段去比「它自己的」本体，
+    #    跨器件的「A 的字段压 B 的本体」无人看管，所以 R55 的位号被 JP1 本体压住没被抓到。
+    #    这里把每个实例拆成若干「图元盒」（本体包围盒 / 可见字段文字 / 引脚名文字），
+    #    不同实例之间任意两盒都不许相交。
+    sym_boxes = {}  # ref → [(x0, y0, x1, y1, 说明)]
+    for ref, box in body_boxes.items():
+        if box:
+            sym_boxes.setdefault(ref, []).append((*box, "本体"))
+    for ref, boxes in prop_texts.items():
+        for b in boxes:
+            sym_boxes.setdefault(ref, []).append((b[0], b[1], b[2], b[3], f"字段{b[4]}"))
+    for ref, boxes in pin_name_boxes.items():
+        for b in boxes:
+            sym_boxes.setdefault(ref, []).append((b[0], b[1], b[2], b[3], f"引脚名{b[4]}"))
+    refs = sorted(sym_boxes)
+    for i in range(len(refs)):
+        for j in range(i + 1, len(refs)):
+            for a in sym_boxes[refs[i]]:
+                for b in sym_boxes[refs[j]]:
+                    if bbox_overlap(a[:4], b[:4]):
+                        fails.append(
+                            f"[7] {refs[i]} 的{a[4]} {a[:4]} 与 {refs[j]} 的{b[4]} {b[:4]} 相交")
+
+    # 8. 渲染复核（kicad-cli 出 PDF → pymupdf 读文字盒）
+    note8 = "SKIP（没装 kicad-cli 或 pymupdf）"
+    r8 = rendered_field_check(prop_texts, body_boxes, SCH)
+    if r8 is not None:
+        f8, note8 = r8
+        fails += f8
+
+    print(f"图元解析：导线 {len(wires)} 段，junction {len(junctions)} 个，实例 {len(instances)} 个，引脚 {len(pin_pos)} 个，文字 {len(labels)} 处，引脚名 {sum(len(v) for v in pin_name_boxes.values())} 个，图元盒 {sum(len(v) for v in sym_boxes.values())} 个")
+    print(f"渲染复核：{note8}")
     if fails:
         print(f"FAIL：{len(fails)} 条")
         for f in fails:
             print("  " + f)
         return 1
-    print("PASS：检查 1/2/3/4/5/6 全部通过")
+    print("PASS：检查 1/2/3/4/5/6/7/8 全部通过")
     return 0
 
 

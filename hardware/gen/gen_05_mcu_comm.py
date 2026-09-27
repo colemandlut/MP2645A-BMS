@@ -96,14 +96,10 @@ def pin_world(px: float, py: float, rot: int, ix: float, iy: float):
     raise ValueError(rot)
 
 
-# 引脚名会画在本体边缘；0402 电容/晶振/LED 本体过窄，引脚名会互相粘连或压本体。
-# 这些符号把引脚名置空（脚号保留）：极性/方向由 +3V3 标签与二极管/晶振图形表达。
-HIDE_PIN_NAME_SYMS = {"X322512MSB4SI", "0402CG330J500NT", "FC-2012HRK-620D", "0805G"}
-
-
-def hide_pin_names(block: str) -> str:
-    """把符号块内所有 (name "X" 置空（脚号保留）。KiCad 只会在引脚块里出现 (name "。"""
-    return re.sub(r'(\(name\s+)"[^"]*"', r'\1""', block)
+# 第 3 轮（P2-N1）：嵌入符号必须与库 hardware/lib/jlc/jlc.kicad_sym 逐字节相同
+# （只把顶层符号名改成 jlc:NAME）。第 2 轮曾把 LED/Y1/C56/C57 的引脚名清空来「隐藏引脚名」，
+# 那会让网表丢掉极性语义（LED1.1 的 `-`、LED3.2 的 `K`），且与库同步后会被撤销。
+# 引脚名造成的重叠一律改用器件朝向/位置/字段位置规避。
 
 
 # ---------------------------------------------------------------------------
@@ -134,7 +130,11 @@ COMPONENTS = [
     ("J7", "ZX-XH2.54-4PZZ", "XH 4P", "C7429634", 393.70, 139.70, 0, False),
     ("U8", "PESD2CAN_C2687131", "PESD2CAN", "C2687131", 368.30, 116.84, 0, False),
     ("R55", "0603WAF1200T5E", "120Ω 1%", "C22787", 342.90, 138.43, 90, False),
-    ("JP1", "PZ254V-11-02P", "终端跳线", "C492401", 347.98, 139.70, 90, False),
+    # 第 3 轮 P1：JP1 原来在 (347.98, 139.70)，与 R55（x=342.90）只差 5.08mm，
+    # 本体矩形压住 R55 的位号「R55」和数值「120Ω 1%」。沿 CAN_TERM 右移到 x=365.76，
+    # 与 R55 本体（右沿 343.92）相距 18.03mm；JP1.2 的落线仍走 x=367.03 折到 CAN_L(y=146.05)。
+    # 第 3 轮 P2-N2：Value 由「终端跳线」改为「2P 排针」，与 BOM 第 83 行一致。
+    ("JP1", "PZ254V-11-02P", "2P 排针", "C492401", 365.76, 139.70, 90, False),
     ("R56", "0402WGF0000TCE", "0Ω", "C17168", 320.04, 133.35, 0, False),
     ("R57", "0402WGF0000TCE", "0Ω", "C17168", 320.04, 146.05, 0, False),
     ("L2", "ACT1210-510-2P-TL00", "51µH CMC", "C95572", 342.90, 175.26, 0, True),
@@ -166,15 +166,41 @@ PROP_OVERRIDE = {
     "J8": (("J8", 248.92, 168.91), ("Value", 248.92, 193.04)),
     "L2": (("L2", 342.90, 160.02), ("Value", 342.90, 196.85)),
     "SW1": (("SW1", 375.92, 172.72), ("Value", 375.92, 187.96)),
+    # 第 3 轮 P1：JP1 移到 x=365.76 后，位号放到本体上沿与 CAN_H 总线之间的空带（居中，
+    # 所以不写 justify），数值放到本体左侧走道（左对齐，右端到 361.5，本体左沿 361.95）。
+    # 引脚名「1」「2」是库符号自带的、压在本体内，属符号库 quirk，见报告，不改符号。
+    "JP1": (("JP1", 365.76, 134.62, "center"), ("Value", 354.31, 137.16)),
 }
+
+# 第 3 轮：9 颗竖放（rot=0）电容的 Value 由 y+2.54 下移到 y+3.81。
+#   库符号的极板伸到局部 y=±2.03，原来的 y+2.54 让「100nF 16V」这类值文字（渲染高 2.09mm）
+#   上沿从 y+1.5 起就压进极板下沿 y+2.03（pymupdf 实测 C50 值文字 bbox 顶 123.51 vs 极板底 123.95）。
+#   横向放置的 C59（rot=90）字段落在本体右侧空带里，不受影响，不动。
+_VALUE_DROP = ("C50", "C51", "C52", "C53", "C54", "C55", "C56", "C58")
+for _r in _VALUE_DROP:
+    _c = next(c for c in COMPONENTS if c[0] == _r)
+    assert _c[6] == 0 and not _c[7], _r
+    PROP_OVERRIDE[_r] = ((_r, _c[4], _c[5] - 5.08), ("Value", _c[4], _c[5] + 3.81))
+
+# C57 例外：它正下方 2.54mm 就是 Y1.2 的 GND 全局标签（标签挂在 (116.84,212.09) 的导线端点上）。
+# 渲染实测该 GND 文字带是 y 211.23–213.26；「33pF 50V」渲染高 2.03，锚在 y+3.81 时底边 211.90，
+# 会压上去（300dpi 图上「33」被标签框盖住）。所以数值右移到 GND 文字右端（122.11）之外的空带里，
+# 距标签文字 1.39mm、距本页导线 2.9mm；位号仍在本体上方，不动。
+PROP_OVERRIDE["C57"] = (("C57", 120.65, 201.93), ("Value", 123.50, 210.82))
+
+
+def _fld(t):
+    """字段位置元组规范化：(名, x, y[, 对齐]) → (名, x, y, 对齐)；对齐缺省 left。"""
+    return t if len(t) == 4 else (t[0], t[1], t[2], "left")
 
 
 def prop_pos(ref, x, y, rot):
     if ref in PROP_OVERRIDE:
-        return PROP_OVERRIDE[ref]
+        a, b = PROP_OVERRIDE[ref]
+        return _fld(a), _fld(b)
     if rot in (90, 270):
-        return ((ref, x + 5.08, y - 2.54), ("Value", x + 5.08, y + 2.54))
-    return ((ref, x, y - 5.08), ("Value", x, y + 2.54))
+        return (ref, x + 5.08, y - 2.54, "left"), ("Value", x + 5.08, y + 2.54, "left")
+    return (ref, x, y - 5.08, "left"), ("Value", x, y + 2.54, "left")
 
 
 def sym_origin(comp):
@@ -220,8 +246,6 @@ def gen():
             continue
         seen.add(name)
         block = read_symbol(name)
-        if name in HIDE_PIN_NAME_SYMS:
-            block = hide_pin_names(block)
         A('\t' + block.replace('\n', '\n\t').rstrip('\t') + '\n')
     A('\t)\n')
 
@@ -530,8 +554,23 @@ def gen():
     text_item(302.26, 152.40, "L2 与 R56/R57 二选一", 1.8, "left top")
 
     # ================= 器件实例 =================
+    def field(name, val, fx, fy, fa, fj="left", hide=False):
+        """写一条 property。fj=="center" 时按 KiCad 惯例不写 justify 节点。"""
+        A(f'\t\t(property "{name}" "{esc(val)}"\n')
+        A(f'\t\t\t(at {fmt(fx)} {fmt(fy)} {fa})\n')
+        A('\t\t\t(effects\n')
+        A('\t\t\t\t(font\n')
+        A('\t\t\t\t\t(size 1.27 1.27)\n')
+        A('\t\t\t\t)\n')
+        if fj != "center":
+            A(f'\t\t\t\t(justify {fj})\n')
+        if hide:
+            A('\t\t\t\thide\n')
+        A('\t\t\t)\n')
+        A('\t\t)\n')
+
     for ref, sym, val, lcsc, x, y, rot, dnp in COMPONENTS:
-        (rref, rx, ry), (vref, vx, vy) = prop_pos(ref, x, y, rot)
+        (rref, rx, ry, rj), (vref, vx, vy, vj) = prop_pos(ref, x, y, rot)
         pins = pins_of((ref, sym, val, lcsc, x, y, rot, dnp))
         props = symbol_props(read_symbol(sym))
         footprint = props.get("Footprint", "")
@@ -547,35 +586,10 @@ def gen():
         A('\t\t(on_board yes)\n')
         A(f'\t\t(dnp {"yes" if dnp else "no"})\n')
         A(f'\t\t(uuid "{su}")\n')
-        A(f'\t\t(property "Reference" "{esc(ref)}"\n')
-        A(f'\t\t\t(at {fmt(rx)} {fmt(ry)} {fa})\n')
-        A('\t\t\t(effects\n')
-        A('\t\t\t\t(font\n')
-        A('\t\t\t\t\t(size 1.27 1.27)\n')
-        A('\t\t\t\t)\n')
-        A('\t\t\t\t(justify left)\n')
-        A('\t\t\t)\n')
-        A('\t\t)\n')
-        A(f'\t\t(property "Value" "{esc(val)}"\n')
-        A(f'\t\t\t(at {fmt(vx)} {fmt(vy)} {fa})\n')
-        A('\t\t\t(effects\n')
-        A('\t\t\t\t(font\n')
-        A('\t\t\t\t\t(size 1.27 1.27)\n')
-        A('\t\t\t\t)\n')
-        A('\t\t\t\t(justify left)\n')
-        A('\t\t\t)\n')
-        A('\t\t)\n')
+        field("Reference", ref, rx, ry, fa, rj)
+        field("Value", val, vx, vy, fa, vj)
         for fname, fval in [("Footprint", footprint), ("Datasheet", datasheet), ("LCSC", lcsc)]:
-            A(f'\t\t(property "{fname}" "{esc(fval)}"\n')
-            A(f'\t\t\t(at {fmt(x)} {fmt(y + 7.62)} 0)\n')
-            A('\t\t\t(effects\n')
-            A('\t\t\t\t(font\n')
-            A('\t\t\t\t\t(size 1.27 1.27)\n')
-            A('\t\t\t\t)\n')
-            A('\t\t\t\t(justify left)\n')
-            A('\t\t\t\thide\n')
-            A('\t\t\t)\n')
-            A('\t\t)\n')
+            field(fname, fval, x, y + 7.62, 0, "left", hide=True)
         for num in sorted(pins, key=lambda n: int(n)):
             pu = uid("pin:" + ref + ":" + num)
             A(f'\t\t(pin "{num}" (uuid "{pu}"))\n')
