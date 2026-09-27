@@ -2,8 +2,8 @@
 """调用第三方大模型（OpenAI 兼容接口）：DeepSeek、阿里云百炼（通义千问）。
 
     python3 tools/llm.py providers                         # 各提供方的密钥变量是否已设置（不打印密钥）
-    python3 tools/llm.py models  aliyun                    # 列出可用模型
-    python3 tools/llm.py chat    aliyun qwen-max  task.md  # 把 task.md 作为用户消息发出，回答打印到 stdout
+    python3 tools/llm.py models  aliyun                    # 列出可用模型（阿里云 Anthropic 兼容端点不支持，404）
+    python3 tools/llm.py chat    aliyun qwen3-max task.md  # 把 task.md 作为用户消息发出，回答打印到 stdout
 
 密钥只从环境变量读，**不写进仓库、不打印**：
 - DeepSeek：DEEPSEEK_API_KEY  → https://api.deepseek.com
