@@ -27,6 +27,14 @@
      §1.3 的预期网络（第 1 轮分段 A 新增）。检查 1–8 全是「我自己算的几何 vs 我自己
      算的几何」，对 `(mirror y)` 这类符号变换不敏感——实测把 pin_world 的 mirror 分支
      屏蔽掉，1–8 依旧全 PASS；检查 9 量的是 KiCad 自己连出来的网，才真正兜得住。
+ 10. 标签/说明文字的**墨迹盒**不许压到器件本体图元上（第 2 轮新增）；
+ 11. 两段标签/说明文字不许叠在一起（用「横向重叠率 + 锚Δx」区分「真叠」与
+     「同列上下紧排」，第 2 轮新增）；
+ 12. 可见字段不许离自己的器件比离别人的器件还远（第 2 轮新增）；
+ 13. 两段说明文字不许互相压住（第 2 轮新增，生成域，比渲染域的 8e 早一步）。
+
+检查 10–13 用的是**墨迹**几何（见 ink_bbox 的标定说明），1–7 用的是 text_width 的
+「字符前进宽度」近似（相对量够用，判「压没压上」不够）。
 
 全部通过 → exit 0；任何一条失败 → 打印 FAIL 并 exit 1。检查 8 需要 kicad-cli + pymupdf，
 检查 9 需要 kicad-cli + 根图，缺工具时各自打印 SKIP。
@@ -214,6 +222,51 @@ def vtext_bbox(x, y, txt, h):
     return (x - h / 2, y - tw / 2, x + h / 2, y + tw / 2)
 
 
+# --- 墨迹几何（第 2 轮新增，检查 10–13 用）----------------------------------
+# 检查 1–7 拿 text_width（0.6h/字）比「压没压上」是不够的：那是**字符前进宽度**，比真实
+# 墨迹小约一半（实测 1.8 号的「SRN_F」墨迹 5.87mm，text_width 只给 3.81mm），拿同一把
+# 偏小的尺子量两边时近距缺陷会被整片漏掉。下面两个函数是**渲染实测标定**出来的：
+#   * 墨迹宽 = CJK 1.50h/字、其余 0.92h/字（1.27 号拉丁实测 0.92h/字）；
+#   * 纵向锚点：`(justify … top)` 的墨迹 = y−0.25h … y+1.25h（§9 标题锚 43.18、渲染实测
+#     42.62–46.16；§10 说明锚 48.26、实测 47.77–50.16），bottom 对称；居中（标签/字段）
+#     实测 ≈ y±0.75h（另有 ~0.2mm 系统偏移，见下面 GLBL_PAD 的说明）。
+# 已知误差：全局标签的文字画在图形框**里面**、离锚点还有一段框长，实测比「右对齐到锚点」
+# 的模型再往左 ~2.0mm（C221 的 GND：模型 351.8–355.3，渲染 355.15–359.02 的实测是
+# 355.15 起）。所以全局标签的墨迹盒横向额外放宽 GLBL_PAD —— 宁可把缺陷报出来。
+INK_CJK, INK_LATIN = 1.50, 0.92
+GLBL_PAD = 2.0
+
+
+def ink_width(txt, h):
+    """墨迹宽度。"""
+    return sum(INK_CJK * h if ord(c) > 0x2E80 else INK_LATIN * h for c in txt)
+
+
+def ink_bbox(x, y, txt, h, hj, vj="center", pad=0.0):
+    """水平文字的墨迹盒（锚点 (x, y)）。"""
+    tw = ink_width(txt, h)
+    if hj == "right":
+        x0, x1 = x - tw, x
+    elif hj == "center":
+        x0, x1 = x - tw / 2, x + tw / 2
+    else:
+        x0, x1 = x, x + tw
+    if vj == "top":
+        y0, y1 = y - 0.25 * h, y + 1.25 * h
+    elif vj == "bottom":
+        y0, y1 = y - 1.25 * h, y + 0.25 * h
+    else:
+        y0, y1 = y - 0.75 * h, y + 0.75 * h
+    return (x0 - pad, y0, x1 + pad, y1)
+
+
+def box_gap(a, b):
+    """两盒的边到边距离（相交 = 0）。字段归属检查要比「离谁更近」，用 2D 间距。"""
+    dx = max(b[0] - a[2], a[0] - b[2], 0.0)
+    dy = max(b[1] - a[3], a[1] - b[3], 0.0)
+    return (dx * dx + dy * dy) ** 0.5
+
+
 def pin_dir_world(inst_rot, pin_rot, mirror=False):
     """引脚方向（尖端→本体）在世界坐标下的单位向量。"""
     dx = {0: 1, 90: 0, 180: -1, 270: 0}[pin_rot % 360]
@@ -370,9 +423,10 @@ def load():
                     box = text_bbox(float(pat[1]), float(pat[2]), pval, h, hj, vj)
                 else:
                     box = vtext_bbox(float(pat[1]), float(pat[2]), pval, h)
-                # 后 4 项给检查 8 用：锚点、水平对齐、文字内容（宽度估算偏小，见 text_width）
+                # 后 4 项给检查 8 用：锚点、水平对齐、文字内容（宽度估算偏小，见 text_width）；
+                # 末项字高给检查 12 的墨迹盒用（检查 10–13 一律按墨迹量，见 ink_bbox）。
                 prop_texts.setdefault(ref, []).append(
-                    (*box, pname, float(pat[1]), float(pat[2]), hj, pval))
+                    (*box, pname, float(pat[1]), float(pat[2]), hj, pval, h))
 
     # --- 导线 ---
     wires = []
@@ -411,8 +465,8 @@ def load():
         ys = [p[1] for p in ws]
         body_boxes[ref] = (min(xs), min(ys), max(xs), max(ys))
 
-    # --- 标签/全局标签/说明文字：文字盒 + 锚点 ---
-    labels = []  # (x0, y0, x1, y1, ax, ay, txt, kind)
+    # --- 标签/全局标签/说明文字：文字盒 + 锚点 + 字高/对齐（后三项给检查 10/11/13 的墨迹盒）---
+    labels = []  # (x0, y0, x1, y1, ax, ay, txt, kind, h, hj, vj)
     for kind, key in [("label", "label"), ("global_label", "global_label")]:
         for node in children(root, key):
             at = child(node, "at")
@@ -422,7 +476,7 @@ def load():
                 h, _ = font_size(eff)
                 hj, vj = justify(eff)
                 labels.append((*text_bbox(float(at[1]), float(at[2]), txt, h, hj, vj),
-                               float(at[1]), float(at[2]), txt, kind))
+                               float(at[1]), float(at[2]), txt, kind, h, hj, vj))
     for node in children(root, "text"):
         at = child(node, "at")
         eff = child(node, "effects")
@@ -431,7 +485,7 @@ def load():
             h, _ = font_size(eff)
             hj, vj = justify(eff)
             labels.append((*text_bbox(float(at[1]), float(at[2]), txt, h, hj, vj),
-                           float(at[1]), float(at[2]), txt, "text"))
+                           float(at[1]), float(at[2]), txt, "text", h, hj, vj))
 
     # --- 引脚名世界文字盒（非空引脚名，近似本体端位置）---
     pin_name_boxes = {}  # ref → [(x0, y0, x1, y1, num)]
@@ -605,7 +659,7 @@ def rendered_field_check(prop_texts, body_boxes, sch_path):
     fails, claimed = [], []
     for ref in sorted(prop_texts):
         for b in prop_texts[ref]:
-            x0, y0, x1, y1, pname, ax, ay, hj, val = b
+            x0, y0, x1, y1, pname, ax, ay, hj, val = b[:9]
             best, berr = None, None
             for i, r in enumerate(runs):
                 if abs((r[1] + r[3]) / 2 - ay) > 1.0:  # 垂直方向必须对准（字高实测 2.09mm）
@@ -695,7 +749,14 @@ def rendered_field_check(prop_texts, body_boxes, sch_path):
         x0, y0, x1, y1 = r[:4]
         if (x0 >= TITLE_BLOCK[0] and y0 >= TITLE_BLOCK[1]
                 and x1 <= TITLE_BLOCK[2] and y1 <= TITLE_BLOCK[3]):
-            continue                      # 图框标题栏，KiCad 按模板摆的（见 TITLE_BLOCK）
+            # 图框标题栏，KiCad 按模板摆的（见 TITLE_BLOCK）。**但豁免只对「本来就画在
+            # 图框里」的文字生效**：标题栏矩形一直开到 x=420，而可用的边框线在 410。第 2 轮
+            # 的 comment 1（生成器写的说明行）长到 x=418.94，正好落在豁免矩形里 —— 8f 于是
+            # 一声不响，而它其实是「写出去会被裁掉」（复核 P1-3a）。这里要求被豁免的 span
+            # 自己也在可用区里；越出的照样报。
+            if (x0 >= PAGE_MARGIN and y0 >= PAGE_MARGIN
+                    and x1 <= PAGE_W - PAGE_MARGIN and y1 <= PAGE_H - PAGE_MARGIN):
+                continue
         if (x0 < PAGE_MARGIN or y0 < PAGE_MARGIN
                 or x1 > PAGE_W - PAGE_MARGIN or y1 > PAGE_H - PAGE_MARGIN):
             fails.append(f"[8f] 文字「{r[4]}」{r[:4]} 越出页面可用区"
@@ -703,6 +764,126 @@ def rendered_field_check(prop_texts, body_boxes, sch_path):
     return fails, (f"PDF 文字串 {len(runs)} 段（去重+合并后），字段认领 "
                    f"{len(claimed)}/{sum(len(v) for v in prop_texts.values())} 个，"
                    f"自由文字两两比对 {len(free)} 段（原始 span）")
+
+
+# ---------------------------------------------------------------------------
+# 检查 10–13：墨迹盒版面归属（第 2 轮新增）
+# ---------------------------------------------------------------------------
+# 第 1 轮的检查 1–8 里，b/c/d 三类一条都抓不到（复核 P1-3 的 b/c/d 就是这么漏的）：
+# 检查 4 只比「标签 vs 导线」，检查 6/7 比的是「字段 vs 本体」且用偏小的 text_width，
+# 8d/8e 只在**渲染域**抓「字段压别人」「文字压文字」，而 P1-3b 的段落重叠、P1-3d 的
+# 「标签压引脚 / 标签叠标签」在几何域和渲染域都没人看。阈值全部按第 2 轮改前/改后两棵树
+# （`AFE_HW=/tmp/afe-r1-hardware` vs `hardware`）实测标定，注释里给出两侧的实测值。
+INK_BODY_TOL = 0.15       # 标签/文字墨迹与本体图元的相交容差（留一点描边重叠量）
+STACK_GAP = 1.0           # 叠标签：墨迹纵向间隙小于它；再配横向重叠率
+STACK_XRATIO = 0.40       # 叠标签：墨迹横向重叠 ≥ 较窄那个的 40%
+STACK_DX = 1.0            # 叠标签：锚点横向必须错开 ≥ 1.0mm，同 x 的上下两行不算「叠」
+TT_GAP = 0.5              # 说明文字互压：墨迹纵向间隙小于它
+TT_DX = 2.0               # 说明文字互压：锚点横向错开 ≥ 2.0mm 才比
+FIELD_MARGIN = 0.5        # 字段归属：离别人比离自己近 0.5mm 以上才算
+FIELD_MIN_OWN = 2.0       # 字段归属：离自己本体 2mm 以内的一律不查（贴着的字段必然安全）
+
+
+def ink_layout_check(labels, prop_texts, body_boxes):
+    """检查 10–13。返回 (fails, note)。"""
+    fails = []
+
+    def ink_of(item):
+        _x0, _y0, _x1, _y1, ax, ay, txt, kind, h, hj, vj = item
+        pad = GLBL_PAD if kind == "global_label" else 0.0
+        return ink_bbox(ax, ay, txt, h, hj, vj, pad)
+
+    # 10. 标签/说明文字的墨迹不许压到器件本体图元上。第 2 轮复核 P1-3d「C213 的 GND 标签
+    #     压在引脚上」就是这一类：R1 的 GND 标签墨迹 (251.76,87.95–255.27,89.85) 与 C213
+    #     本体 (247.65,84.33–252.73,88.39) 相交 0.97×0.44mm，渲染出来「GND」那段文字真的
+    #     压在电容极板上（实测墨迹 x 重叠 2.99mm）；改后 C213 竖放、标签离开本体，不再触发。
+    #     这一条同时抓住 C221 的 GND（同一处布局，R1/R2 都有）—— 复核只点了 C213，C221 是
+    #     同病，第 2 轮一并修（下移一个栅格）。
+    for it in labels:
+        box = ink_of(it)
+        for ref, bb in body_boxes.items():
+            if bb is None:
+                continue
+            ox = min(box[2], bb[2]) - max(box[0], bb[0])
+            oy = min(box[3], bb[3]) - max(box[1], bb[1])
+            if ox > INK_BODY_TOL and oy > INK_BODY_TOL:
+                fails.append(
+                    f"[10] {it[7]}「{it[6]}」墨迹 ({box[0]:.2f},{box[1]:.2f}–{box[2]:.2f},{box[3]:.2f}) "
+                    f"压在 {ref} 本体 {bb} 上（重叠 {ox:.2f} × {oy:.2f} mm，锚点 ({it[4]},{it[5]})）")
+
+    # 11. 两段标签/说明文字不许叠在一起（复核 P1-3d：两个 REG_C 标签叠放、SRN_F 与 GND 挤在
+    #     一起）。**间隙单独用分不出来**：R1 的 REG_C 对间隙 +0.64、SRN_F 对 −0.63，而改后
+    #     合法的 PACKP/PACKP 对（两根 100Ω 引到同一个网，KiCad 要求两处都标）间隙也是 +0.64。
+    #     能分开的是**横向错开量**：REG_C 那对锚Δx 6.35、墨迹横向重叠 91%（两段文字几乎完全
+    #     上下重合），PACKP 那对锚Δx 10.16、横向只重叠 26%（看得清是两个名字）；同列上下紧排
+    #     （VC0/VC1 这类，锚Δx=0）也放行。三个条件一起用，R1 报 2 条、R2 报 0 条。
+    #     **只比标签 vs 标签**：标签与说明文字之间不能比纵向（全局标签的文字画在图形框里，
+    #     模型纵向误差实测 0.2–1.2mm —— 例如 (360.68,88.90) 的 GND 与 §6 说明首行模型间隙
+    #     +0.24mm，PDF 实测 +0.86mm），涉及说明文字的重叠交给检查 13（它只比文字 vs 文字）。
+    for i in range(len(labels)):
+        for j in range(i + 1, len(labels)):
+            A, B = labels[i], labels[j]
+            if A[7] == "text" or B[7] == "text":
+                continue
+            ba, bc = ink_of(A), ink_of(B)
+            wmin = min(ba[2] - ba[0], bc[2] - bc[0])
+            if wmin <= 0:
+                continue
+            ox = min(ba[2], bc[2]) - max(ba[0], bc[0])
+            gap = max(bc[1] - ba[3], ba[1] - bc[3])
+            if (ox / wmin >= STACK_XRATIO and gap < STACK_GAP
+                    and abs(A[4] - B[4]) >= STACK_DX):
+                fails.append(
+                    f"[11] {A[7]}「{A[6]}」({A[4]:.2f},{A[5]:.2f}) 与 {B[7]}「{B[6]}」"
+                    f"({B[4]:.2f},{B[5]:.2f}) 叠在一起：墨迹纵向间隙 {gap:.2f}mm、"
+                    f"横向重叠 {ox / wmin:.0%}（较窄那个）、锚Δx {abs(A[4] - B[4]):.2f}mm")
+
+    # 12. 可见字段离自己的器件太远、反而离别人的器件更近（复核 P1-3c：C226 的位号与
+    #     「100nF 100V DNP」被摆在 C220 正下方，读图会把 C220 看成 DNP）。量 2D 边到边间距：
+    #     R1 的 C226 位号到 C220 本体 0.64 / 到自己 3.12（Δ=−2.48），值到 C220 本体 7.62 /
+    #     到自己 8.21（Δ=−0.59）；改后位号居中到自己轴上（Δ=+5.49），值也居中（Δ≈0）。
+    #     留 0.5mm 余量是因为同排等距的两个器件（R206/R207、C205/C206）会出现 Δ≈0 的**平局**
+    #     —— 那是排版对称，不是缺陷。
+    for ref in sorted(prop_texts):
+        own = body_boxes.get(ref)
+        if own is None:
+            continue
+        for b in prop_texts[ref]:
+            fbox = ink_bbox(b[5], b[6], b[8], b[9], b[7], "center")
+            d_own = box_gap(fbox, own)
+            if d_own <= FIELD_MIN_OWN:
+                continue
+            near = min(((box_gap(fbox, bb), r) for r, bb in body_boxes.items()
+                        if bb is not None and r != ref), default=None)
+            if near and near[0] < d_own - FIELD_MARGIN:
+                fails.append(
+                    f"[12] {ref} 字段「{b[4]}」{b[8]!r} 锚点 ({b[5]:.2f},{b[6]:.2f}) "
+                    f"离自己本体 {d_own:.2f}mm，却离 {near[1]} 本体只有 {near[0]:.2f}mm")
+
+    # 13. 两段说明文字不许互相压住（复核 P1-3b：画图过程文字压在 §9 标题上）。渲染域的 8e
+    #     要出图后才看得见，这里在生成域先量一遍。只比「说明文字 vs 说明文字」：涉及**标签**
+    #     的纵向量不准（全局标签的文字画在图形框里，模型与渲染的系统偏差 0.2–1.2mm，实测
+    #     有一对模型 −0.84mm 而渲染 +0.18mm），涉及标签的交给 11（用的是相对量）。
+    #     要求锚Δx ≥ 2mm：同一段说明里上下两行是分开的 text 图元、锚点同 x，不该互告。
+    #     R1 的过程文字（锚 20.32,40.64）与 §9 标题（锚 190.50,43.18）墨迹纵向压 0.60mm；
+    #     R2 里锚Δx ≥ 2mm 的说明文字对最小间隙 +2.57mm。
+    texts = [it for it in labels if it[7] == "text"]
+    for i in range(len(texts)):
+        for j in range(i + 1, len(texts)):
+            A, B = texts[i], texts[j]
+            if abs(A[4] - B[4]) < TT_DX:
+                continue
+            ba, bc = ink_of(A), ink_of(B)
+            if min(ba[2], bc[2]) - max(ba[0], bc[0]) <= 0:   # 横向不重叠的不算「压」
+                continue
+            gap = max(bc[1] - ba[3], ba[1] - bc[3])
+            if gap < TT_GAP:
+                fails.append(
+                    f"[13] 说明文字「{A[6]}」({A[4]:.2f},{A[5]:.2f}) 与「{B[6]}」"
+                    f"({B[4]:.2f},{B[5]:.2f}) 墨迹纵向间隙 {gap:.2f}mm（锚Δx {abs(A[4] - B[4]):.2f}mm）")
+    return fails, (f"标签/文字墨迹 {len(labels)} 处（其中说明文字 {len(texts)} 处）、"
+                   f"字段 {sum(len(v) for v in prop_texts.values())} 个，与 {len(body_boxes)} 个本体盒比对；"
+                   f"检查 10/11/12/13")
 
 
 # ---------------------------------------------------------------------------
@@ -963,7 +1144,8 @@ def main():
                 fails.append(f"[3] 引脚 {ref}.{num} {q} 有 {n_ep} 段导线端点相接（T 型连接），但无 junction")
 
     # 4. 标签/全局标签/说明文字 与导线重叠（跳过文字锚点所挂接的那条导线）
-    for (x0, y0, x1, y1, ax, ay, txt, kind) in labels:
+    for L in labels:
+        x0, y0, x1, y1, ax, ay, txt, kind = L[:8]
         for wi, (a, b) in enumerate(wires):
             if on_segment((ax, ay), a, b, inclusive=True):
                 continue  # 文字自己的挂接导线，允许压在导线上
@@ -1018,6 +1200,10 @@ def main():
         f8, note8 = r8
         fails += f8
 
+    # 10–13. 墨迹版面归属（标签压引脚 / 标签叠标签 / 字段挂错器件 / 文字互压）
+    f_ink, note_ink = ink_layout_check(labels, prop_texts, body_boxes)
+    fails += f_ink
+
     # 9. 网表逐脚核对
     note9 = "SKIP（没装 kicad-cli 或找不到根图）"
     r9 = netlist_pin_check(SCH, ROOT_SCH)
@@ -1027,13 +1213,14 @@ def main():
 
     print(f"图元解析：导线 {len(wires)} 段，junction {len(junctions)} 个，实例 {len(instances)} 个，引脚 {len(pin_pos)} 个，文字 {len(labels)} 处，引脚名 {sum(len(v) for v in pin_name_boxes.values())} 个，图元盒 {sum(len(v) for v in sym_boxes.values())} 个")
     print(f"渲染复核：{note8}")
+    print(f"墨迹版面：{note_ink}")
     print(f"网表核对：{note9}")
     if fails:
         print(f"FAIL：{len(fails)} 条")
         for f in fails:
             print("  " + f)
         return 1
-    print("PASS：检查 1/2/3/4/5/6/7/8/9 全部通过")
+    print("PASS：检查 1–9 及墨迹版面 10/11/12/13 全部通过")
     return 0
 
 
