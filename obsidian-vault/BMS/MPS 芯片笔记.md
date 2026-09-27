@@ -39,3 +39,10 @@ updated: 2026-09-26
   - 外围：电感（LX-SW）、BST 电容、4V5 1µF、LOGIC 接 4V5、CU_FB 分压、LBC/UBC 电流设定电阻
 - MP9486A 实为偏 LED 驱动的迟滞 buck（带 DIM，FB 均值 200mV），做 5V 电源可用但非主用途，待评估
 - 嘉立创库取回：30/30 符号+封装+3D；**B13B-XH-A 封装间距是 2.54mm（错，JST XH 实为 2.50mm）**
+
+## MP2797 画图前核定（2026-09-27 16:29 JST，Opus 规格书 design/02_afe-spec.md）
+- **手册拓扑是共漏**（Fig 26 p.121、Fig 27 p.122）：CHG 管在电池侧源极朝 BAT+，DSG 管在 PACK 侧源极朝 PACK+，FET_MID = 漏极公共点；关断时 CHG 栅拉向 VTOP、DSG 栅拉向 PACKP（p.14–15）。docs/03 写的共源会让 PACK 拉低时顶开 CHG 管 → 01 页 P0，待用户定
+- **WDT 不能上拉**（p.24 外部拉高复位芯片，p.48 WDT_RST_EN 默认 1）→ 悬空
+- 被动均衡电流走 VC 串阻（Fig 28 p.125，情况 B）；LFP + 33Ω 典型 39mA、最坏 45mA、每只 67mW → 0805 保留（85°C 下 0603 余量 1.22 不够）；docs/03 的「58mA」是手册 4V/20Ω 的数
+- SRP 接分流器电池侧（GND 单点）、SRN 接 PACK− 侧；01 页 Net-Tie 把 SRP 与 GND 在焊盘处相连
+- 固件：CELL_S_CTRL 必须写 0x7（默认 0xF 会把 C9–C16 判欠压）；开 USE_COMM_CRC；单管导通硬件兜底 175A
