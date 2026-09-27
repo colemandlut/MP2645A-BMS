@@ -162,7 +162,7 @@ PROP_OVERRIDE = {
     "LED1": (("LED1", 312.42, 160.02), ("Value", 312.42, 170.18)),
     "LED2": (("LED2", 312.42, 172.72), ("Value", 312.42, 182.88)),
     "LED3": (("LED3", 312.42, 185.42), ("Value", 312.42, 195.58)),
-    "J7": (("J7", 393.70, 133.35), ("Value", 393.70, 146.05)),
+    "J7": (("J7", 393.70, 130.81), ("Value", 393.70, 148.59)),
     "J8": (("J8", 248.92, 168.91), ("Value", 248.92, 193.04)),
     "L2": (("L2", 342.90, 160.02), ("Value", 342.90, 196.85)),
     "SW1": (("SW1", 375.92, 172.72), ("Value", 375.92, 187.96)),
@@ -450,14 +450,19 @@ def gen():
     junction(pt("JP1", "2")[0], 146.05)
 
     # ================= U7 引脚 =================
-    for num, name, kind in [("1", "CAN_TXD", "lbl"), ("2", "GND", "glbl"),
-                            ("3", "+3V3", "glbl"), ("4", "CAN_RXD", "lbl")]:
+    # CAN_RXD(4) 与 +3V3(3) 相邻，全局标签盒子高 1 格会贴边；CAN_RXD 下拉 1 格拉开。
+    for num, name, kind, drop in [("1", "CAN_TXD", "lbl", 0.0), ("2", "GND", "glbl", 0.0),
+                                  ("3", "+3V3", "glbl", 0.0), ("4", "CAN_RXD", "lbl", 2.54)]:
         px, py = pt("U7", num)
-        wire_ref([("U7", num), (266.70, py)], f"u7_l{num}")
-        if kind == "glbl":
-            global_label(name, "input", 266.70, py, "right")
+        ly = py + drop
+        if drop:
+            wire_ref([("U7", num), (266.70, py), (266.70, ly)], f"u7_l{num}")
         else:
-            local_label(name, 266.70, py, "right")
+            wire_ref([("U7", num), (266.70, py)], f"u7_l{num}")
+        if kind == "glbl":
+            global_label(name, "input", 266.70, ly, "right")
+        else:
+            local_label(name, 266.70, ly, "right")
     wire_ref([("U7", "8"), (pt("U7", "8")[0], pt("U7", "8")[1] - 7.62)], "u7_rs")
     local_label("CAN_RS", pt("U7", "8")[0], pt("U7", "8")[1] - 7.62, "right")
     no_connect(*pt("U7", "5"), "u7_5")
