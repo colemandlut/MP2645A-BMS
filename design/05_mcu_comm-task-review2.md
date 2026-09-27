@@ -1,6 +1,6 @@
 # 独立复核任务书：子图 05_mcu_comm（MCU 与通讯）
 
-你是**第二复核方 review2**（规则 00c 第 6 泳道，阿里云 qwen3-max；画图方 DeepSeek、复核方 Opus 各为不同厂商）。只读不改工程文件；报告写到 `design/05_mcu_comm-review-qwen.md`（**必须落盘**）。
+你是**第二复核方 review2**（规则 00c 第 6 泳道，阿里云 qwen3.8-max；画图方 DeepSeek、复核方 Opus 各为不同厂商）。只读不改工程文件；报告写到 `design/05_mcu_comm-review-qwen.md`（**必须落盘**）。
 工作目录 `/home/user/MP2645A-BMS`，全部中文。
 
 ## 纪律
