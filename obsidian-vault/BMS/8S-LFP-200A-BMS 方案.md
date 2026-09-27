@@ -160,3 +160,5 @@ repo: colemandlut/MP2645A-BMS
   - **订正**：库符号 D201 的 `C`/`A` 是**引脚名**，**引脚号是 1/2**（阴极 `C` = 脚 1 在左）；A 段报告 §5.1 原来的「1=K 2=A」说法错误，已订正，`PART_EXPECT` 按引脚号写 `{"1":"VC0","2":"GND"}`
   - **负例验证**：9g（无 `BAL*` 网络，spec §4.4）、9c 新件、9c D201 极性三项都造负例确认会报错（新检查不做负例可能是空跑）
   - 留给 C 段：R216–R219（10k，NTC 上拉 `NTCB`）、C222–C225（1nF DNP，**记得加进 9d 的 DNP 清单**）、R220/R221（2.2k I2C 上拉）、R222（100k `AFE_ALERT` 下拉，**必须沿用 A 段的 `output` 形状否则 ERC 报 pin_to_pin**）、R223（10k `AFE_WAKE` 上拉）；`docs/02-BOM.csv` 的 `C219B`→`C226` 一格仍待主代理同步
+- ✅ 02_afe 完成（2026-09-27 18:1x JST，Opus 复核 r2 P0=P1=0，P2=13 待用户定）：DeepSeek-flash 分 A/B/C 三段各 ≤30 分钟画完 + 第 2 轮字段/版面；53 器件 164 脚；快照 review/02-r2；网络类 */VC? 拆成 VC0–VC8（避免 VCP 误入 CELL_SENSE）
+  - 固件必做：CELL_S_CTRL=0x7 后 CELL_DEAD_DET_CLEAR（出厂按 16 节，首次上电 C9–C16 读 0V 会锁坏电芯标志）；单节 ≥2.5V（VTOP UVLO 14.6–17V，共漏关断后整包无法补电）
