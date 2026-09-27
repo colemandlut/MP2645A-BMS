@@ -7,7 +7,7 @@ set -euo pipefail
 prov=${1:?提供方}; model=${2:?模型}; wd=${3:?工作目录}
 case "$prov" in
   deepseek) base=https://api.deepseek.com/anthropic; key=${DEEPSEEK_API_KEY:?DEEPSEEK_API_KEY 未设置}; fast=deepseek-flash ;;
-  aliyun)   base=${DASHSCOPE_BASE_URL:-https://dashscope.aliyuncs.com/apps/anthropic}; key=${DASHSCOPE_API_KEY:?DASHSCOPE_API_KEY 未设置}; fast=qwen-plus ;;
+  aliyun)   base=${DASHSCOPE_BASE_URL:-https://dashscope.aliyuncs.com/apps/anthropic}; key=${DASHSCOPE_API_KEY:?DASHSCOPE_API_KEY 未设置}; fast=qwen3.8-flash ;;
   *) echo "未知提供方 $prov" >&2; exit 2 ;;
 esac
 case "$base" in */anthropic) ;; *) echo "地址须为 Anthropic 兼容端点（以 /anthropic 结尾）：$base" >&2; exit 2 ;; esac
