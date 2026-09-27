@@ -236,7 +236,39 @@
       },
       {
         "netclass": "CELL_SENSE",
-        "pattern": "*/VC?"
+        "pattern": "*/VC0"
+      },
+      {
+        "netclass": "CELL_SENSE",
+        "pattern": "*/VC1"
+      },
+      {
+        "netclass": "CELL_SENSE",
+        "pattern": "*/VC2"
+      },
+      {
+        "netclass": "CELL_SENSE",
+        "pattern": "*/VC3"
+      },
+      {
+        "netclass": "CELL_SENSE",
+        "pattern": "*/VC4"
+      },
+      {
+        "netclass": "CELL_SENSE",
+        "pattern": "*/VC5"
+      },
+      {
+        "netclass": "CELL_SENSE",
+        "pattern": "*/VC6"
+      },
+      {
+        "netclass": "CELL_SENSE",
+        "pattern": "*/VC7"
+      },
+      {
+        "netclass": "CELL_SENSE",
+        "pattern": "*/VC8"
       },
       {
         "netclass": "GATE",
