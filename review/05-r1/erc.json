@@ -1,0 +1,138 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-27T02:12:06",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555",
+            "violations": [
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'BAT+'",
+                            "pos": {
+                                "x": 0.4064,
+                                "y": 0.7112
+                            },
+                            "uuid": "81d3743c-b6d2-5c35-b190-08dc9cf65b69"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'I2C_SDA'",
+                            "pos": {
+                                "x": 2.0701,
+                                "y": 0.9398
+                            },
+                            "uuid": "9c8355e3-37f8-5fb5-a7ad-df351442ac54"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'I2C_SCL'",
+                            "pos": {
+                                "x": 2.0955,
+                                "y": 0.9906
+                            },
+                            "uuid": "cc3a909e-6cf6-53df-981e-64e3f90befee"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'AFE_WAKE'",
+                            "pos": {
+                                "x": 2.1209,
+                                "y": 1.0414
+                            },
+                            "uuid": "f4af1603-3b87-54ad-a36e-2d31590e564d"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'AFE_ALERT'",
+                            "pos": {
+                                "x": 2.1463,
+                                "y": 1.0922
+                            },
+                            "uuid": "3096ceeb-c55a-5734-9c44-a5288abc69d8"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                }
+            ]
+        },
+        {
+            "path": "/功率回路/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/938e7e56-d566-5323-870c-7a6740864203",
+            "violations": []
+        },
+        {
+            "path": "/MP2797 采集与保护/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/b7551ed3-1617-5b05-94f3-5ce7ab4e2107",
+            "violations": []
+        },
+        {
+            "path": "/开关电容主动均衡/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/66cc3a14-196d-5f5c-9535-d482588cd3fc",
+            "violations": []
+        },
+        {
+            "path": "/辅助电源/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/c20e45f9-c9d2-50e9-b477-f2356556af13",
+            "violations": []
+        },
+        {
+            "path": "/MCU 与通讯/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/0739f2da-d4a5-5124-931f-263baaef6ebe",
+            "violations": []
+        }
+    ],
+    "source": "mp2645a-bms.kicad_sch"
+}
