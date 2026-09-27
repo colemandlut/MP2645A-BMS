@@ -1921,7 +1921,7 @@
 				(pin passive line
 					(at -7.62 -2.54 0)
 					(length 2.54)
-					(name "OSC1"
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1939,7 +1939,7 @@
 				(pin passive line
 					(at 7.62 -2.54 180)
 					(length 2.54)
-					(name "GND"
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1957,7 +1957,7 @@
 				(pin passive line
 					(at 7.62 2.54 180)
 					(length 2.54)
-					(name "OSC2"
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1975,7 +1975,7 @@
 				(pin passive line
 					(at -7.62 2.54 0)
 					(length 2.54)
-					(name "GND"
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2148,7 +2148,7 @@
 				(pin passive line
 					(at -3.81 0 0)
 					(length 2.54)
-					(name "1"
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2166,7 +2166,7 @@
 				(pin passive line
 					(at 3.81 0 180)
 					(length 2.54)
-					(name "2"
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2847,6 +2847,171 @@
 				)
 				(pin passive line
 					(at 5.08 0 180)
+					(length 2.54)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	(symbol "jlc:PZ254V-11-02P"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "H"
+				(at 0 6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "PZ254V-11-02P"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "jlc:HDR-TH_2P-P2.54-V-M"
+				(at 0 -8.89 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://lcsc.com/product-detail/New-Arrivals_XFCN-PZ254V-11-02P_C492401.html"
+				(at 0 -11.43 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "XFCN(兴飞)"
+				(at 0 -13.97 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "PZ254V-11-02P"
+				(at 0 -16.51 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "LCSC Part" "C492401"
+				(at 0 -19.05 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "Pin Headers"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "PZ254V-11-02P_0_1"
+				(rectangle
+					(start -1.27 3.81)
+					(end 3.81 -3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(circle
+					(center 0 2.54)
+					(radius 0.38)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -3.81 1.27 0)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -3.81 -1.27 0)
 					(length 2.54)
 					(name "2"
 						(effects
@@ -4043,7 +4208,7 @@
 				(pin passive line
 					(at -5.08 -1.27 0)
 					(length 3.81)
-					(name "-"
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4061,7 +4226,7 @@
 				(pin passive line
 					(at 5.08 -1.27 180)
 					(length 3.81)
-					(name "+"
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4258,7 +4423,7 @@
 				(pin passive line
 					(at 5.08 -1.27 180)
 					(length 3.81)
-					(name "A"
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4276,7 +4441,7 @@
 				(pin passive line
 					(at -5.08 -1.27 0)
 					(length 3.81)
-					(name "K"
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4897,7 +5062,7 @@
 		)
 		(uuid "60bbb864-2914-5d72-94a4-2e6a07d1e62c")
 	)
-	(text "差分对 120Ω（规则 0c：J7→U8→L2/R56/R57→U7 直通道，顶层不换层）；L2 与 R56/R57 二选一；J8 DNP，下载器勿从 1 脚供电。"
+	(text "差分对 120Ω（规则 0c：J7→U8→L2/R56/R57→U7 直通道，顶层不换层）；JP1 插帽接入 120Ω 终端，拔帽不用；J8 DNP，下载器勿从 1 脚供电。"
 		(exclude_from_sim no)
 		(at 40.64 63.50 0)
 		(effects
@@ -4906,7 +5071,18 @@
 			)
 			(justify left top)
 		)
-		(uuid "137015b2-8824-5e35-8023-6503fa52df06")
+		(uuid "7269be1f-c00c-5f4b-8645-63b96ab76c02")
+	)
+	(text "I2C 上拉 R_I2C1/2 在 02 页。"
+		(exclude_from_sim no)
+		(at 40.64 68.58 0)
+		(effects
+			(font
+				(size 2.00 2.00)
+			)
+			(justify left top)
+		)
+		(uuid "c423cd0d-e4fd-596d-9df6-cec7678693d2")
 	)
 	(wire
 		(pts
@@ -5484,7 +5660,7 @@
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left)
+			(justify right)
 		)
 		(uuid "e8d18917-5b55-509f-9d23-a8de7b4ae056")
 	)
@@ -6288,17 +6464,6 @@
 	)
 	(wire
 		(pts
-			(xy 342.90 143.51)
-			(xy 342.90 146.05)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ff083de6-f661-54f3-918d-3a99c308b20f")
-	)
-	(wire
-		(pts
 			(xy 363.22 133.35)
 			(xy 342.90 133.35)
 		)
@@ -6321,8 +6486,51 @@
 	)
 	(wire
 		(pts
+			(xy 342.90 143.51)
+			(xy 346.71 143.51)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5a3e3e5e-6c8c-59e0-8de6-f709e721a58f")
+	)
+	(wire
+		(pts
+			(xy 342.90 143.51)
+			(xy 337.82 143.51)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "14efd2cb-2601-5433-82dd-729b96419c54")
+	)
+	(label "CAN_TERM"
+		(at 337.82 143.51 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "01874e8a-df51-5955-acdd-5705b8cea74a")
+	)
+	(wire
+		(pts
+			(xy 349.25 143.51)
+			(xy 349.25 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "aea53293-8181-50cb-a78f-c026259d620b")
+	)
+	(wire
+		(pts
 			(xy 373.38 146.05)
-			(xy 342.90 146.05)
+			(xy 349.25 146.05)
 		)
 		(stroke
 			(width 0)
@@ -6332,7 +6540,7 @@
 	)
 	(wire
 		(pts
-			(xy 342.90 146.05)
+			(xy 349.25 146.05)
 			(xy 325.12 146.05)
 		)
 		(stroke
@@ -6450,7 +6658,8 @@
 		(uuid "bba8a283-ce75-5cc0-b552-200e5c5ea23e")
 	)
 	(junction (at 342.90 133.35) (diameter 0) (color 0 0 0 0) (uuid "98f15924-8013-5183-848f-a0b4d0c0b711"))
-	(junction (at 342.90 146.05) (diameter 0) (color 0 0 0 0) (uuid "b14bff2f-862a-5450-8acd-7f5d5bbe4745"))
+	(junction (at 342.90 143.51) (diameter 0) (color 0 0 0 0) (uuid "b6ab3c0a-f540-5f74-9de0-0b10d089c77a"))
+	(junction (at 349.25 146.05) (diameter 0) (color 0 0 0 0) (uuid "2ae0ffeb-f603-5a07-ba43-3c2347e5b2e7"))
 	(wire
 		(pts
 			(xy 274.32 139.70)
@@ -7956,7 +8165,7 @@
 			)
 		)
 		(property "Value" "12MHz"
-			(at 101.60 234.95 0)
+			(at 101.60 217.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8351,6 +8560,74 @@
 		)
 	)
 	(symbol
+		(lib_id "jlc:PZ254V-11-02P")
+		(at 347.98 139.70 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5e654713-8b14-56bc-a2fc-8dfa83f5ec34")
+		(property "Reference" "JP1"
+			(at 353.06 137.16 270)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "终端跳线"
+			(at 353.06 142.24 270)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "jlc:HDR-TH_2P-P2.54-V-M"
+			(at 347.98 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				hide
+			)
+		)
+		(property "Datasheet" "https://lcsc.com/product-detail/New-Arrivals_XFCN-PZ254V-11-02P_C492401.html"
+			(at 347.98 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				hide
+			)
+		)
+		(property "LCSC" "C492401"
+			(at 347.98 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				hide
+			)
+		)
+		(pin "1" (uuid "5c8bd011-0546-54a5-870b-9ec80674e284"))
+		(pin "2" (uuid "663815b4-397c-56d5-ada5-2b63116dbcf2"))
+		(instances
+			(project "mp2645a-bms"
+				(path "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/0739f2da-d4a5-5124-931f-263baaef6ebe"
+					(reference "JP1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "jlc:0402WGF0000TCE")
 		(at 320.04 133.35 0)
 		(unit 1)
@@ -8504,7 +8781,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "51µH CMC (DNP)"
+		(property "Value" "51µH CMC"
 			(at 342.90 196.85 0)
 			(effects
 				(font
@@ -8925,7 +9202,7 @@
 			)
 		)
 		(property "Value" "红 0805"
-			(at 312.42 167.64 0)
+			(at 312.42 170.18 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8993,7 +9270,7 @@
 			)
 		)
 		(property "Value" "红 0805"
-			(at 312.42 180.34 0)
+			(at 312.42 182.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9061,7 +9338,7 @@
 			)
 		)
 		(property "Value" "绿 0805"
-			(at 312.42 193.04 0)
+			(at 312.42 195.58 0)
 			(effects
 				(font
 					(size 1.27 1.27)

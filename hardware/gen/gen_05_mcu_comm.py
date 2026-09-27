@@ -96,6 +96,16 @@ def pin_world(px: float, py: float, rot: int, ix: float, iy: float):
     raise ValueError(rot)
 
 
+# 引脚名会画在本体边缘；0402 电容/晶振/LED 本体过窄，引脚名会互相粘连或压本体。
+# 这些符号把引脚名置空（脚号保留）：极性/方向由 +3V3 标签与二极管/晶振图形表达。
+HIDE_PIN_NAME_SYMS = {"X322512MSB4SI", "0402CG330J500NT", "FC-2012HRK-620D", "0805G"}
+
+
+def hide_pin_names(block: str) -> str:
+    """把符号块内所有 (name "X" 置空（脚号保留）。KiCad 只会在引脚块里出现 (name "。"""
+    return re.sub(r'(\(name\s+)"[^"]*"', r'\1""', block)
+
+
 # ---------------------------------------------------------------------------
 # 器件表：位号 / 符号名 / 值 / LCSC / 位置(mm) / 旋转 / DNP
 # 版面（spec §9）：左=电源/时钟/复位（去耦列 + 偏置列 + 晶振组），中=U6，
@@ -124,9 +134,10 @@ COMPONENTS = [
     ("J7", "ZX-XH2.54-4PZZ", "XH 4P", "C7429634", 393.70, 139.70, 0, False),
     ("U8", "PESD2CAN_C2687131", "PESD2CAN", "C2687131", 368.30, 116.84, 0, False),
     ("R55", "0603WAF1200T5E", "120Ω 1%", "C22787", 342.90, 138.43, 90, False),
+    ("JP1", "PZ254V-11-02P", "终端跳线", "C492401", 347.98, 139.70, 90, False),
     ("R56", "0402WGF0000TCE", "0Ω", "C17168", 320.04, 133.35, 0, False),
     ("R57", "0402WGF0000TCE", "0Ω", "C17168", 320.04, 146.05, 0, False),
-    ("L2", "ACT1210-510-2P-TL00", "51µH CMC (DNP)", "C95572", 342.90, 175.26, 0, True),
+    ("L2", "ACT1210-510-2P-TL00", "51µH CMC", "C95572", 342.90, 175.26, 0, True),
     ("U7", "SN65HVD230M_TR-HG", "SN65HVD230M", "C55259679", 284.48, 143.51, 0, False),
     # 右：U7 外围（竖放列，x=274.32）
     ("R53", "0402WGF1002TCE", "10k 1%", "C25744", 274.32, 160.02, 90, False),
@@ -147,7 +158,10 @@ PROP_OVERRIDE = {
     "U6": (("U6", 203.20, 88.90), ("Value", 203.20, 200.66)),
     "U7": (("U7", 284.48, 133.35), ("Value", 284.48, 152.40)),
     "U8": (("U8", 368.30, 93.98), ("Value", 368.30, 152.40)),
-    "Y1": (("Y1", 101.60, 200.66), ("Value", 101.60, 234.95)),
+    "Y1": (("Y1", 101.60, 200.66), ("Value", 101.60, 217.17)),
+    "LED1": (("LED1", 312.42, 160.02), ("Value", 312.42, 170.18)),
+    "LED2": (("LED2", 312.42, 172.72), ("Value", 312.42, 182.88)),
+    "LED3": (("LED3", 312.42, 185.42), ("Value", 312.42, 195.58)),
     "J7": (("J7", 393.70, 133.35), ("Value", 393.70, 146.05)),
     "J8": (("J8", 248.92, 168.91), ("Value", 248.92, 193.04)),
     "L2": (("L2", 342.90, 160.02), ("Value", 342.90, 196.85)),
@@ -206,6 +220,8 @@ def gen():
             continue
         seen.add(name)
         block = read_symbol(name)
+        if name in HIDE_PIN_NAME_SYMS:
+            block = hide_pin_names(block)
         A('\t' + block.replace('\n', '\n\t').rstrip('\t') + '\n')
     A('\t)\n')
 
@@ -231,8 +247,9 @@ def gen():
               "BAL_CLK=PA8(TIM1_CH1 75kHz)+R52 100k 下拉；PRECHG_EN=PA1+R51 100k 下拉；AFE_WAKE=MP2797 NSHDN(PB5 开漏，上拉 R_WAK 在 02 页)；",
               2.0, "left top")
     text_item(40.64, 63.50,
-              "差分对 120Ω（规则 0c：J7→U8→L2/R56/R57→U7 直通道，顶层不换层）；L2 与 R56/R57 二选一；J8 DNP，下载器勿从 1 脚供电。",
+              "差分对 120Ω（规则 0c：J7→U8→L2/R56/R57→U7 直通道，顶层不换层）；JP1 插帽接入 120Ω 终端，拔帽不用；J8 DNP，下载器勿从 1 脚供电。",
               2.0, "left top")
+    text_item(40.64, 68.58, "I2C 上拉 R_I2C1/2 在 02 页。", 2.0, "left top")
 
     def global_label(name, shape, x, y, just="left"):
         gu = uid("glbl:" + name + ":" + fmt(x) + ":" + fmt(y))
@@ -332,7 +349,7 @@ def gen():
         ("41", "AFE_WAKE", "glbl", 212.09, 104.14, "left"),
         ("42", "I2C_SCL", "glbl", 209.55, 99.06, "left"),
         ("43", "I2C_SDA", "glbl", 207.01, 93.98, "left"),
-        ("44", "BOOT0", "lbl", 204.47, 106.68, "left"),
+        ("44", "BOOT0", "lbl", 204.47, 106.68, "right"),
         ("47", "GND", "glbl", 196.85, 106.68, "right"),
         ("48", "+3V3", "glbl", 194.31, 101.60, "right"),
     ]:
@@ -403,14 +420,18 @@ def gen():
     global_label("GND", "input", pt("U8", "3")[0], pt("U8", "3")[1] - 7.62, "right")
 
     wire_ref([("R55", "2"), (pt("R55", "2")[0], 133.35)], "r55_h")
-    wire_ref([("R55", "1"), (pt("R55", "1")[0], 146.05)], "r55_l")
 
     # CAN_H 总线（连接器侧，右侧）：U8.1 → R55.2 → R56.2（右 pin）
     wire([(pt("U8", "1")[0], 133.35), pt("R55", "2")], "canh_1")
     wire([pt("R55", "2"), pt("R56", "2")], "canh_2")
-    # CAN_L 总线（连接器侧）：U8.2 → R55.1 stub 底 → R57.2（右 pin）
-    wire([(pt("U8", "2")[0], 146.05), (pt("R55", "1")[0], 146.05)], "canl_1")
-    wire([(pt("R55", "1")[0], 146.05), pt("R57", "2")], "canl_2")
+    # 终端跳线：R55.1 → CAN_TERM（本页网络）→ JP1.1；JP1.2 → CAN_L 总线
+    wire_ref([("R55", "1"), ("JP1", "1")], "can_term")
+    wire_ref([("R55", "1"), (337.82, pt("R55", "1")[1])], "can_term_lbl")
+    local_label("CAN_TERM", 337.82, pt("R55", "1")[1], "right")
+    wire_ref([("JP1", "2"), (pt("JP1", "2")[0], 146.05)], "jp1_l")
+    # CAN_L 总线（连接器侧）：U8.2 → JP1.2 折点 → R57.2（右 pin）
+    wire([(pt("U8", "2")[0], 146.05), (pt("JP1", "2")[0], 146.05)], "canl_1")
+    wire([(pt("JP1", "2")[0], 146.05), pt("R57", "2")], "canl_2")
     # 收发器侧 CAN_H_X / CAN_L_X（R56.1/R57.1 左 pin → 折到 U7.7/U7.6）
     wire([pt("R56", "1"), (302.26, 133.35)], "canhx_1")
     wire([(302.26, 133.35), (302.26, pt("U7", "7")[1])], "canhx_2")
@@ -425,7 +446,8 @@ def gen():
     global_label("CAN_L", "bidirectional", 355.60, 146.05, "left")
 
     junction(*pt("R55", "2"))
-    junction(pt("R55", "1")[0], 146.05)
+    junction(*pt("R55", "1"))
+    junction(pt("JP1", "2")[0], 146.05)
 
     # ================= U7 引脚 =================
     for num, name, kind in [("1", "CAN_TXD", "lbl"), ("2", "GND", "glbl"),
@@ -571,7 +593,7 @@ def main():
     out = gen()
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(out)
-    print(f"已生成: {os.path.abspath(OUT)}（{len(out)} 字节）")
+    print(f"已生成: {os.path.abspath(OUT)}（{len(out.encode('utf-8'))} 字节）")
 
 
 if __name__ == "__main__":

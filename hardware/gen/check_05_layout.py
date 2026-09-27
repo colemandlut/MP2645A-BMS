@@ -105,17 +105,111 @@ def pin_world(px, py, rot, ix, iy):
     raise ValueError(rot)
 
 
+# ---------------------------------------------------------------------------
+# 文字几何（近似）：为「标签文字 vs 导线 / 引脚名 vs 引脚名 / 字段 vs 本体」检查服务
+# ---------------------------------------------------------------------------
+def font_size(eff):
+    """effects → (高, 宽)，默认 1.27。"""
+    h = w = 1.27
+    if eff:
+        f = child(eff, "font")
+        if f:
+            s = child(f, "size")
+            if s and len(s) >= 3:
+                h, w = float(s[1]), float(s[2])
+    return h, w
+
+
+def justify(eff):
+    """effects → (水平, 垂直) 对齐，默认 left / center。"""
+    hj, vj = "left", "center"
+    if eff:
+        j = child(eff, "justify")
+        if j and len(j) >= 2:
+            parts = unq(j[1]).split()
+            if parts and parts[0] in ("left", "right", "center"):
+                hj = parts[0]
+            if len(parts) > 1 and parts[1] in ("top", "bottom"):
+                vj = parts[1]
+    return hj, vj
+
+
+def text_width(txt, h):
+    """近似文字宽度：CJK 按全角（≈h），其余按 0.6h。"""
+    w = 0.0
+    for ch in txt:
+        w += h if ord(ch) > 0x2E80 else 0.6 * h
+    return w
+
+
+def text_bbox(x, y, txt, h, hj, vj):
+    """水平文字（旋转角 0）的近似包围盒；锚点 (x, y)。"""
+    tw = text_width(txt, h)
+    if hj == "right":
+        x0, x1 = x - tw, x
+    elif hj == "center":
+        x0, x1 = x - tw / 2, x + tw / 2
+    else:
+        x0, x1 = x, x + tw
+    if vj == "top":
+        y0, y1 = y, y + h
+    elif vj == "bottom":
+        y0, y1 = y - h, y
+    else:
+        y0, y1 = y - h / 2, y + h / 2
+    return (x0, y0, x1, y1)
+
+
+def pin_dir_world(inst_rot, pin_rot):
+    """引脚方向（尖端→本体）在世界坐标下的单位向量。"""
+    dx = {0: 1, 90: 0, 180: -1, 270: 0}[pin_rot % 360]
+    dy = {0: 0, 90: 1, 180: 0, 270: -1}[pin_rot % 360]
+    wx, wy = dx, -dy  # 符号局部 y 向上 → 世界 y 向下
+    if inst_rot == 90:
+        wx, wy = -wy, wx
+    elif inst_rot == 180:
+        wx, wy = -wx, -wy
+    elif inst_rot == 270:
+        wx, wy = wy, -wx
+    return wx, wy
+
+
+def pin_name_bbox(bx, by, wx, wy, tw, h):
+    """引脚名以本体端 (bx, by) 为锚、沿 (wx, wy) 向本体内延伸。
+    水平引脚名=横排文字；顶/底引脚名=竖排文字（KiCad 实际按竖排渲染）。"""
+    if wx > 0:
+        x0, x1 = bx, bx + tw
+        y0, y1 = by - h / 2, by + h / 2
+    elif wx < 0:
+        x0, x1 = bx - tw, bx
+        y0, y1 = by - h / 2, by + h / 2
+    elif wy > 0:  # 顶边引脚（向下指）：竖排名字向下延伸
+        x0, x1 = bx - h / 2, bx + h / 2
+        y0, y1 = by, by + tw
+    else:  # wy < 0：底边引脚（向上指）：竖排名字向上延伸
+        x0, x1 = bx - h / 2, bx + h / 2
+        y0, y1 = by - tw, by
+    return (x0, y0, x1, y1)
+
+
+def bbox_overlap(b1, b2, eps=EPS):
+    return not (b1[2] < b2[0] - eps or b2[2] < b1[0] - eps or
+                b1[3] < b2[1] - eps or b2[3] < b1[1] - eps)
+
+
 def load():
     txt = open(SCH, encoding="utf-8").read()
     root = parse(tokenize(txt))
 
     # --- 嵌入库符号：符号名 → {pin_number: (ix, iy)}，符号名 → 本体点列表 ---
     lib_pins = {}
+    lib_pinmeta = {}
     lib_body = {}
     libs = child(root, "lib_symbols")
     for sym in children(libs, "symbol"):
         topname = unq(sym[1]) if len(sym) > 1 else None  # "jlc:NAME"
         pins = {}
+        pinmeta = {}
         bodypts = []
         for sub in sym:
             if not (isinstance(sub, list) and sub and sub[0] == "symbol"):
@@ -129,6 +223,13 @@ def load():
                     if at and num:
                         ix, iy, _rot = float(at[1]), float(at[2]), float(at[3])
                         pins[unq(num[1])] = (ix, iy)
+                        nm = child(el, "name")
+                        ln = child(el, "length")
+                        pinmeta[unq(num[1])] = {
+                            "name": unq(nm[1]) if nm else "",
+                            "ix": ix, "iy": iy, "rot": _rot,
+                            "len": float(ln[1]) if ln else 2.54,
+                        }
                 elif el[0] == "rectangle":
                     st, en = child(el, "start"), child(el, "end")
                     bodypts += [(float(st[1]), float(st[2])), (float(st[1]), float(en[2])),
@@ -148,10 +249,12 @@ def load():
                         cx, cy, rr = float(c[1]), float(c[2]), float(r[1])
                         bodypts += [(cx - rr, cy), (cx + rr, cy), (cx, cy - rr), (cx, cy + rr)]
         lib_pins[topname] = pins
+        lib_pinmeta[topname] = pinmeta
         lib_body[topname] = bodypts
 
-    # --- 实例：位号 → (lib_id, x, y, rot, [pin numbers]) ---
+    # --- 实例：位号 → (lib_id, x, y, rot, [pin numbers])；可见字段（Reference/Value）文字盒 ---
     instances = {}
+    prop_texts = {}  # ref → [(x0, y0, x1, y1, propname)]
     for sym in children(root, "symbol"):
         lib_id = child(sym, "lib_id")
         at = child(sym, "at")
@@ -172,6 +275,20 @@ def load():
             continue
         nums = [unq(p[1]) for p in children(sym, "pin")]
         instances[ref] = (unq(lib_id[1]), float(at[1]), float(at[2]), float(at[3]), nums)
+        for prop in children(sym, "property"):
+            pname = unq(prop[1]) if len(prop) > 1 else ""
+            if pname not in ("Reference", "Value"):
+                continue
+            pval = unq(prop[2]) if len(prop) > 2 else ""
+            pat = child(prop, "at")
+            peff = child(prop, "effects")
+            if pat and pval:
+                ang = float(pat[3]) if len(pat) > 3 else 0.0
+                if int(ang) % 360 == 0:  # 只查水平字段（本轮修改的都是水平文字）
+                    h, _ = font_size(peff)
+                    hj, vj = justify(peff)
+                    prop_texts.setdefault(ref, []).append(
+                        (*text_bbox(float(pat[1]), float(pat[2]), pval, h, hj, vj), pname))
 
     # --- 导线 ---
     wires = []
@@ -210,7 +327,45 @@ def load():
         ys = [p[1] for p in ws]
         body_boxes[ref] = (min(xs), min(ys), max(xs), max(ys))
 
-    return wires, junctions, pin_world_pos, body_boxes, instances
+    # --- 标签/全局标签/说明文字：文字盒 + 锚点 ---
+    labels = []  # (x0, y0, x1, y1, ax, ay, txt, kind)
+    for kind, key in [("label", "label"), ("global_label", "global_label")]:
+        for node in children(root, key):
+            at = child(node, "at")
+            eff = child(node, "effects")
+            txt = unq(node[1]) if len(node) > 1 else ""
+            if at and txt:
+                h, _ = font_size(eff)
+                hj, vj = justify(eff)
+                labels.append((*text_bbox(float(at[1]), float(at[2]), txt, h, hj, vj),
+                               float(at[1]), float(at[2]), txt, kind))
+    for node in children(root, "text"):
+        at = child(node, "at")
+        eff = child(node, "effects")
+        txt = unq(node[1]) if len(node) > 1 else ""
+        if at and txt:
+            h, _ = font_size(eff)
+            hj, vj = justify(eff)
+            labels.append((*text_bbox(float(at[1]), float(at[2]), txt, h, hj, vj),
+                           float(at[1]), float(at[2]), txt, "text"))
+
+    # --- 引脚名世界文字盒（非空引脚名，近似本体端位置）---
+    pin_name_boxes = {}  # ref → [(x0, y0, x1, y1, num)]
+    for ref, (lib, x, y, rot, nums) in instances.items():
+        meta = lib_pinmeta.get(lib, {})
+        for num in nums:
+            m = meta.get(num)
+            if not m or not m["name"]:
+                continue
+            tip = pin_world(x, y, rot, m["ix"], m["iy"])
+            wx, wy = pin_dir_world(rot, m["rot"])
+            bx = tip[0] + m["len"] * wx
+            by = tip[1] + m["len"] * wy
+            tw = text_width(m["name"], 1.27)
+            pin_name_boxes.setdefault(ref, []).append(
+                (*pin_name_bbox(bx, by, wx, wy, tw, 1.27), num))
+
+    return wires, junctions, pin_world_pos, body_boxes, instances, labels, prop_texts, pin_name_boxes
 
 
 # ---------------------------------------------------------------------------
@@ -273,7 +428,7 @@ def seg_bbox_intersect(a, b, box):
 # 检查
 # ---------------------------------------------------------------------------
 def main():
-    wires, junctions, pin_pos, body_boxes, instances = load()
+    wires, junctions, pin_pos, body_boxes, instances, labels, prop_texts, pin_name_boxes = load()
     fails = []
 
     all_pins = pin_pos.values()
@@ -321,13 +476,42 @@ def main():
             if key not in junctions:
                 fails.append(f"[3] 引脚 {ref}.{num} {q} 有 {n_ep} 段导线端点相接（T 型连接），但无 junction")
 
-    print(f"图元解析：导线 {len(wires)} 段，junction {len(junctions)} 个，实例 {len(instances)} 个，引脚 {len(pin_pos)} 个")
+    # 4. 标签/全局标签/说明文字 与导线重叠（跳过文字锚点所挂接的那条导线）
+    for (x0, y0, x1, y1, ax, ay, txt, kind) in labels:
+        for wi, (a, b) in enumerate(wires):
+            if on_segment((ax, ay), a, b, inclusive=True):
+                continue  # 文字自己的挂接导线，允许压在导线上
+            if seg_bbox_intersect(a, b, (x0, y0, x1, y1)):
+                fails.append(f"[4] {kind}「{txt}」文字 {x0:.2f},{y0:.2f}–{x1:.2f},{y1:.2f} 与导线#{wi} {a}→{b} 重叠")
+
+    # 5. 引脚名 vs 引脚名（同一符号内文字盒两两相交，抓「GNDOSC2」这类粘连）；
+    #    并对指定小封装符号核验引脚名确已隐藏（置空）。
+    for ref, boxes in pin_name_boxes.items():
+        for i in range(len(boxes)):
+            for j in range(i + 1, len(boxes)):
+                if bbox_overlap(boxes[i][:4], boxes[j][:4]):
+                    fails.append(f"[5] {ref} 引脚 {boxes[i][4]}/{boxes[j][4]} 名称粘连 {boxes[i][:4]} vs {boxes[j][:4]}")
+    HIDE = {"X322512MSB4SI", "0402CG330J500NT", "FC-2012HRK-620D", "0805G"}
+    for ref, (lib, *_rest) in instances.items():
+        if lib in HIDE and pin_name_boxes.get(ref):
+            fails.append(f"[5] {ref}({lib}) 应隐藏引脚名但仍显示：{[b[4] for b in pin_name_boxes[ref]]}")
+
+    # 6. 可见字段（Reference/Value）压符号本体
+    for ref, boxes in prop_texts.items():
+        box = body_boxes.get(ref)
+        if box is None:
+            continue
+        for b in boxes:
+            if bbox_overlap(b[:4], box, eps=0.0):
+                fails.append(f"[6] {ref} 字段「{b[4]}」{b[:4]} 压在本体 {box} 上")
+
+    print(f"图元解析：导线 {len(wires)} 段，junction {len(junctions)} 个，实例 {len(instances)} 个，引脚 {len(pin_pos)} 个，文字 {len(labels)} 处，引脚名 {sum(len(v) for v in pin_name_boxes.values())} 个")
     if fails:
         print(f"FAIL：{len(fails)} 条")
         for f in fails:
             print("  " + f)
         return 1
-    print("PASS：检查 1/2/3 全部通过")
+    print("PASS：检查 1/2/3/4/5/6 全部通过")
     return 0
 
 
