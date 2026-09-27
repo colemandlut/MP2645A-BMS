@@ -147,3 +147,8 @@ repo: colemandlut/MP2645A-BMS
 - 05 第 2 轮（2026-09-27 13:03 JST）：Opus 复核 r2 P0=0 P1=1（JP1 与 R55 符号叠放）P2=9；教训：「隐藏引脚名」不能清空嵌入符号的 pin name（与库不一致、丢极性语义、同步库会撤销）→ 保持嵌入符号 = 库；自检要有「符号本体/字段两两不相交」
 - llm_agent.sh 默认超时 1h 对整页画图/复核不够（DeepSeek 画 05 第 2 轮、qwen3.8-max 复核都超时无产出）→ 画图用 AGENT_TIMEOUT=5400、复核 7200，且复核任务书要求「先建报告、边查边写」
 - ✅ 05_mcu_comm 完成（2026-09-27 13:32 JST，Opus 复核 r4 P0=P1=0，P2=8 待用户定）：3 轮画图（DeepSeek v4-pro→flash）+ 4 轮 Opus 复核；快照 review/05-r4；库级 pin_names hide 后 01–03 页画完按「网表 diff / 嵌入符号与库比对 / PDF 目视」三步验收
+- 05 第二复核 review2（qwen3.8-27b，2026-09-27 14:18 JST 收稿，审 r2 快照，报告 design/05_mcu_comm-review-qwen.md）：**P0=1 P1=4 P2=3**
+  - P0-1：Y1 晶振封装 `CRYSTAL-SMD_4P-L3.2-W2.5-BL` pin 号与 YXC C9002 数据手册 Top View **180° 错位**（pad1 左上 vs 手册贴装外观 pin1 左下；Top/Bottom View 翻转几何自洽无二义）→ 0°/180° 贴装 HSE_IN/HSE_OUT 双双落 GND 焊盘，HSE 不起振 MCU 不起机；r2 无 PCB 属潜在 P0，**PCB 布局前必须库级重编号（1→左下、2→右下、3→右上、4→左上）或实物 corner cut 裁决**
+  - P1：① r2 内嵌符号 4 类空引脚名与库不一致（r4 已库级修复，如实记录）② JP1/R55 符号叠放（r3 已挪）③ **L2 封装 `FILTER-..._ACT1210` pad2/4 与 TDK 引脚 4/2 互换**（TDK p3：1 左上/4 右上/2 左下/3 右下、绕组 1-4/2-3；贴 L2 时 CANH↔CANL 经绕组 ~0.7Ω 短接，DNP 首版无碍，贴前库级修）④ **SW1（XKB TS-1187A）90°/270° 贴装约束**：内部两极=上对/下对（电路图 A—B/C—D 证实），设计 0°/180° 正确，90° 旋转时每极各桥 KEY 与 GND=按键恒按下，PCB 阶段须专项防旋转（封装尺寸与手册 PCB layout 一致，无问题）
+  - P2：规格书 §3.3「±40V」与 TI SLOS346K p6 不符（DC −4~+16V、瞬态 ±25V@100Ω、HBM 16kV）；J7 符号名 XH2.54 与实测 2.50mm 不符；绿灯 330Ω 0.6–2.1mA 算式留档（用户已定）
+  - 确认正确：U6 48 脚逐脚、U7 D 脚低有效（R53 上拉=复位隐性，P1 候选作废）、U8 钳位、R54=0Ω 高速模式、33pF 算式 18.5–23.5pF 跨 CL20pF、LED×3 极性、BOM MCU 段 34 行 LCSC 号、ERC 5 条警告全预期（I2C/AFE 对端在 02 页未画）
