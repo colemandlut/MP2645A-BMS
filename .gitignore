@@ -17,3 +17,4 @@ hardware/lib/jlc/jlc.3dshapes/
 /.*.xml
 /.*.json
 /.*.txt
+.agent-home/
