@@ -12,6 +12,9 @@
 - 可以自己跑 `kicad-cli`（在 `hardware/` 下对 `mp2645a-bms.kicad_sch`，输出写 /tmp）。
 - 核约束要问「串在哪、并在哪、电流走哪条路」，算最坏工况；推导链上游的前提也要核。
 
+## 坐标约定
+- **KiCad 封装与原理图坐标 y 轴向下**（y 为正 = 下方）；判断焊盘方位时先换算，否则会把上下看反。
+
 ## 必查
 - ⓪ 断线/死头/悬空（ERC、网表 `unconnected-*`）；⓪b 同网多名。
 - ①a 每颗 IC 按手册典型应用逐件点名：U6 CH32V203C8T6（`datasheets/C3001172_*.pdf`：电源脚、VDDA、VBAT、NRST、BOOT0、HSE）、
