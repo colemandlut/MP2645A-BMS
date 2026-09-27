@@ -141,3 +141,6 @@ repo: colemandlut/MP2645A-BMS
 - 订正建议：晶振负载 20pF→33pF（C1562，CL20pF+杂散 2–7pF）；绿灯 1k→330Ω；02 页 R_ALT 10k 上拉→100k 下拉（xALERT 推挽高有效）；CAN 收发器 Standby 400–600µA 超待机目标
 - 固件：必须开 IWDG（死机时 BAL_CLK 不停）；AFE 唤醒后 ≥5ms 再 I2C
 - 用户 2026-09-27 05 页决定：RS485 不画、调试口 J8 1×6 2.54 DNP、CAN 待机超标接受、晶振 33pF、绿灯 330Ω、删 PWR_EN、02 页 R_ALT 100k 下拉；**CAN 终端 120Ω 要做跳线可选**：R55 串 JP1（C492401 2P 排针）+ 跳线帽 C100114（机械件）
+- 05 Opus 复核 r1（2026-09-27 11:19 JST）：P0=0 P1=3（JP1 未画、CAN_H_X/L_X 未进网络类→已改 .kicad_pro、三处文字重叠）P2=11
+  - 规格书前提纠错：CH32 手册「HSE drive current 0.53mA」是振荡器耗电不是晶体电流；33pF 后激励功率约 ×2.4，可能超晶振 200µW → OSC_OUT 串 0Ω 预留、样板实测
+  - R55 按 VOD 最大 3V 算 75mW（非 33mW），85°C 降额余量约 1.1 倍；PESD2CAN Vrwm 24V < 29.2V，误接 PACK+ 会烧；J8 串口做不了 ISP（BOOT0/NRST 未引出）

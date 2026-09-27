@@ -241,11 +241,11 @@
       },
       {
         "netclass": "CAN_DIFF",
-        "pattern": "RS485_A"
+        "pattern": "*CAN_H_X"
       },
       {
         "netclass": "CAN_DIFF",
-        "pattern": "RS485_B"
+        "pattern": "*CAN_L_X"
       },
       {
         "netclass": "LV_POWER",
