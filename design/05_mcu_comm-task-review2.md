@@ -5,10 +5,10 @@
 
 ## 纪律
 - **不要读**画图方的报告（`design/05_mcu_comm-draw-report.md`、`*-draw-*.out`）和生成脚本注释；独立重推。
-- 输入：快照 `review/05-r1/`（`05_mcu_comm.kicad_sch`、`erc.json`、`netlist.xml`、`sch.pdf`，05 页在 PDF 第 6 页）、
+- 输入：快照 `review/05-r2/`（`05_mcu_comm.kicad_sch`、`erc.json`、`netlist.xml`、`sch.pdf`，05 页在 PDF 第 6 页）、
   设计规格书 `design/05_mcu_comm-spec.md`（Opus 按手册写，**它本身也要被你质疑**：前提对不对、手册页码是否支持结论）、
   用户决定（`docs/03-详细设计.md` 第 6 节、`docs/02-BOM.csv` MCU 段：RS485 不画、调试口 J8 1×6 2.54 DNP、CAN 待机超标接受、晶振 33pF、绿灯 330Ω、删 PWR_EN、
-  **CAN 终端改为 R55 串 JP1 跳线可选（用户 2026-09-27，本快照还没画 JP1，报成已知待改项即可）**）、数据手册 `datasheets/`。
+  CAN 终端为 R55 串 JP1 跳线可选（用户 2026-09-27，本快照已画））、数据手册 `datasheets/`。
 - 可以自己跑 `kicad-cli`（在 `hardware/` 下对 `mp2645a-bms.kicad_sch`，输出写 /tmp）。
 - 核约束要问「串在哪、并在哪、电流走哪条路」，算最坏工况；推导链上游的前提也要核。
 
