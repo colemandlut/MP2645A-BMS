@@ -47,6 +47,17 @@ ROOT_SCH = os.path.join(HW, "mp2645a-bms.kicad_sch")
 
 EPS = 1e-3
 
+# 图纸尺寸（A3，见生成器的 `(paper "A3")`）与文字可用区留边。留边就是**实测的图框线**：
+# 从 PDF 的矢量图元里量出来是 x 10.0→410.0、y 10.0→287.0（原来拍脑袋写 8.0，比图框宽
+# 2mm，会把「刚压线」漏过去）。图元盒另有检查 3/4 兜着，这里只管文字。
+PAGE_W, PAGE_H = 420.0, 297.0
+PAGE_MARGIN = 10.0
+# 图框标题栏：KiCad 自己管的文字（页号、版本、我们的 comment 行）按图框模板定位，实测
+# 最后一行的右边界到 x≈418.9 —— **越过了 410 的边框线**。那不是生成器摆的，也不是
+# 「画出去被裁掉」，单独开一个豁免区。区域取右下角，生成器的内容区不会伸到这里
+# （全页最右的内容是 x≈402 的字段文字，y < 200）。
+TITLE_BLOCK = (295.0, 250.0, 420.0, 297.0)
+
 
 # ---------------------------------------------------------------------------
 # S-表达式解析（够用即可）
@@ -240,6 +251,18 @@ def pin_name_bbox(bx, by, wx, wy, tw, h):
 def bbox_overlap(b1, b2, eps=EPS):
     return not (b1[2] < b2[0] - eps or b2[2] < b1[0] - eps or
                 b1[3] < b2[1] - eps or b2[3] < b1[1] - eps)
+
+
+def bbox_overlap_xy(b1, b2, xeps, yeps):
+    """两个轴分别给容差（bbox_overlap 两轴共用一个 eps）。eps 为负 = 允许的重叠量。
+
+    pymupdf 的 span bbox **不是墨迹**：它含字体的上/下伸部。同一段文字块里相邻两行
+    （行距 2.54、字号 1.8）的 bbox 会互相压 0.36mm；size 2.4 的表头压到下一行 size 1.8
+    的正文字上更是压 0.93mm。所以「说明文字之间」的比对**纵向必须放宽到 ~1.2mm**，
+    否则整页的说明文字会自己告自己；横向没这个问题，保持严格。
+    """
+    return not (b1[2] < b2[0] - xeps or b2[2] < b1[0] - xeps or
+                b1[3] < b2[1] - yeps or b2[3] < b1[1] - yeps)
 
 
 def load():
@@ -531,6 +554,30 @@ def rendered_runs(page):
     return [tuple(r) for r in runs]
 
 
+def rendered_spans(page):
+    """去重后的**原始 span**（不做合并），返回 [(bbox, text)]。
+
+    为什么重叠判定不能用合并后的 `runs`：合并规则是「同一行、水平间隙 ≤1.6mm 就并」，
+    而**互相压着的**两段文字水平间隙是**负的**，一定满足 ≤1.6mm，于是必然被并成一段
+    —— 8e 于是什么都看不见。分段 C 就是这么漏掉的：§9 的说明（x 210.82–312.7）和
+    §6 的说明（x 304.72–400.9）锚在同一 y=48.26 上、横向压了 7.9mm，而检查全 PASS。
+    合并只对「认领字段」有意义（KiCad 会把一个字段拆成多个 span），重叠判定必须用原始 span。
+    """
+    seen, spans = set(), []
+    for blk in page.get_text("dict")["blocks"]:
+        for line in blk.get("lines", []):
+            for sp in line.get("spans", []):
+                txt = sp["text"]
+                if not txt.strip():
+                    continue
+                b = tuple(round(v / MM, 3) for v in sp["bbox"])
+                if (b, txt) in seen:
+                    continue
+                seen.add((b, txt))
+                spans.append((b, txt))
+    return spans
+
+
 def rendered_field_check(prop_texts, body_boxes, sch_path):
     """检查 8 本体：把每个可见字段「认领」到它附近真实渲染出来的文字串上，然后
       a) 认领不到（2mm 内没有文字，或文字不在锚点该在的那一侧）→ 字段没画在该画的地方；
@@ -552,6 +599,7 @@ def rendered_field_check(prop_texts, body_boxes, sch_path):
         return None
     doc = fitz.open(pdf)
     runs = rendered_runs(doc[0])
+    spans = rendered_spans(doc[0])
     doc.close()
 
     fails, claimed = [], []
@@ -608,7 +656,53 @@ def rendered_field_check(prop_texts, body_boxes, sch_path):
             if bbox_overlap(run[:4], r[:4], eps=-0.15):
                 fails.append(f"[8d] {ref} 字段「{pname}」渲染文字「{run[4]}」{run[:4]} "
                              f"与另一段渲染文字「{r[4]}」{r[:4]} 相交")
-    return fails, f"PDF 文字串 {len(runs)} 段（去重+合并后），字段认领 {len(claimed)}/{sum(len(v) for v in prop_texts.values())} 个"
+    # e) 说明文字 / 标签文字之间也不许相交。8a–8d 全都拿「字段」当左操作数，两段说明文字
+    #    互相压住是看不见的。分段 C 第一版就是这么漏的：§8 两行说明一路顶到 x>420mm，
+    #    既越出纸面、又压到 §7 的文字，而 8a–8d + 检查 1–7 全部 PASS。
+    #    这里把「既不属于任何字段、也不在任何符号本体内」的文字两两比一遍。
+    #    判据不是「纵向重叠多少 mm」，而是**纵向重叠 / 较矮那个 span 的高度**（实测标定）：
+    #      * 真缺陷：§9 第 4 行（高 2.90）压住 AFE_3V3 标签（高 1.91）→ 1.026/1.91 = **0.54**；
+    #      * 假重叠（同一段文字块相邻两行，字体上下伸部相互穿过）：
+    #        标题（2.4 号，高 3.55）压正文（1.8 号，高 2.90）→ 0.948/2.90 = 0.33；
+    #        J5 位号字段（高 3.55）压说明「C40669…」→ 0.929/2.39 = 0.39。
+    #    真/假之间是 0.39 → 0.54，取阈值 **0.45**。曾试过「用左端是否对齐来分档」，不行：
+    #    同一行文字会被拆成多个 span（「§9 电源：…」的首 span 在 210.68、次 span 在 216.85），
+    #    左端并不相等，会把标题↔正文误判成真重叠。
+    #    **用原始 span 而不是合并后的 runs**（见 rendered_spans 的注释）：合并会把互相压着
+    #    的两段文字并成一段，8e 就永远看不见这一类缺陷了。
+    #    **用原始 span 而不是合并后的 runs**（见 rendered_spans 的注释）：合并会把互相压着
+    #    的两段文字并成一段，8e 就永远看不见这一类缺陷了。
+    claimed_boxes = [runs[c[2]][:4] for c in claimed]
+    def _in_any(box, boxes):
+        return any(inside(box, bb, 0.5) for bb in boxes)
+    free = [(i, b, t) for i, (b, t) in enumerate(spans)
+            if not _in_any(b, claimed_boxes)
+            and not _in_any(b, [bb for bb in body_boxes.values() if bb])]
+    for a in range(len(free)):
+        for b in range(a + 1, len(free)):
+            ba, bb2 = free[a][1], free[b][1]
+            ox = min(ba[2], bb2[2]) - max(ba[0], bb2[0])
+            oy = min(ba[3], bb2[3]) - max(ba[1], bb2[1])
+            hmin = min(ba[3] - ba[1], bb2[3] - bb2[1])
+            if ox > -0.15 and hmin > 0 and oy / hmin > 0.45:
+                fails.append(f"[8e] 说明/标签文字「{free[a][2]}」{free[a][1]} "
+                             f"与「{free[b][2]}」{free[b][1]} 相交"
+                             f"（纵向重叠 {oy:.3f}mm = 较矮 span 的 {oy / hmin:.0%}）")
+    # f) 文字不许越出页面可用区。几何检查 3/4 只量导线与图元盒，说明文字是 text 图元，
+    #    越界后照样 PASS；出图后要靠肉眼才看得见「写出去被裁掉」。
+    #    分段 C 第一版就是靠这条抓到 10 段越框文字，其中 §9/§5/§6 三处是分段 A/B 留下的。
+    for r in runs:
+        x0, y0, x1, y1 = r[:4]
+        if (x0 >= TITLE_BLOCK[0] and y0 >= TITLE_BLOCK[1]
+                and x1 <= TITLE_BLOCK[2] and y1 <= TITLE_BLOCK[3]):
+            continue                      # 图框标题栏，KiCad 按模板摆的（见 TITLE_BLOCK）
+        if (x0 < PAGE_MARGIN or y0 < PAGE_MARGIN
+                or x1 > PAGE_W - PAGE_MARGIN or y1 > PAGE_H - PAGE_MARGIN):
+            fails.append(f"[8f] 文字「{r[4]}」{r[:4]} 越出页面可用区"
+                         f"（{PAGE_MARGIN}–{PAGE_W - PAGE_MARGIN} × {PAGE_MARGIN}–{PAGE_H - PAGE_MARGIN} mm）")
+    return fails, (f"PDF 文字串 {len(runs)} 段（去重+合并后），字段认领 "
+                   f"{len(claimed)}/{sum(len(v) for v in prop_texts.values())} 个，"
+                   f"自由文字两两比对 {len(free)} 段（原始 span）")
 
 
 # ---------------------------------------------------------------------------
@@ -663,6 +757,22 @@ PART_EXPECT = {
     "C209": {"1": "SRP_F", "2": "SRN_F"},
     "C210": {"1": "GND", "2": "SRP_F"},
     "C211": {"1": "GND", "2": "SRN_F"},
+    # §7 NTC ×4（spec §7）：R21x 1=NTCB（上拉端）2=NTCx；C22x 1=GND 2=NTCx（C22x 竖放，
+    # vpart 把 pin2 放上端，所以 2 是信号、1 是 GND）。C222–C225 是 DNP，但网表里仍按
+    # 「装了」的接法核对——DNP 只影响装配，不影响连接关系。
+    "R216": {"1": "NTCB", "2": "NTC_CELL1"},
+    "R217": {"1": "NTCB", "2": "NTC_CELL2"},
+    "R218": {"1": "NTCB", "2": "NTC_FET"},
+    "R219": {"1": "NTCB", "2": "NTC_SHUNT"},
+    "C222": {"1": "GND", "2": "NTC_CELL1"},
+    "C223": {"1": "GND", "2": "NTC_CELL2"},
+    "C224": {"1": "GND", "2": "NTC_FET"},
+    "C225": {"1": "GND", "2": "NTC_SHUNT"},
+    # §8 通讯与中断（spec §8）：四只都竖放 → pin2 在上端、pin1 在下端。
+    "R220": {"2": "+3V3", "1": "I2C_SCL"},
+    "R221": {"2": "+3V3", "1": "I2C_SDA"},
+    "R222": {"2": "AFE_ALERT", "1": "GND"},
+    "R223": {"2": "+3V3", "1": "AFE_WAKE"},
 }
 
 
@@ -726,16 +836,17 @@ def netlist_pin_check(sch_path, root_sch):
         m = re.search(r'"Reference" "([^"]+)"', b)
         if m:
             refs_here.append(m.group(1))
-    for ref in ("C226",):
+    DNP_REFS = ("C226", "C222", "C223", "C224", "C225")
+    for ref in DNP_REFS:
         blk = next((b for b in blocks if f'"Reference" "{ref}"' in b), None)
         if blk is None:
             fails.append(f"[9d] 文件里找不到实例 {ref}")
         elif "(dnp yes)" not in blk:
             fails.append(f"[9d] {ref} 没有标 (dnp yes)")
-    # 反向：没标 DNP 的实例里不该冒出 (dnp yes)（分段 A 只有 C226 是 DNP）
+    # 反向：没标 DNP 的实例里不该冒出 (dnp yes)（本页 DNP = C226 + C222–C225）
     for b in blocks:
         m = re.search(r'"Reference" "([^"]+)"', b)
-        if m and "(dnp yes)" in b and m.group(1) != "C226":
+        if m and "(dnp yes)" in b and m.group(1) not in DNP_REFS:
             fails.append(f"[9d] {m.group(1)} 意外标了 (dnp yes)")
     # 9f：位号必须是「字母前缀 + 纯数字」。规格书 §6 原本写 C219B——尾随字母 KiCad 的
     #     annotator 解析不出序号，根图导网表会报 `Warning: schematic has annotation errors`
@@ -755,8 +866,48 @@ def netlist_pin_check(sch_path, root_sch):
             if net and re.fullmatch(r"BAL[0-9]*", net):
                 fails.append(f"[9g] {ref}.{pin} 落在均衡网络 {net!r} 上，本页只允许 CELLn/VCn（spec §4.4）")
 
+    # 9h：DNP 件除了 (dnp yes) 之外，值里还必须写明 DNP。只标 KiCad 的 dnp 标志不够——
+    #     出 BOM/给贴片厂看的是 Value 文本，位号后缀又没有额外标记，值里不写就会「照贴」。
+    for b in blocks:
+        m = re.search(r'"Reference" "([^"]+)"', b)
+        if not m or m.group(1) not in DNP_REFS:
+            continue
+        vm = re.search(r'"Value" "([^"]*)"', b)
+        if not vm or "DNP" not in vm.group(1):
+            fails.append(f"[9h] DNP 件 {m.group(1)} 的值 {vm.group(1) if vm else '<无>'!r} 里没写 DNP")
+    # 9i：每个器件都必须有 Footprint 与 LCSC。走线/网表核对看不出「封装漏填」——
+    #     漏填的器件在原理图上完全正常，直到 PCB 同步时才报「找不到封装」。
+    #     嘉立创件的 LCSC 编号还会一路带到 BOM/成本表，空值会静默丢料。
+    #     图纸实例属性和网表两处都读：图纸那份是「生成器有没有老实写字段」的源头（不依赖
+    #     导出器），网表那份是 BOM/贴片厂真正吃的数据。负例实测两处都会随实例属性一起空掉。
+    #     另外 LCSC 要做格式校验——写成 ABC123 这种非立创编号，嘉立创下单时会直接找不到料。
+    for b in blocks:
+        m = re.search(r'"Reference" "([^"]+)"', b)
+        if not m:
+            continue
+        ref = m.group(1)
+        fp = re.search(r'\(property "Footprint" "([^"]*)"', b)
+        lc = re.search(r'\(property "LCSC" "([^"]*)"', b)
+        if not fp or not fp.group(1).strip():
+            fails.append(f"[9i] {ref} 没填 Footprint（实例属性；空着会被库符号的默认封装顶替）")
+        if not lc or not lc.group(1).strip():
+            fails.append(f"[9i] {ref} 没填 LCSC（嘉立创 C 编号）")
+        elif not re.fullmatch(r"C[0-9]+", lc.group(1).strip()):
+            fails.append(f"[9i] {ref} 的 LCSC {lc.group(1)!r} 不是立创 C 编号格式")
+    # 网表侧再核一遍（网表是 BOM/贴片厂真正吃的那份数据）
+    mine = os.path.basename(sch_path)
+    n_comp = 0
+    for comp in root.iter("comp"):
+        props = {p.get("name"): (p.get("value") or "") for p in comp.iter("property")}
+        if props.get("Sheetfile") != mine:      # 根图网表含全部子页，只核本页
+            continue
+        n_comp += 1
+        if not (comp.findtext("footprint") or "").strip():
+            fails.append(f"[9i] 网表里 {comp.get('ref')} 没有 footprint")
+
     n = len(U1_EXPECT) + sum(len(v) for v in PART_EXPECT.values())
-    return fails, f"逐脚核对 {n} 项（U1 48 脚 + 外围件 {sum(len(v) for v in PART_EXPECT.values())} 端子）"
+    return fails, f"逐脚核对 {n} 项（U1 48 脚 + 外围件 {sum(len(v) for v in PART_EXPECT.values())} 端子）；" \
+                  f"Footprint/LCSC 核对 {n_comp} 件"
 
 
 # ---------------------------------------------------------------------------
