@@ -144,3 +144,5 @@ repo: colemandlut/MP2645A-BMS
 - 05 Opus 复核 r1（2026-09-27 11:19 JST）：P0=0 P1=3（JP1 未画、CAN_H_X/L_X 未进网络类→已改 .kicad_pro、三处文字重叠）P2=11
   - 规格书前提纠错：CH32 手册「HSE drive current 0.53mA」是振荡器耗电不是晶体电流；33pF 后激励功率约 ×2.4，可能超晶振 200µW → OSC_OUT 串 0Ω 预留、样板实测
   - R55 按 VOD 最大 3V 算 75mW（非 33mW），85°C 降额余量约 1.1 倍；PESD2CAN Vrwm 24V < 29.2V，误接 PACK+ 会烧；J8 串口做不了 ISP（BOOT0/NRST 未引出）
+- 05 第 2 轮（2026-09-27 13:03 JST）：Opus 复核 r2 P0=0 P1=1（JP1 与 R55 符号叠放）P2=9；教训：「隐藏引脚名」不能清空嵌入符号的 pin name（与库不一致、丢极性语义、同步库会撤销）→ 保持嵌入符号 = 库；自检要有「符号本体/字段两两不相交」
+- llm_agent.sh 默认超时 1h 对整页画图/复核不够（DeepSeek 画 05 第 2 轮、qwen3.8-max 复核都超时无产出）→ 画图用 AGENT_TIMEOUT=5400、复核 7200，且复核任务书要求「先建报告、边查边写」
