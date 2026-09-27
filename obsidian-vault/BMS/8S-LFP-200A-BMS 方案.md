@@ -137,3 +137,6 @@ repo: colemandlut/MP2645A-BMS
 - 画 01/02/03/05 以最新 `docs/02-BOM.csv` 为准；布局约束：外层 2oz / 内层 0.5oz，200A 走 20×2mm 紫铜排 + M8 螺柱，MOS 间走厚铜 + 开窗堆锡，目标板 130×90mm
 - 库存风险：Tokmas MOS 够 62 块、D1–D3 约 241、J5 约 244、MP2797 269 片
 - 05 页流程：先由 Opus 写设计规格书 `design/05_mcu_comm-spec.md`（逐脚分配、外围点名、缺料补齐），再交 DeepSeek 画
+- 05 规格书 `design/05_mcu_comm-spec.md`（Opus，2026-09-27 00:49）：I2C1 PB6/7、CAN1 PA11/12、BAL_CLK PA8 TIM1_CH1（144M/1920=75kHz）、AFE_ALERT PB4（5V 容忍脚，防 AFE 先上电灌电流）、AFE_WAKE=MP2797 NSHDN（PB5 开漏）、PRECHG_EN PA1、LED PB13–15 低有效、键 PB12、PWR_EN 删；复位即停：BAL_CLK/PRECHG_EN 100k 下拉、CAN TXD 10k 上拉
+- 订正建议：晶振负载 20pF→33pF（C1562，CL20pF+杂散 2–7pF）；绿灯 1k→330Ω；02 页 R_ALT 10k 上拉→100k 下拉（xALERT 推挽高有效）；CAN 收发器 Standby 400–600µA 超待机目标
+- 固件：必须开 IWDG（死机时 BAL_CLK 不停）；AFE 唤醒后 ≥5ms 再 I2C
