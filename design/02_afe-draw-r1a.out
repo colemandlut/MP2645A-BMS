@@ -1,0 +1,27 @@
+**2026-09-27 17:06 JST**（`TZ=Asia/Tokyo date` 实查）
+
+## 分段 A 已交付（02_afe / MP2797）
+
+**写入的 4 个文件**：`hardware/02_afe.kicad_sch`（生成）、`hardware/gen/gen_02_afe.py`、`hardware/gen/check_02_layout.py`、`design/02_afe-draw-report.md`。按 CLAUDE.md 的常驻规矩，另把新结论写回 `obsidian-vault/`（两篇）。库/BOM/docs/根图/其它子图未动，未跑 `gen_kicad_skeleton.py`，未碰 git。
+
+**验证结果（已跑完，通知你）**：
+```
+python3 hardware/gen/check_02_layout.py
+  → 导线 74 段，junction 7，实例 17，引脚 81，文字 77，图元盒 132
+  → 渲染复核 34/34 字段认领；网表核对 81 项
+  → PASS：检查 1/2/3/4/5/6/7/8/9 全部通过   exit=0
+kicad-cli sch erc（根图）
+  → 18 violations，全部 isolated_pin_label（已逐条列进报告，都是等 B/C 段接件的立柱标签）
+```
+
+**已画 17 个位号**：U1 48 脚全部引出（8 个 NC 脚放 NC 标志，C9–C16 用竖干并到 `VC8`，7 个 junction）＋ §9 电源 R212/C212/R213/C213/Q201/C214/C215/C216/C217/C218 ＋ §6 驱动 R214/C219/C220/R215/C221/C226。U1 用 `(mirror y)`，电芯脚朝左对着 B 段的 RC 阵。
+
+**两个真缺陷，都是本段挖出来的**：
+1. **`(mirror y)` 会把字段水平对齐一起翻转**——`justify left` 渲染成右对齐（U1 位号锚点 154.94，PDF 实测画在 152.16–154.70）。改居中后 PASS。
+2. **规格书 §6 的位号 `C219B` 非法**：KiCad 只认「字母前缀+纯数字」，尾随字母让整张图被判标注错误——根图导网表一直报的 `Warning: schematic has annotation errors` 就是它。二分定位到单个实例后改名 **`C226`**，警告消失。**`docs/02-BOM.csv` 需要主代理同步这一格**，B/C 段画图别再照抄。
+
+**另外必须如实说明的一点**：按知识库「新检查要做负例验证」的规矩，我把 mirror 分支屏蔽掉跑了一遍——**检查 1–8 依旧全 PASS**，而那次副本的网表里 `U1.1` 已经接到 `VCP` 上。也就是说几何自检量的是「我自己算的几何 vs 我自己算的几何」，对符号变换天然不敏感。因此补了**第 9 项：以根图导网表逐脚核对规格书**（9a 已负例报出 45 条，9b/9c/9d/9f 各自验证过会报；9e 是本页不会触发的守卫）。负例做法写进了脚本（`AFE_HW` 环境变量换硬件目录）和报告表格。
+
+留给 B/C 的位号清单、全局标签形状必须照抄的约束、以及「每加一批件要同步扩 `PART_EXPECT`」的提醒都在报告 §5 里。分段 B 可直接从 `gen_02_afe.py` 末尾的版面分区注释处续画。
+
+DONE
