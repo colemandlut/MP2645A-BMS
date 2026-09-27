@@ -3,6 +3,12 @@
 	(generator "kicad_symbol_editor")
 	(generator_version "10.0")
 	(symbol "0402B102K500NT"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -194,6 +200,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402B472K500NT"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -385,6 +397,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402CG200J500NT"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -576,6 +594,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402CG330J500NT"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -767,6 +791,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF0000TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -921,6 +951,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF1000TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1075,6 +1111,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF1001TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1229,6 +1271,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF1002TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1383,6 +1431,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF1003TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1537,6 +1591,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF1004TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1691,6 +1751,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF100JTCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1845,6 +1911,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF1203TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1999,6 +2071,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF1503TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -2153,6 +2231,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF2002TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -2307,6 +2391,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF2004TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -2461,6 +2551,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF2201TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -2615,6 +2711,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF2403TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -2769,6 +2871,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF3300TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -2923,6 +3031,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF3302TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -3077,6 +3191,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0402WGF3923TCE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -3231,6 +3351,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0451007.MRL"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -3397,6 +3523,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0466001.NRHF"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -3563,6 +3695,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0466003.NRHF"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -3729,6 +3867,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0603WAF1005T5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -3883,6 +4027,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0603WAF1200T5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -4037,6 +4187,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0603WAF1203T5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -4191,6 +4347,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0603WAF1503T5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -4345,6 +4507,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0603WAF2004T5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -4499,6 +4667,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0603WAF200JT5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -4653,6 +4827,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0603WAF4703T5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -4807,6 +4987,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0603WAF5100T5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -4961,6 +5147,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0603WAF620JT5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -5115,6 +5307,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "0805G"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -5330,6 +5525,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0805W8F300JT5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -5484,6 +5685,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "0805W8F330JT5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -5638,6 +5845,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "1206W4F100JT5E"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -5792,6 +6005,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "1N5819WS"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -6733,6 +6949,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "ACT1210-510-2P-TL00"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -7078,6 +7297,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "ANTC1608-103F3380FB"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -7233,6 +7458,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "AO3400A"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -7526,6 +7754,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "AO3401A"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -7843,6 +8074,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "AO3415A_C5350990"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -8208,6 +8442,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "AO3416_C479060"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -8501,6 +8738,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "ASR-S-7-0.1F"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -9007,6 +9250,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "B4B-XH-A"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -9208,6 +9454,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "BAT54WSL9"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -9375,6 +9624,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "BZT52C12S_C173449"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -9542,6 +9797,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "BZT52C3V3_C353528"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -10018,6 +10276,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CC0603KRX7R0BB104"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -10209,6 +10473,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CC0603KRX7R9BB104"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -10400,6 +10670,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CFS12V3T3R0"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -11559,6 +11835,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL05A105KA5NQNC"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -11750,6 +12032,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL05B103KB5NNNC"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -11941,6 +12229,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL05B104KB54PNC"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -12132,6 +12426,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL05B104KO5NNNC"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -12323,6 +12623,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL10A105KB8NNNC"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -12514,6 +12820,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL10A226MQ8NRNC"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -12705,6 +13017,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL10A475KO8NNNC"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -12896,6 +13214,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL21A226MAQNNNE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -13087,6 +13411,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL21B104KCFNNNE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -13278,6 +13608,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL31A107MQHNNNE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -13469,6 +13805,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL31B105KCHNNNE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -13660,6 +14002,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CL31B106KAHNNNE"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -13851,6 +14199,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "CR-L5W-15ΩJ"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -14005,6 +14359,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "EEE-FT1H470AP"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -14220,6 +14580,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "EL3H7"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -14542,6 +14905,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "FC-2012HRK-620D"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -14757,6 +15123,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "FCR1206J56RP055W"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -14911,6 +15283,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "FS32X475K101EGG"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -15102,6 +15480,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "GRM32ER72A475KE14L"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -15293,6 +15677,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "IPT012N08N5"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -15586,6 +15973,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "JFC1206-1100FS"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -16025,6 +16418,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "MM3Z15"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -16192,6 +16588,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "MMBT3904-C20526"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -16401,6 +16800,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "MMBT5551_C2145"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -18163,6 +18565,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "NCP18XH103F03RB"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -18329,6 +18737,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "PBSS5140T,215"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -18538,6 +18949,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "PESD2CAN,215"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -18841,6 +19255,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "PESD2CAN_C2687131"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -19168,6 +19585,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "PZ254V-11-02P"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -19570,6 +19993,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "RV63V47M6X8"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -19774,6 +20203,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "S1206-SD-5.0A"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -19940,6 +20375,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "SLO0618H2R2MTT"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -20131,6 +20572,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "SMBJ33A-C78419"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -20298,6 +20742,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "SMDJ33A_C2976503"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -20465,6 +20915,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "SMDJ33A_C438163"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -21386,6 +21839,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "SQ2361ES-T1_GE3"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -21679,6 +22135,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "SS210"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -21846,6 +22305,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "SS310"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -22013,6 +22475,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "SS8550_C8542"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -23215,6 +23680,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "SWPA5040S220MT"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -23406,6 +23877,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "TCC0603X7R103K101CT"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -23597,6 +24074,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "TCC0805X7R474K101FT"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -23777,6 +24260,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "TCC1206X7R105K101HT"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -24241,6 +24730,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "TS-1187A-B-A-B"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -24502,6 +24994,12 @@
 		(embedded_fonts no)
 	)
 	(symbol "WSLP5931L1000FEA"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -24656,6 +25154,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "X322512MSB4SI"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -24954,6 +25455,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "X32258MSB4SI"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -26238,6 +26742,9 @@
 		(embedded_fonts no)
 	)
 	(symbol "ZX-XH2.54-4PZZ"
+		(pin_names
+			(hide yes)
+		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)

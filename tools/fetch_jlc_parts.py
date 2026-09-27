@@ -123,6 +123,36 @@ def normalize_pin_types() -> int:
     return n
 
 
+def hide_small_pin_labels() -> int:
+    """小器件（≤4 脚）的引脚名 KiCad 默认画在本体内，与本体/导线重叠（05 页复核 P1-R3：LED 的「+」、晶振 OSC1/GND 粘连）。
+    在库里统一加 (pin_names (hide yes))；两脚且引脚名就是 1/2 的无源件再加 (pin_numbers (hide yes))。
+    只改显示开关，不动引脚名/号/坐标，网表仍保留引脚名语义。幂等，返回改动的符号数。"""
+    sym = BASE + ".kicad_sym"
+    if not os.path.exists(sym):
+        return 0
+    with open(sym, encoding="utf-8") as fp:
+        s = fp.read()
+    out, n, pos = [], 0, 0
+    for m in re.finditer(r'\n\t\(symbol "([^"]+)"\n', s):
+        start = m.end()
+        nxt = s.find('\n\t(symbol "', start)
+        block = s[start: nxt if nxt >= 0 else len(s)]
+        if "(pin_names" in block.split("(property", 1)[0]:
+            continue
+        pins = re.findall(r'\(pin \w+ \w+.*?\(name "([^"]*)"', block, re.S)
+        if not pins or len(pins) > 4:
+            continue
+        ins = "\t\t(pin_names\n\t\t\t(hide yes)\n\t\t)\n"
+        if len(pins) == 2 and sorted(pins) == ["1", "2"]:
+            ins = "\t\t(pin_numbers\n\t\t\t(hide yes)\n\t\t)\n" + ins
+        out.append(s[pos:start]); out.append(ins); pos = start; n += 1
+    out.append(s[pos:])
+    if n:
+        with open(sym, "w", encoding="utf-8") as fp:
+            fp.write("".join(out))
+    return n
+
+
 def main(argv: list[str]) -> int:
     os.makedirs(LIB, exist_ok=True)
     wanted, non = bom_parts()
@@ -170,5 +200,6 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["--normalize-only"]:
         print(f"库升级为 KiCad 当前格式：{upgrade_library()}")
         print(f"引脚电气类型归一为 passive：{normalize_pin_types()} 处")
+        print(f"小器件隐藏引脚名/号：{hide_small_pin_labels()} 个符号")
         sys.exit(0)
     sys.exit(main(sys.argv[1:]))
