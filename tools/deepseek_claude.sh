@@ -5,7 +5,8 @@
 set -eu
 TASK="$1"; OUT="$2"
 : "${DEEPSEEK_API_KEY:?DEEPSEEK_API_KEY 未设置}"
-: "${DS_MODEL:=deepseek-flash}"   # 用户 2026-09-27 13:07 JST：deepseek-v4-pro 一律换成 deepseek-flash
+: "${DS_MODEL:=deepseek-flash}"   # 用户 2026-09-27 13:07 JST：deepseek-v4-pro 一律换成 deepseek-flash（DeepSeek-V4.1-Flash）
+[ "$DS_MODEL" = "deepseek-v4-pro" ] && { echo "deepseek-v4-pro 已被用户禁用" >&2; exit 2; }
 mkdir -p /tmp/ds-claude-home
 exec env -i \
   HOME=/tmp/ds-claude-home PATH="$PATH" LANG=C.UTF-8 TERM=dumb \
@@ -14,6 +15,7 @@ exec env -i \
   ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic \
   ANTHROPIC_API_KEY="$DEEPSEEK_API_KEY" \
   ANTHROPIC_MODEL="$DS_MODEL" ANTHROPIC_SMALL_FAST_MODEL=deepseek-flash ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-flash \
+  ANTHROPIC_DEFAULT_OPUS_MODEL="$DS_MODEL" ANTHROPIC_DEFAULT_SONNET_MODEL="$DS_MODEL" CLAUDE_CODE_SUBAGENT_MODEL="$DS_MODEL" \
   CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000 \
   CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 DISABLE_TELEMETRY=1 DISABLE_AUTOUPDATER=1 \
   claude -p --model "$DS_MODEL" --permission-mode acceptEdits \
