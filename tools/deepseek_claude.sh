@@ -5,7 +5,7 @@
 set -eu
 TASK="$1"; OUT="$2"
 : "${DEEPSEEK_API_KEY:?DEEPSEEK_API_KEY 未设置}"
-: "${DS_MODEL:=deepseek-v4-pro}"
+: "${DS_MODEL:=deepseek-flash}"   # 用户 2026-09-27 13:07 JST：deepseek-v4-pro 一律换成 deepseek-flash
 mkdir -p /tmp/ds-claude-home
 exec env -i \
   HOME=/tmp/ds-claude-home PATH="$PATH" LANG=C.UTF-8 TERM=dumb \
