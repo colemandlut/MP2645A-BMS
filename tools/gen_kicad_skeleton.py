@@ -35,8 +35,8 @@ SHEETS = [
      "B+ 熔断器 / CHG、DSG 各 8 并联 NMOS / 栅极网络与 PNP 快速关断 / 分流器 / TVS / 预充 / P+ P- 端子",
      ["BAT+", "BAT-", "PACK+", "PACK-", "FET_MID", "CHG_G", "DSG_G", "SRP", "SRN", "NTC_FET", "NTC_SHUNT", "PRECHG_EN"]),
     ("02_afe", "MP2797 采集与保护",
-     "电芯采样 RC / 电流采样滤波 / 4 路 NTC / 高边驱动输出 / 通讯与中断 / 被动均衡",
-     ["CELL0..CELL8", "SRP", "SRN", "CHG_G", "DSG_G", "FET_MID", "PACK+", "NTC_CELL1", "NTC_CELL2",
+     "电芯采样 RC / 电流采样滤波 / 4 路 NTC / 高边驱动输出 / 通讯与中断 / 被动均衡",  # BAT+：VTOP/REGIN 取电（用户 2026-09-27）
+     ["CELL0..CELL8", "SRP", "SRN", "CHG_G", "DSG_G", "FET_MID", "PACK+", "BAT+", "NTC_CELL1", "NTC_CELL2",
       "NTC_FET", "NTC_SHUNT", "I2C_SCL", "I2C_SDA", "AFE_ALERT", "AFE_WAKE", "+3V3", "GND"]),
     ("03_balancer", "开关电容主动均衡",
      "8 个互补半桥 QN/QP(AO3400A/AO3401A) + 8 个 74LVC1G17（本节电芯供电）+ 7 级飞电容 3x100µF / 时钟 BAL_CLK 逐级电容耦合 / 均衡节点 3A 保险丝",
