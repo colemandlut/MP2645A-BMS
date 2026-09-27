@@ -153,3 +153,4 @@ repo: colemandlut/MP2645A-BMS
   - P2：规格书 §3.3「±40V」与 TI SLOS346K p6 不符（DC −4~+16V、瞬态 ±25V@100Ω、HBM 16kV）；J7 符号名 XH2.54 与实测 2.50mm 不符；绿灯 330Ω 0.6–2.1mA 算式留档（用户已定）
   - 确认正确：U6 48 脚逐脚、U7 D 脚低有效（R53 上拉=复位隐性，P1 候选作废）、U8 钳位、R54=0Ω 高速模式、33pF 算式 18.5–23.5pF 跨 CL20pF、LED×3 极性、BOM MCU 段 34 行 LCSC 号、ERC 5 条警告全预期（I2C/AFE 对端在 02 页未画）
 - 05 第二复核 qwen 的 P0（Y1 封装 180° 错位）与 P1（L2 pad2/4 互换）经主代理按焊盘坐标核对**均不成立**：qwen 把 KiCad 封装坐标 y>0 当成「上」（KiCad y 轴向下）；裁决 design/05_mcu_comm-review-qwen-adjudication.md；复核任务书已加坐标约定
+- 🔴 用户 2026-09-27 16:3x JST 决定（02 规格书）：**01 页功率管改手册共漏拓扑**（CHG 电池侧、DSG PACK 侧、FET_MID=漏极公共点）；VTOP/REGIN 从 BAT+ 取（02 页契约加 BAT+）；电芯 NTC 改线束探头（非嘉立创件，BOM 删 RT1/RT2，RT3/RT4 在 01 页）；其余推荐全采纳（C_NTC DNP、J5 针脚 1 NTC1/2 GND/3 NTC2/4 GND/5–13 CELL0–8、基础库改料、2xx 位号、不做 PACK 反接保护、不做 MTP、01 页 PACK+ 加 47µF/63V 电解 C48971005）
