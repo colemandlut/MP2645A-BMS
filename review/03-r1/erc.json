@@ -1,0 +1,153 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-28T02:32:00",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555",
+            "violations": [
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DSG_G'",
+                            "pos": {
+                                "x": 1.4732,
+                                "y": 1.2446
+                            },
+                            "uuid": "03d14180-a5d8-5b34-82da-dfd75a5a56ef"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'CHG_G'",
+                            "pos": {
+                                "x": 1.4732,
+                                "y": 1.8288
+                            },
+                            "uuid": "4710ae53-b84e-5721-83b9-567cff76e5e7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'SRP'",
+                            "pos": {
+                                "x": 3.1496,
+                                "y": 1.27
+                            },
+                            "uuid": "1cacdce8-afd7-5faf-82db-2c2fd5c0c765"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'SRN'",
+                            "pos": {
+                                "x": 3.1496,
+                                "y": 1.4605
+                            },
+                            "uuid": "66dca6cd-38cc-5f90-a3aa-50afdd02e025"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'FET_MID'",
+                            "pos": {
+                                "x": 3.2004,
+                                "y": 0.6604
+                            },
+                            "uuid": "7e66d8b0-3d28-5a62-ba14-ef0efe7c1367"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'PACK+'",
+                            "pos": {
+                                "x": 3.2004,
+                                "y": 0.8636
+                            },
+                            "uuid": "f0f8e717-77c1-5b3a-a142-4f54dbb67399"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                }
+            ]
+        },
+        {
+            "path": "/功率回路/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/938e7e56-d566-5323-870c-7a6740864203",
+            "violations": []
+        },
+        {
+            "path": "/MP2797 采集与保护/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/b7551ed3-1617-5b05-94f3-5ce7ab4e2107",
+            "violations": []
+        },
+        {
+            "path": "/开关电容主动均衡/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/66cc3a14-196d-5f5c-9535-d482588cd3fc",
+            "violations": []
+        },
+        {
+            "path": "/辅助电源/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/c20e45f9-c9d2-50e9-b477-f2356556af13",
+            "violations": []
+        },
+        {
+            "path": "/MCU 与通讯/",
+            "uuid_path": "/632f74a5-cd8f-58d8-9ac1-1bfbb611d555/0739f2da-d4a5-5124-931f-263baaef6ebe",
+            "violations": []
+        }
+    ],
+    "source": "mp2645a-bms.kicad_sch"
+}
