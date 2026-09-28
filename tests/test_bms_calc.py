@@ -34,10 +34,10 @@ class TestBmsCalc(unittest.TestCase):
         self.assertAlmostEqual(s["p_at_dsg_w"], 4.0)
 
     def test_active_balance_much_faster_than_passive(self):
-        # 开关电容 @100mV 约 0.19A，比 50mA 被动快约 4 倍
+        # 开关电容 @100mV 约 0.16A（用户 2026-09-27），比 50mA 被动快约 3 倍
         self.assertLess(self.r["bal_5pct_h"] * 3, self.r["bal_5pct_passive_h"])
-        # 120Ah*5% = 6Ah / (0.19A*0.95)
-        self.assertAlmostEqual(self.r["bal_5pct_h"], 6 / (0.19 * 0.95), places=3)
+        # 120Ah*5% = 6Ah / (0.16A*0.95)
+        self.assertAlmostEqual(self.r["bal_5pct_h"], 6 / (0.16 * 0.95), places=3)  # 用户 2026-09-27：0.16A@100mV
 
     def test_balance_time_rejects_negative(self):
         with self.assertRaises(ValueError):
@@ -89,11 +89,20 @@ class TestSwitchedCap(unittest.TestCase):
 
     def test_default_design_point(self):
         r = bc.sc_equalizer(0.1)
-        # R_SSL = 1/(75k*100µ) = 0.133Ω；R_FSL = 4*(0.022+0.042+0.061) = 0.500Ω（含 2 只保险丝冷阻）
+        # 口径：design/03_balancer-spec.md §6.1（用户 2026-09-27）
+        # R_SSL = 1/(75k*100µ) = 0.133Ω；R_FSL = 4*(0.020+0.042+0.015)*1.08 = 0.333Ω；线束 6*0.045 = 0.27Ω
         self.assertAlmostEqual(r["r_ssl_ohm"], 0.1333, places=3)
-        self.assertAlmostEqual(r["r_fsl_ohm"], 0.500, places=3)
-        self.assertAlmostEqual(r["i_a"], 0.1 / (0.1333 ** 2 + 0.500 ** 2) ** 0.5, places=3)
-        self.assertGreater(r["i_a"], 0.18)
+        self.assertAlmostEqual(r["r_fsl_ohm"], 0.3326, places=3)
+        self.assertAlmostEqual(r["r_harness_ohm"], 0.270, places=3)
+        board = (0.1333 ** 2 + 0.3326 ** 2) ** 0.5
+        self.assertAlmostEqual(r["r_board_ohm"], board, places=3)
+        self.assertAlmostEqual(r["i_a"], 0.1 / (board + 0.270), places=3)
+        self.assertGreater(r["i_a"], 0.15)
+        self.assertLess(r["i_a"], 0.17)
+
+    def test_harness_reduces_current(self):
+        self.assertGreater(bc.sc_equalizer(0.1, r_wire=0.0)["i_a"], bc.sc_equalizer(0.1)["i_a"])
+        self.assertAlmostEqual(bc.sc_equalizer(0.1, r_wire=0.0)["i_a"], 0.279, places=2)
 
     def test_default_matches_design_input(self):
         self.assertAlmostEqual(bc.DesignInput().bal_current_a, round(bc.sc_equalizer(0.1)["i_a"], 2))

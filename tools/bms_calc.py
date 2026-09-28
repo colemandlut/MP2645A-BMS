@@ -36,7 +36,7 @@ class DesignInput:
     shunt_uohm: float = 100.0
 
     # ---- 主动均衡（v0.3：分立开关电容，电流随压差变化）----
-    bal_current_a: float = 0.19          # 相邻两节压差 100mV 时的估算电流（sc_equalizer 默认参数）
+    bal_current_a: float = 0.16          # 相邻两节压差 100mV 时的估算电流（sc_equalizer 默认参数，含线束 6·R_w；用户 2026-09-27）
     bal_efficiency: float = 0.95         # 小压差下开关电容损耗很小，取 0.95 保守
 
     ambient_c: float = 45.0
@@ -113,21 +113,27 @@ def passive_balance_time_h(d: DesignInput, soc_mismatch_pct: float, i_bleed_a: f
 # ---------------- 开关电容均衡（v0.3） ----------------
 
 def sc_equalizer(dv: float, c_uf: float = 100.0, f_khz: float = 75.0,
-                 r_n: float = 0.022, r_p: float = 0.042, r_extra: float = 0.061) -> dict:
-    """相邻两节之间的开关电容均衡电流估算。
+                 r_n: float = 0.020, r_p: float = 0.042, r_extra: float = 0.015,
+                 k_deadtime: float = 1.08, r_wire: float = 0.045) -> dict:
+    """相邻两节之间的开关电容均衡电流估算（口径见 design/03_balancer-spec.md §6.1，用户 2026-09-27 采纳）。
 
-    每相回路 = 一只 N 管 + 一只 P 管 + 电容 ESR/走线：R_phase = r_n + r_p + r_extra；
-    慢开关极限 R_SSL = 1/(f·C)，快开关极限 R_FSL = 4·R_phase（占空比 50%），
-    合成 R_eq ≈ sqrt(R_SSL² + R_FSL²)，I = ΔV / R_eq。
-    默认：2×100µF/6.3V 1206（3.6V 偏置下有效约 50% → 100µF），75kHz（R_SSL 与原 3 颗 @50kHz 相同），
-    AO3416 / AO3415A 在 Vgs≈3.3V 时的导通电阻约 22 / 42mΩ；
-    r_extra = 电容 ESR/走线 0.015Ω + 每相经过的 2 只 BAL 节点保险丝冷阻（CFS12V3T3R00 约 2×0.023Ω）。
+    板上每相回路 = 一只 N 管 + 一只 P 管 + 电容 ESR/走线：R_phase = r_n + r_p + r_extra；
+    慢开关极限 R_SSL = 1/(f·C)，快开关极限 R_FSL = 4·R_phase·k_deadtime（死区/慢开通修正约 1.08），
+    板上 R_board = sqrt(R_SSL² + R_FSL²)。
+    每节有本地储能 C31k 后线束只流直流：中间那根 BAL 线流 2I、两侧各 I，
+    折算到压差上是 6·r_wire 串联，I = ΔV / (R_board + 6·r_wire)。
+    r_wire = 每根均衡线的电阻：保险丝 CFS12V3T3R00 冷阻 23mΩ + 导线（0.5m 20AWG 约 17mΩ）+ J6 接触 + PCB ≈ 45mΩ。
+    默认：2×100µF/6.3V 1206（3.3V 偏置下有效约 100µF，样板实测），75kHz，
+    AO3416 / AO3415A 在 Vgs≈3.0–3.3V 时约 20 / 42mΩ（QN Fig 9、QP Fig 5 曲线）。
     """
     r_phase = r_n + r_p + r_extra
     r_ssl = 1.0 / (f_khz * 1e3 * c_uf * 1e-6)
-    r_fsl = 4.0 * r_phase
-    r_eq = math.hypot(r_ssl, r_fsl)
-    return {"r_eq_ohm": r_eq, "r_ssl_ohm": r_ssl, "r_fsl_ohm": r_fsl, "i_a": dv / r_eq}
+    r_fsl = 4.0 * r_phase * k_deadtime
+    r_board = math.hypot(r_ssl, r_fsl)
+    r_harness = 6.0 * r_wire
+    r_eq = r_board + r_harness
+    return {"r_eq_ohm": r_eq, "r_board_ohm": r_board, "r_harness_ohm": r_harness,
+            "r_ssl_ohm": r_ssl, "r_fsl_ohm": r_fsl, "i_a": dv / r_eq}
 
 
 # ---------------- MP2643 手册公式（v0.3 早期方案，保留供对比） ----------------
@@ -243,7 +249,7 @@ def main() -> None:
     print("== 开关电容均衡：相邻两节压差 → 电流 ==")
     for dv in (0.01, 0.03, 0.1, 0.3):
         sc = sc_equalizer(dv)
-        print(f"  ΔV {dv*1000:>4.0f} mV → {sc['i_a']*1000:>6.0f} mA   (R_eq {sc['r_eq_ohm']:.3f}Ω)")
+        print(f"  ΔV {dv*1000:>4.0f} mV → {sc['i_a']*1000:>6.0f} mA   (R_eq {sc['r_eq_ohm']:.3f}Ω = 板上 {sc['r_board_ohm']:.3f} + 线束 {sc['r_harness_ohm']:.3f})")
     print("== 均衡 (5% SOC 偏差) ==")
     print(f"  开关电容 @100mV {d.bal_current_a}A : {r['bal_5pct_h']:.2f} h")
     print(f"  被动 50mA 对比        : {r['bal_5pct_passive_h']:.1f} h")
