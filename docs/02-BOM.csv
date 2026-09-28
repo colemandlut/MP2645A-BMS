@@ -53,9 +53,10 @@ AFE,RT_CELL1 RT_CELL2,2,电芯 NTC 线束探头,10kΩ B25/50=3380K 环氧/贴片
 均衡,C311-C318,8,每节本地储能,Samsung CL31A107MQHNNNE,C15008,1206,100µF 6.3V X5R,JLC,用户 2026-09-27（design/03_balancer-spec.md）：新增（U-4）；跨本节电芯 紧贴半桥两管源极；线束只流直流 抑制 ±1V 振铃 热插拔均压；基础库
 均衡,C321-C328,8,时钟耦合,0402B102K500NT,C1523,0402,1nF 50V,JLC,用户 2026-09-27（design/03_balancer-spec.md）：C322–C328 原 CC2–CC8（DRV(k−1)→INk）；C321 新增（U-3）首级交流耦合 CLK_R→IN1
 均衡,C331-C337 C341-C347,14,飞电容,Samsung CL31A107MQHNNNE,C15008,1206,100µF 6.3V X5R,JLC,用户 2026-09-27（design/03_balancer-spec.md）：原 CF1–CF14（CF(2k−1)→C33k、CF(2k)→C34k）；每级 2 颗接 Xk–X(k+1)；BAL_CLK 75kHz；基础库
-均衡,R301-R308,8,驱动输入下拉,UNI-ROYAL 0402WGF1003TCE,C25741,0402,100k 1%,JLC,用户 2026-09-27（design/03_balancer-spec.md）：取代原 RB1–RB15（1M C26083 ×15）（U-2）；INk→本节负极 只下拉不做中点偏置；空闲态确定为全低
+均衡,R301,1,首级驱动输入下拉,UNI-ROYAL 0402WGF1003TCE,C25741,0402,100k 1%,JLC,用户 2026-09-28（03 Opus 复核 P1）：首级保持 100k，停时钟时最先翻低
+均衡,R302-R308,7,第 2–8 级驱动输入下拉,UNI-ROYAL 0402WGF3303TCE,C25778,0402,330k 1%,JLC,用户 2026-09-28（03 Opus 复核 P1）：100k→330k，时钟卡高/MCU 慢掉电时由第 1 级下降沿同步带低各级，消除约 50µs 混相；扩展库
 均衡,R311-R318 R321-R328,16,栅极慢开电阻,UNI-ROYAL 0402WGF3300TCE,C25104,0402,330Ω 1%,JLC,用户 2026-09-27（design/03_balancer-spec.md）：新增（U-1）；R31k DRVk→GNk、R32k DRVk→GPk；与 D30k/D31k 组成死区网络
-均衡,D301-D308 D311-D318,16,栅极快关肖特基,1N5819WS,C191023,SOD-323,40V 1A 肖特基,JLC,用户 2026-09-27（design/03_balancer-spec.md）：新增（U-1）；D30k K→DRVk A→GNk；D31k A→DRVk K→GPk；基础库
+均衡,D301-D308 D311-D318,16,栅极快关肖特基（死区）,CJ BAT54WS L9,C22629,SOD-323,30V 200mA ≤10pF,JLC,用户 2026-09-28（03 Opus 复核 P1）：1N5819WS 结电容约 110pF 会使死区失效 → BAT54WS；扩展库
 均衡,R300,1,时钟输入串阻,UNI-ROYAL 0402WGF1001TCE,C11702,0402,1k,JLC,用户 2026-09-27（design/03_balancer-spec.md）：原 R_CLK；BAL_CLK→CLK_R→C321
 均衡,F300-F308,9,均衡节点保险丝,大毅 TA-I CFS12V3T3R00,C163126,1206,3A 32V 50A 快熔 冷阻 23mΩ −20~105℃,JLC,用户 2026-09-27（design/03_balancer-spec.md）：原 F2–F10（F30k 接 BALk）；只保护板上故障；线束电芯端保险丝用户决定暂不加（已知风险）；U-7 保持本料
 电源,U4,1,Buck 3.3V,Tokmas LMR16006XDDCR,C54823941,TSOT-23-6,4-60V(abs 65V) 1A 600kHz Iq80µA 非同步 VFB 0.770V,JLC,第 2 轮降本（用户 2026-09-26 采用）（可选项）：TI C87080 引脚兼容替代；Iq 80µA（TI 28µA），待机 +50µA；33k/10k → 3.31V；EasyEDA 无 C54823941 的库，符号/封装沿用嘉立创 C87080（TI 同名件）的：引脚 1 BOOT/2 GND/3 FB/4 EN/5 VIN/6 SW 一致，封装尺寸 2.92×2.80、体宽 1.60、脚距 0.95 与 Tokmas 手册一致
