@@ -34,7 +34,10 @@
      不敏感——02 页实测把 pin_world 的 mirror 分支屏蔽掉，1–8 依旧全 PASS；
      检查 9 量的是 KiCad 自己连出来的网，才真正兜得住「接错网」。9 里还带
      9b（NC 真悬空）/9c（外围件端子，未画件列缺件清单）/9d（DNP 标志）/9f（位号合法性）/
-     9g（本页不许出现电源网络）/9h（DNP 值里写明）/9i（Footprint 与 LCSC 齐备）几小项。
+     9g（本页不许出现电源网络）/9h（DNP 值里写明）/9i（Footprint 与 LCSC 齐备）/
+     9j（网络→脚集合反查）/9l（本页网络全集）/9m（网络类）/9n（本页 ERC=0）/
+     9o（8 节同构）/9p（值·LCSC·库符号：第 2 轮换料表 + 对 docs/02-BOM.csv 逐件核）/
+     9q（二极管 K/A 方向：库符号图形 + §3.2 网络，第 2 轮新增）几小项。
  10. 标签/说明文字的**墨迹盒**不许压到器件本体图元上（第 2 轮新增）；
  11. 两段标签/说明文字不许叠在一起（用「横向重叠率 + 锚Δx」区分「真叠」与
      「同列上下紧排」，第 2 轮新增）；
@@ -49,6 +52,7 @@
 """
 from __future__ import annotations
 
+import csv
 import json
 import os
 import re
@@ -61,6 +65,9 @@ import xml.etree.ElementTree as ET
 HW = os.environ.get("BAL_HW") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 SCH = os.path.join(HW, "03_balancer.kicad_sch")
 ROOT_SCH = os.path.join(HW, "mp2645a-bms.kicad_sch")
+# 检查 9p 的外部口径：docs/02-BOM.csv 是本页器件值的**另一份独立记录**（贴片厂吃的那份）。
+# 用 BAL_HW 指向快照时（负例验证）BOM 通常不存在，9p 的 BOM 那一半自动降级成 SKIP。
+BOM = os.environ.get("BAL_BOM") or os.path.join(os.path.dirname(os.path.abspath(HW)), "docs", "02-BOM.csv")
 
 EPS = 1e-3
 
@@ -939,6 +946,95 @@ PART_EXPECT = {
 # 本页没有任何 DNP 件（§2.2 器件表里没有备位）。留空元组，将来要加备位时写在这里。
 DNP_REFS = ()
 
+# 值/LCSC/库符号期望表（检查 9p）：ref → (库符号名, 值, 立创编号)。
+# **为什么单开一张表**：9c/9j 只核「哪只脚接哪个网」——一只参数不对但**脚位兼容**的件能
+# 全过（0402 电阻换阻值、SOD-323 换同封装肖特基，网络一根不动），9i 又只查 ST LCSC 的
+# *格式*。第 2 轮换料（P1-1 肖特基结电容、P1-2 输入下拉分级）恰恰是靠参数起作用的，
+# 所以把这些件抄成一张独立于生成器的表：值和料号写错一格就报出来。
+# 来源：`design/03_balancer-spec.md` §8.1c（用户 2026-09-28 决定）+ `docs/02-BOM.csv`。
+# 全页其余器件的值由 9p 的 BOM 那一半兜（对 docs/02-BOM.csv 逐件核）。
+PART_VALUE_EXPECT = {
+    # R301 保持 100k：它是整套死区时序的基准，停时钟时最先泄放完。
+    **{f"R30{k}": (("0402WGF1003TCE", "100k 1%", "C25741") if k == 1
+                   else ("0402WGF3303TCE", "330k 1%", "C25778")) for k in range(1, 9)},
+    # 1N5819WS（CT≈110pF）→ BAT54WS（CT≤10pF），否则栅极被结电容顶过阈值、死区失效。
+    **{f"D3{k}{j}": ("BAT54WSL9", "BAT54WS", "C22629") for k in (0, 1) for j in range(1, 9)},
+}
+
+
+def expand_refs(field: str):
+    """BOM 的位号栏 → 位号列表：`R301`、`R302-R308`、`R311-R318 R321-R328`、`D301-D308 D311-D318`。"""
+    out = []
+    for tok in re.split(r"[\s,、]+", field.strip()):
+        if not tok:
+            continue
+        m = re.fullmatch(r"([A-Za-z]+)(\d+)-([A-Za-z]*)(\d+)", tok)
+        if m:
+            p1, n1, p2, n2 = m.group(1), int(m.group(2)), m.group(3) or m.group(1), int(m.group(4))
+            if p1 == p2:
+                out += [f"{p1}{n}" for n in range(n1, n2 + 1)]
+                continue
+        out.append(tok)
+    return out
+
+
+def diode_polarity_geometry(sch_path):
+    """从原理图的 lib_symbols 里量二极管符号的**极性几何**（检查 9q 用）。
+
+    返回 {符号名: {"axis", "base", "apex", "cathode_lo", "cathode_hi", "pin": {num: 坐标}}}：
+      · axis：判断极性的轴（x 或 y，取三角有两个不同取值的那根）；
+      · base/apex：三角底边与顶点在该轴上的坐标（顶点＝阴极侧）；
+      · cathode_lo/hi：非三角折线（阴极横杠＋肖特基钩，或矩形）在该轴上的范围。
+    判据只用到「顶点在哪一侧」——嘉立创符号的脚名都是 passive，K/A 只能从图形上认。
+    """
+    root = parse(tokenize(open(sch_path, encoding="utf-8").read()))
+    out = {}
+    for sym in children(child(root, "lib_symbols"), "symbol"):
+        name = unq(sym[1])
+        pins, polys = {}, []
+        for sub in children(sym, "symbol"):
+            for el in sub:
+                if not isinstance(el, list):
+                    continue
+                if el[0] == "pin":
+                    at, num = child(el, "at"), child(el, "number")
+                    if at and num:
+                        pins[unq(num[1])] = (float(at[1]), float(at[2]))
+                elif el[0] in ("polyline", "rectangle"):
+                    if el[0] == "rectangle":
+                        st, en = child(el, "start"), child(el, "end")
+                        pts = [(float(st[1]), float(st[2])), (float(st[1]), float(en[2])),
+                               (float(en[1]), float(en[2])), (float(en[1]), float(st[2]))]
+                    else:
+                        ptsn = child(el, "pts")
+                        pts = [(float(xy[1]), float(xy[2]))
+                               for xy in (children(ptsn, "xy") if ptsn else [])]
+                    if len(pts) >= 2:
+                        polys.append(pts)
+        tri_i = None
+        for i, pts in enumerate(polys):
+            if len(pts) >= 4 and pts[0] == pts[-1] and len(set(pts[:-1])) == 3:
+                tri_i = i               # 闭合且只有 3 个不同顶点 = 二极管三角
+                break
+        if tri_i is None or len(pins) < 2:
+            continue
+        tri = polys[tri_i][:-1]
+        for axis in (0, 1):
+            vals = [p[axis] for p in tri]
+            uniq = sorted(set(vals))
+            if len(uniq) != 2:
+                continue
+            base = uniq[0] if vals.count(uniq[0]) == 2 else uniq[1]
+            apex = uniq[1] if base == uniq[0] else uniq[0]
+            marks = [p[axis] for i, pts in enumerate(polys) if i != tri_i for p in pts]
+            if not marks:
+                break
+            out[name] = {"axis": "xy"[axis], "base": base, "apex": apex,
+                         "cathode_lo": min(marks), "cathode_hi": max(marks),
+                         "pin": pins}
+            break
+    return out
+
 # 本页不许出现的电源网络（§3.2 末条：电源符号 0 个，VBk 全部用局部标签）。
 POWER_NETS = ("GND", "GNDA", "GNDD", "+3V3", "+5V", "+12V", "VBUS", "VCC")
 
@@ -1146,9 +1242,104 @@ def netlist_pin_check(sch_path, root_sch):
         if nm.startswith("CELL") or nm in POWER_NETS:
             fails.append(f"[9l] 本页出现网络 {nm!r}（本页不得有 GND/电源/CELL* 网络，§3.2 末条）")
 
+    # 网表里本页的每件：ref → 库符号名 / 值 / LCSC（9p、9q 共用）
+    comps_here = {}
+    for comp in root.iter("comp"):
+        props = {p.get("name"): (p.get("value") or "") for p in comp.iter("property")}
+        if props.get("Sheetfile") != mine:
+            continue
+        ls = comp.find("libsource")
+        comps_here[comp.get("ref")] = {
+            "sym": (ls.get("part") if ls is not None else "") or "",
+            "value": comp.findtext("value") or "",
+            "lcsc": props.get("LCSC", ""),
+        }
+
+    # 9p：值/LCSC/库符号核对。分两半——
+    #     (a) 第 2 轮换料（PART_VALUE_EXPECT）：逐件核库符号名、值、LCSC；
+    #     (b) 全页 113 件对 `docs/02-BOM.csv`：LCSC 必须一格不差，值必须能在该行文字里找到。
+    #     为什么 (a) 不能省：(b) 只证明「原理图与 BOM 一致」——两份一起错（比如 R302 全写回
+    #     100k）时 (b) 是绿的，而 (a) 是按 §8.1c 的**用户决定**写死的，能把它揪出来。
+    #     反过来 (b) 也不能省：(a) 只盯第 2 轮动过的 24 件。
+    n_val = 0
+    for ref, (sym, val, lcsc) in sorted(PART_VALUE_EXPECT.items()):
+        if ref not in refs_here:
+            continue
+        n_val += 1
+        got = comps_here.get(ref, {})
+        if got.get("sym") != sym:
+            fails.append(f"[9p] {ref} 用的库符号是 {got.get('sym')!r}，第 2 轮换料后应为 {sym!r}")
+        if got.get("value") != val:
+            fails.append(f"[9p] {ref} 的值是 {got.get('value')!r}，§8.1c 要求 {val!r}")
+        if got.get("lcsc") != lcsc:
+            fails.append(f"[9p] {ref} 的 LCSC 是 {got.get('lcsc')!r}，应为 {lcsc!r}")
+    bom, n_bom, bom_note = {}, 0, f"docs/02-BOM.csv 不存在（{BOM}）"
+    if os.path.exists(BOM):
+        with open(BOM, encoding="utf-8") as fh:
+            for row in list(csv.reader(fh))[1:]:
+                if len(row) >= 6 and row[1].strip():
+                    for r in expand_refs(row[1]):
+                        bom[r] = row
+        for ref in sorted(refs_here):
+            row = bom.get(ref)
+            if row is None:
+                continue
+            n_bom += 1
+            got = comps_here.get(ref, {})
+            if got.get("lcsc") != row[5].strip():
+                fails.append(f"[9p] {ref} 的 LCSC {got.get('lcsc')!r} 与 docs/02-BOM.csv 的 "
+                             f"{row[5].strip()!r} 不一致")
+                continue
+            btxt = " ".join(row[3:9])
+            val = got.get("value", "")
+            if val and val not in btxt and val.split()[0] not in btxt:
+                fails.append(f"[9p] {ref} 的值 {val!r} 在 docs/02-BOM.csv 该行里找不到"
+                             f"（行文字：{btxt.strip()!r}）")
+        bom_note = f"docs/02-BOM.csv 逐件核对 {n_bom} 件"
+
+    # 9q：二极管 K/A 方向核对（§3.1 末条「二极管的极性不可对调」+ §3.2 网络表）。
+    #     9c/9j 已经能报「D30k.1 接的不是 DRVk」，但它们只在**脚号**层面说话：脚号本身
+    #     是靠库符号的 `(number "1")` 认的，谁把库符号的两条腿数字对调（或者换成一个
+    #     图形反过来的同封装肖特基），9c 照样全绿。所以这里两头一起核：
+    #       (a) 图形：从 lib_symbols 里量三角顶点（阴极）在哪一侧，要求 pin 1 在同一侧，
+    #           且阴极横杠/肖特基钩也在那一侧——脚名都是 passive，K/A 只能从图形上认；
+    #       (b) 网络：按 §3.2，D30k 的 K=DRVk / A=GNk，D31k 的 K=GPk / A=DRVk。
+    #     报错一律用 K/A 的说法，接反了能一眼看出是极性错而不是「脚接错网」。
+    geo = diode_polarity_geometry(sch_path)
+    POLARITY = {**{f"D30{k}": (f"DRV{k}", f"GN{k}") for k in range(1, 9)},
+                **{f"D31{k}": (f"GP{k}", f"DRV{k}") for k in range(1, 9)}}
+    n_diode = 0
+    for ref, (knet, anet) in sorted(POLARITY.items()):
+        if ref not in refs_here:
+            continue
+        n_diode += 1
+        sym = comps_here.get(ref, {}).get("sym", "")
+        g = geo.get(f"jlc:{sym}")
+        if g is None:
+            fails.append(f"[9q] {ref} 用的符号 {sym!r} 里找不到「闭合三角 + 阴极横杠」的二极管图形，"
+                         f"K/A 方向无法从图形上认，不放行")
+            continue
+        ax = "xy".index(g["axis"])
+        mid = (g["base"] + g["apex"]) / 2.0
+        side = 1 if g["apex"] > mid else -1        # 三角顶点（＝阴极）所在的一侧
+        p1 = g["pin"].get("1")
+        if p1 is None or (p1[ax] - mid) * side <= 0:
+            fails.append(f"[9q] 符号 {sym!r} 的图形里 pin 1 不在三角顶点（阴极）一侧："
+                         f"顶点 {g['apex']}、pin1 {p1[ax] if p1 else None}——脚号与图形不符，"
+                         f"接对了网也认不出极性")
+        if (g["cathode_lo"] - mid) * side <= 0 or (g["cathode_hi"] - mid) * side <= 0:
+            fails.append(f"[9q] 符号 {sym!r} 的阴极横杠 [{g['cathode_lo']}, {g['cathode_hi']}] "
+                         f"不在三角顶点（阴极）一侧（顶点 {g['apex']}）")
+        got = nodes.get(ref, {})
+        if got.get("1") != knet or got.get("2") != anet:
+            fails.append(f"[9q] {ref} 极性接反/接错：K(脚1) 是 {got.get('1')!r}、A(脚2) 是 "
+                         f"{got.get('2')!r}；§3.2 要求 K={knet!r}、A={anet!r}")
+
     note = f"逐脚核对 {n_checked}/{n_pins} 项（§3.1/§3.2 全页 274 脚，图纸上已画 {len(refs_here)} 件）；" \
            f"网络方向核对 {n_spec_net} 个网络（§3.2）＝网表实际 {len(actual)} 个，本页无 GND/电源/CELL* 网；" \
            f"Footprint/LCSC 核对 {n_comp} 件"
+    note += f"；值/LCSC/符号核对 {n_val} 件（第 2 轮换料，§8.1c）；" \
+            f"二极管 K/A 方向 {n_diode} 只（图形 + §3.2 网络）；{bom_note}"
     if swapped:
         note += f"；R/C/F 两脚对调 {len(swapped)} 处（§3.1 允许）：{', '.join(swapped)}"
     if missing:

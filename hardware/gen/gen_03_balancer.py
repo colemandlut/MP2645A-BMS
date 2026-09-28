@@ -116,7 +116,7 @@ SEC = {1: 251.46, 2: 199.39, 3: 147.32, 4: 95.25}    # 左栏第 k 节的横条�
 SEC_R = {5: 224.79, 6: 172.72, 7: 120.65, 8: 68.58}
 DX = 168.91          # 右栏相对左栏的 x 偏移（133×1.27）；右栏最左墨迹 ≈221.3 > 左栏最右 ≈216.2
 
-X_R30 = 55.88        # R30k 100k 下拉（竖放 rot 270，pin1 上=INk、pin2 下=VB(k-1)）
+X_R30 = 55.88        # R30k 下拉（竖放 rot 270，pin1 上=INk、pin2 下=VB(k-1)）：R301=100k、R302–R308=330k
 X_C32 = 71.12        # C32k 1nF 交流耦合（横放 rot 0，pin1 左、pin2 右）
 X_U30 = 96.52        # U30k SN74LVC1G17（rot 90：1 NC / 2 INA / 3 GND / 4 OUTY / 5 VCC）
 X_C30 = 113.03       # C30k 100nF 去耦（竖放 rot 270）
@@ -144,15 +144,26 @@ X_J6, Y_J6 = 27.94, 269.24       # XDWF-C3030WV-2*5P：本体 x±3.81 / y±7.62�
 
 def sec_row(k: int, R: float, dx: float = 0.0):
     """spec §3.1 每节通用连接的 11 件（k，右栏 dx≠0）。"""
+    # R30k 是 DRVk 的下拉/泄放电阻。第 2 轮（复核 P1-2 → 规格书 §8.1c 用户决定）：
+    # R301 保持 100k（它是整套死区时序的基准），R302–R308 改 330k，让第 1 级**总是**先
+    # 泄放完（第 1 级翻相 ≤133µs，其余 ≥169µs）。时钟卡高或 MCU 掉电时，八级同时异步
+    # 衰减会让相邻级混相，浪涌可达 20–40A（超 AO3415A 的 IDM 15.6A）。330k 的漏电流
+    # 偏移 ±0.33V < VT−,min 0.89V，不会误翻。
+    r30 = (("0402WGF1003TCE", "100k 1%", "C25741") if k == 1
+           else ("0402WGF3303TCE", "330k 1%", "C25778"))
+    # 死区二极管（复核 P1-1 → 规格书 §8.1c）：1N5819WS → BAT54WS。1N5819WS 的结电容
+    # ~110pF@4V，经 R31k/R32k 330Ω 耦合会把栅极瞬时顶过 Vth，慢开快关的死区被抹掉；
+    # BAT54WS 的 CT ≤10pF、VF 0.24V@0.1mA。**脚位几何完全相同**（SOD-323，1=K/2=A，
+    # 本体折线一致），所以接线一根不用动，只换符号/值/LCSC。
     return [
-        (f"R30{k}", "0402WGF1003TCE", "100k 1%", "C25741", X_R30 + dx, R, 270, False),
+        (f"R30{k}", *r30, X_R30 + dx, R, 270, False),
         (f"C32{k}", "0402B102K500NT", "1nF 50V", "C1523", X_C32 + dx, R, 0, False),
         (f"U30{k}", "SN74LVC1G17DBVR", "SN74LVC1G17DBVR", "C7394021", X_U30 + dx, R, 90, False),
         (f"C30{k}", "CL05B104KO5NNNC", "100nF 16V", "C1525", X_C30 + dx, R, 270, False),
         (f"R32{k}", "0402WGF3300TCE", "330Ω 1%", "C25104", X_R_D_D + dx, R + RD_DY, 0, False),
-        (f"D31{k}", "1N5819WS", "1N5819WS", "C191023", X_R_D_D + dx, R + 2 * RD_DY + 1.27, 0, False),
+        (f"D31{k}", "BAT54WSL9", "BAT54WS", "C22629", X_R_D_D + dx, R + 2 * RD_DY + 1.27, 0, False),
         (f"R31{k}", "0402WGF3300TCE", "330Ω 1%", "C25104", X_R_D_G + dx, R + RD_DY, 0, False),
-        (f"D30{k}", "1N5819WS", "1N5819WS", "C191023", X_R_D_G + dx, R + 2 * RD_DY + 1.27, 0, False),
+        (f"D30{k}", "BAT54WSL9", "BAT54WS", "C22629", X_R_D_G + dx, R + 2 * RD_DY + 1.27, 0, False),
         (f"Q30{k}", "AO3416_C479060", "AO3416", "C479060", X_QN + dx, R + 6.35, 0, False),
         (f"Q31{k}", "AO3415A_C5350990", "AO3415A", "C5350990", X_QP + dx, R - 6.35, 180, False),
         (f"C31{k}", "CL31A107MQHNNNE", "100µF 6.3V", "C15008", X_C31 + dx, R, 270, False),
@@ -179,8 +190,9 @@ def a_components():
     """全页器件表（ref, symbol, value, lcsc, x, y, rot, dnp）。
 
     位号按规格书 §2.3：QN1–8→Q301–Q308、QP1–8→Q311–Q318、UD1–8→U301–U308、
-    CD1–8→C301–C308、RB1–8（100k 下拉）→R301–R308、R311–R318/R321–R328（330Ω 死区）、
-    D301–D308/D311–D318、C311–C318（100µF 储能）、C321–C328（1nF 耦合）、
+    CD1–8→C301–C308、RB1–8（输入下拉）→R301–R308（第 2 轮：R301 100k、R302–R308 330k）、
+    R311–R318/R321–R328（330Ω 死区）、D301–D308/D311–D318（第 2 轮：BAT54WS C22629）、
+    C311–C318（100µF 储能）、C321–C328（1nF 耦合）、
     CF(2k−1)/CF(2k)→C33k/C34k（飞电容，k=1..7）、R_CLK→R300、
     线束节点熔丝→F300–F308、线束端子→J6。
     """
@@ -223,13 +235,20 @@ def sec_fields(k: int, R: float, dx: float = 0.0):
         f"R30{k}": ((f"R30{k}", X_R30 + dx, R - 11.43, "center"), ("Value", X_R30 + dx, R - 13.97, "center")),
         f"C32{k}": ((f"C32{k}", X_C32 + dx, R - 3.81, "center"), ("Value", X_C32 + dx, R + 3.81, "center")),
         f"U30{k}": ((f"U30{k}", X_U30 + dx, R - 17.78, "center"), ("Value", X_U30 + dx, R + 17.78, "center")),
-        f"C30{k}": ((f"C30{k}", X_C30 + dx, R - 5.08, "center"), ("Value", X_C30 + dx, R - 3.81, "center")),
+        # C30k：位号与值原来同在 y=R−5.08 / R−3.81 两行，模型只差 0.01mm、渲染实测
+        # 纵向压 0.64mm（P2-4）。上方 VBk 标签的墨迹止于 y=R−6.89，塞不下两行，
+        # 所以位号往右上让：y=R−6.35 且右移 3.81，与值**纵分**、与 VBk 标签**横分**。
+        f"C30{k}": ((f"C30{k}", X_C30 + dx + 3.81, R - 6.35, "center"), ("Value", X_C30 + dx, R - 3.81, "center")),
         f"R32{k}": ((f"R32{k}", X_R_D_D + dx, R + 3.81, "center"), ("Value", X_R_D_D + dx, R + 1.27, "center")),
         f"R31{k}": ((f"R31{k}", X_R_D_G + dx, R + 3.81, "center"), ("Value", X_R_D_G + dx, R + 1.27, "center")),
         f"D31{k}": ((f"D31{k}", X_R_D_D + dx, R + 9.53, "center"), ("Value", X_R_D_D + dx, R + 19.05, "center")),
         f"D30{k}": ((f"D30{k}", X_R_D_G + dx, R + 9.53, "center"), ("Value", X_R_D_G + dx, R + 19.05, "center")),
         f"Q30{k}": ((f"Q30{k}", X_QN + dx - 3.81, R + 9.53, "right"), ("Value", X_QN + dx - 3.81, R + 12.70, "right")),
-        f"Q31{k}": ((f"Q31{k}", X_QP + dx - 8.89, R - 3.81, "right"), ("Value", X_QP + dx - 8.89, R - 6.35, "right")),
+        # Q31k 是 P 管、符号转 180°。KiCad 在 rot=180 时把字段的水平对齐左右翻面
+        # （实测：写 right 会渲染成「从锚点往右长」），而 center 不受翻面影响、锚点即
+        # 文字中心。所以这里改用 center，锚点从 X_QP−8.89 左移到 X_QP−12.70，让文字
+        # 落在 GN 竖轨（x=X_GN）与 Q31k 本体（x≥X_QP−7.37）之间的空带里。
+        f"Q31{k}": ((f"Q31{k}", X_QP + dx - 12.70, R - 3.81, "center"), ("Value", X_QP + dx - 12.70, R - 6.35, "center")),
         f"C31{k}": ((f"C31{k}", X_C31 + dx + 2.54, R - 1.27, "left"), ("Value", X_C31 + dx + 2.54, R + 1.27, "left")),
     }
 
@@ -326,8 +345,9 @@ def gen():
     A('\t(paper "A3")\n')
     A('\t(title_block\n')
     A('\t\t(title "开关电容主动均衡")\n')
-    A('\t\t(date "2026-09-26")\n')
-    A('\t\t(rev "v0.3-draw-r1a")\n')
+    # 第 2 轮（复核 P2-4）：日期/版次随换料同步更新
+    A('\t\t(date "2026-09-28")\n')
+    A('\t\t(rev "v0.3-draw-r2")\n')
     A('\t\t(company "MP2645A-BMS")\n')
     A('\t\t(comment 1 "8S LiFePO4 200A BMS · MPS MP2797 + 开关电容均衡")\n')
     A('\t)\n')
@@ -437,8 +457,8 @@ def gen():
               "全级交流耦合：BAL_CLK 经 1nF（C321–C328）逐级耦合，首级亦然（VB0 不接地）；"
               "均衡节点经 3A 熔丝到 BAL0–BAL8；本页无 GND、无电源符号。", 2.0)
     text_item(20.32, 34.29,
-              "死区：R31k/R32k 330Ω ∥ D30k/D31k 1N5819WS（慢开快关）防上下管直通；"
-              "停时钟/复位时 R30k 100k 下拉使各 DRV 收敛到全低。", 2.0)
+              "死区：R31k/R32k 330Ω ∥ D30k/D31k BAT54WS（慢开快关，CT≤10pF）防上下管直通；"
+              "停时钟/复位：R301 100k、R302–R308 330k 下拉，第 1 级先泄放完避免混相。", 2.0)
     text_item(20.32, 40.64, "接口网络（跨页用全局标签，名称以本清单为准）：", 2.4)
     text_item(25.40, 46.99, "· BAL0..BAL8（均衡节点，经 F300–F308）；· BAL_CLK（时钟输入）", 1.8)
     text_item(25.40, 52.07,
@@ -613,6 +633,11 @@ def gen():
         pins = pins_of(c)
         props = symbol_props(read_symbol(sym))
         fa = (360 - rot) % 360
+        if rot == 180:
+            # 符号转 180° 时 KiCad 的变换 y1==0，字段的绘制角**原样**取存储角（只有符号转
+            # 90/270 才把水平↔竖直对调，见 SCH_FIELD::GetDrawRotation）。所以原来写的 180
+            # 会画成正倒的文字（P2-4：Q311–Q318 的位号/值全倒着）。存 0 才是正的。
+            fa = 0
         A('\t(symbol\n')
         A(f'\t\t(lib_id "jlc:{esc(sym)}")\n')
         A(f'\t\t(at {fmt(x)} {fmt(y)} {rot})\n')
