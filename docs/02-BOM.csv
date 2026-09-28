@@ -46,15 +46,18 @@ AFE,R220 R221,2,I2C上拉（到 +3V3）,UNI-ROYAL 0402WGF2201TCE,C25879,0402,2.2
 AFE,R222,1,xALERT 下拉,UNI-ROYAL 0402WGF1003TCE,C25741,0402,100k,JLC,用户 2026-09-27：原 R_ALT；xALERT 推挽高有效；WDT 悬空、严禁上拉（p.24 拉高即复位）
 AFE,R223,1,NSHDN 上拉（到本板 +3V3）,UNI-ROYAL 0402WGF1002TCE,C25744,0402,10k,JLC,用户 2026-09-27：原 R_WAK；不接 AFE 自身 3V3
 AFE,RT_CELL1 RT_CELL2,2,电芯 NTC 线束探头,10kΩ B25/50=3380K 环氧/贴片探头（线束件）,,线束,10k 1% B3380,非嘉立创,用户 2026-09-27：U-2 取代板上 RT1/RT2（0603 在板上测不到电芯温度）；经 J5.1–4 双绞接入；B 值须与固件 R-T 表同口径
-均衡,QN1-QN8,8,半桥下管 N-MOS,PUOLOP AO3416,C479060,SOT-23,20V 6A 21typ/26max mΩ@2.5V Vth 0.45–1.0V,JLC,第 1 轮可选项（用户 2026-09-26 14:46 采用）：每节一只，S 接本节负极；Vth 更低，直通窗口更宽，样板实测直通
-均衡,QP1-QP8,8,半桥上管 P-MOS,ElecSuper AO3415A,C5350990,SOT-23,-20V 4.9A 36typ/47max mΩ@-2.5V,JLC,降本推荐项；每管只承受一节电压；需实测直通
-均衡,UD1-UD8,8,栅极驱动(施密特缓冲),SN74LVC1G17DBVR(UMW),C7394021,SOT-23-5,1.65-5.5V 32mA,JLC,由本节电芯供电，驱动 N/P 共栅
-均衡,CD1-CD8,8,驱动去耦,Samsung CL05B104KO5NNNC,C1525,0402,100nF 16V,JLC,跨本节电芯
-均衡,CF1-CF14,14,飞电容,Samsung CL31A107MQHNNNE,C15008,1206,100µF 6.3V X5R,JLC,第 1 轮可选项（用户 2026-09-26 14:46 采用）：每级 2 颗（原 3），共 7 级；BAL_CLK 50→75kHz 保持 R_SSL 不变；基础库
-均衡,CC2-CC8,7,时钟级间耦合,0402B102K500NT,C1523,0402,1nF 50V,JLC,第 k-1 节驱动输出 → 第 k 节驱动输入
-均衡,RB1-RB15,15,驱动输入偏置/下拉,UNI-ROYAL 0402WGF1004TCE,C26083,0402,1M,JLC,第 2–8 节各 2 只（到本节正负极），第 1 节 1 只下拉
-均衡,R_CLK,1,时钟输入串阻,UNI-ROYAL 0402WGF1001TCE,C11702,0402,1k,JLC,MCU BAL_CLK → 第 1 节驱动
-均衡,F2-F10,9,均衡节点保险丝,大毅 TA-I CFS12V3T3R00,C163126,1206,3A 32V 50A 快熔 冷阻 23mΩ −20~105℃,JLC,BAL0..BAL8；第 1 轮可选项（用户 2026-09-26 14:46 采用）：工作温度下限 −20℃
+均衡,Q301-Q308,8,半桥下管 N-MOS,PUOLOP AO3416,C479060,SOT-23,20V 6A 21typ/26max mΩ@2.5V Vth 0.45–1.0V,JLC,用户 2026-09-27（design/03_balancer-spec.md）：原 QN1–QN8；S 接本节负极 VB(k−1)；第 1 轮可选项（用户 2026-09-26 14:46 采用）
+均衡,Q311-Q318,8,半桥上管 P-MOS,ElecSuper AO3415A,C5350990,SOT-23,-20V 4.9A 36typ/47max mΩ@-2.5V（曲线约 42mΩ@-3V）,JLC,用户 2026-09-27（design/03_balancer-spec.md）：原 QP1–QP8；S 接本节正极 VBk；封装与 Q30x 不同（体宽 1.6）
+均衡,U301-U308,8,栅极驱动(施密特缓冲),SN74LVC1G17DBVR(UMW),C7394021,SOT-23-5,1.65-5.5V 32mA,JLC,用户 2026-09-27（design/03_balancer-spec.md）：原 UD1–UD8；本节电芯供电；输出经 R-D 死区网络分别驱动 N/P 栅极；1 脚 NC
+均衡,C301-C308,8,驱动去耦,Samsung CL05B104KO5NNNC,C1525,0402,100nF 16V,JLC,用户 2026-09-27（design/03_balancer-spec.md）：原 CD1–CD8；跨本节电芯 紧贴 U30k 5/3 脚
+均衡,C311-C318,8,每节本地储能,Samsung CL31A107MQHNNNE,C15008,1206,100µF 6.3V X5R,JLC,用户 2026-09-27（design/03_balancer-spec.md）：新增（U-4）；跨本节电芯 紧贴半桥两管源极；线束只流直流 抑制 ±1V 振铃 热插拔均压；基础库
+均衡,C321-C328,8,时钟耦合,0402B102K500NT,C1523,0402,1nF 50V,JLC,用户 2026-09-27（design/03_balancer-spec.md）：C322–C328 原 CC2–CC8（DRV(k−1)→INk）；C321 新增（U-3）首级交流耦合 CLK_R→IN1
+均衡,C331-C337 C341-C347,14,飞电容,Samsung CL31A107MQHNNNE,C15008,1206,100µF 6.3V X5R,JLC,用户 2026-09-27（design/03_balancer-spec.md）：原 CF1–CF14（CF(2k−1)→C33k、CF(2k)→C34k）；每级 2 颗接 Xk–X(k+1)；BAL_CLK 75kHz；基础库
+均衡,R301-R308,8,驱动输入下拉,UNI-ROYAL 0402WGF1003TCE,C25741,0402,100k 1%,JLC,用户 2026-09-27（design/03_balancer-spec.md）：取代原 RB1–RB15（1M C26083 ×15）（U-2）；INk→本节负极 只下拉不做中点偏置；空闲态确定为全低
+均衡,R311-R318 R321-R328,16,栅极慢开电阻,UNI-ROYAL 0402WGF3300TCE,C25104,0402,330Ω 1%,JLC,用户 2026-09-27（design/03_balancer-spec.md）：新增（U-1）；R31k DRVk→GNk、R32k DRVk→GPk；与 D30k/D31k 组成死区网络
+均衡,D301-D308 D311-D318,16,栅极快关肖特基,1N5819WS,C191023,SOD-323,40V 1A 肖特基,JLC,用户 2026-09-27（design/03_balancer-spec.md）：新增（U-1）；D30k K→DRVk A→GNk；D31k A→DRVk K→GPk；基础库
+均衡,R300,1,时钟输入串阻,UNI-ROYAL 0402WGF1001TCE,C11702,0402,1k,JLC,用户 2026-09-27（design/03_balancer-spec.md）：原 R_CLK；BAL_CLK→CLK_R→C321
+均衡,F300-F308,9,均衡节点保险丝,大毅 TA-I CFS12V3T3R00,C163126,1206,3A 32V 50A 快熔 冷阻 23mΩ −20~105℃,JLC,用户 2026-09-27（design/03_balancer-spec.md）：原 F2–F10（F30k 接 BALk）；只保护板上故障；线束电芯端保险丝用户决定暂不加（已知风险）；U-7 保持本料
 电源,U4,1,Buck 3.3V,Tokmas LMR16006XDDCR,C54823941,TSOT-23-6,4-60V(abs 65V) 1A 600kHz Iq80µA 非同步 VFB 0.770V,JLC,第 2 轮降本（用户 2026-09-26 采用）（可选项）：TI C87080 引脚兼容替代；Iq 80µA（TI 28µA），待机 +50µA；33k/10k → 3.31V；EasyEDA 无 C54823941 的库，符号/封装沿用嘉立创 C87080（TI 同名件）的：引脚 1 BOOT/2 GND/3 FB/4 EN/5 VIN/6 SW 一致，封装尺寸 2.92×2.80、体宽 1.60、脚距 0.95 与 Tokmas 手册一致
 电源,D7,1,续流肖特基,SS210,C14996,SMA,100V 2A,JLC,非同步必需；基础库
 电源,L1,1,Buck电感,Sunlord SWPA5040S220MT,C68434,SMD 5x5,22µH 1.9A,JLC,
@@ -93,4 +96,4 @@ MCU,R58 R59,2,红灯限流,UNI-ROYAL 0402WGF1001TCE,C11702,0402,1k,JLC,
 MCU,R60,1,绿灯限流,UNI-ROYAL 0402WGF3300TCE,C25104,0402,330Ω 1%,JLC,05 规格书（用户 2026-09-27 确认）：绿灯 VF 2.6–3.1V，1k 只有 0.2–0.7mA 太暗；基础库
 MCU,SW1,1,按键,TS-1187A-B-A-B,C318884,SMD 5.1x5.1,,JLC,
 连接器,J5,1,采样端子,BOOMELE XH-13A,C40669,THT 2.50mm,XH 2.50mm 13P 立式,JLC,第 1 轮可选项（用户 2026-09-26 14:46 采用）：XH 2.50mm 13P 立式；嘉立创库存 244（够 244 块）；用户 2026-09-27：画在 02 页；针脚 1 NTC_CELL1 / 2 GND / 3 NTC_CELL2 / 4 GND / 5–13 CELL0–CELL8；线束侧电芯端采样线加保险丝（线束件）
-连接器,J6,1,均衡端子,连欣 XDWF-C3030WV-2*5P,C18202166,THT 3.00mm,2x5 3.00mm 立式 Micro-Fit 兼容 5A/针,JLC,降本推荐项；⚠针号之字形（奇数一排偶数一排），原理图/线束按物理位置对针；先买样品试插
+连接器,J6,1,均衡端子,连欣 XDWF-C3030WV-2*5P,C18202166,THT 3.00mm,2x5 3.00mm 立式 Micro-Fit 兼容 5A/针,JLC,降本推荐项；⚠针号之字形（奇数一排偶数一排），原理图/线束按物理位置对针；先买样品试插；用户 2026-09-27：焊盘 n 接 BAL(n−1) 焊盘 10 空（design/03_balancer-spec.md §4）

@@ -228,7 +228,11 @@
       },
       {
         "netclass": "BAL_3A",
-        "pattern": "/03_balancer/X*"
+        "pattern": "/开关电容主动均衡/X?"
+      },
+      {
+        "netclass": "BAL_3A",
+        "pattern": "/开关电容主动均衡/VB?"
       },
       {
         "netclass": "CELL_SENSE",

@@ -39,8 +39,8 @@ SHEETS = [
      ["CELL0..CELL8", "SRP", "SRN", "CHG_G", "DSG_G", "FET_MID", "PACK+", "BAT+", "NTC_CELL1", "NTC_CELL2",
       "NTC_FET", "NTC_SHUNT", "I2C_SCL", "I2C_SDA", "AFE_ALERT", "AFE_WAKE", "+3V3", "GND"]),
     ("03_balancer", "开关电容主动均衡",
-     "8 个互补半桥 QN/QP(AO3400A/AO3401A) + 8 个 74LVC1G17（本节电芯供电）+ 7 级飞电容 3x100µF / 时钟 BAL_CLK 逐级电容耦合 / 均衡节点 3A 保险丝",
-     ["BAL0..BAL8", "BAL_CLK", "GND"]),
+     "8 个互补半桥 AO3416/AO3415A（R-D 死区）+ 8 个 74LVC1G17（本节电芯供电）+ 每节 100µF 本地储能 + 7 级飞电容 2x100µF / BAL_CLK 75kHz 逐级 1nF 交流耦合、100k 下拉 / 均衡节点 3A 保险丝",
+     ["BAL0..BAL8", "BAL_CLK"]),  # 用户 2026-09-27：删 GND（VB0 不接 GND，首级交流耦合），见 design/03_balancer-spec.md
     ("04_power_supply", "辅助电源",
      "BAT+ → 输入保护 → LMR16006X buck → +3V3（取消 5V 轨与 LDO）",
      ["BAT+", "BAT-", "+3V3", "GND"]),
